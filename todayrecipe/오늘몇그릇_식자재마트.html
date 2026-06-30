@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>오늘 몇 그릇? · 식자재 마트</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{
+    --bg-1:#F2EFEA; --bg-2:#E6E1DA; --bg-3:#DED8D0;
+    --paper:#FFFFFF;
+    --ink:#1A1613; --ink-soft:#55504B; --muted:#A39B92;
+    --line:#EDE9E3; --tile:#F5F2EE; --track:#EEEAE4;
+    --good-1:#16A06A; --bad-1:#D04B3F; --warn-1:#D69412;
+    --sand:#F3EBE2; --sand-ink:#9A6B3C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
+    background:radial-gradient(125% 90% at 50% -10%, var(--bg-1) 0%, var(--bg-2) 58%, var(--bg-3) 100%);
+    color:var(--ink);display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+  .device{width:392px;max-width:100%;height:min(860px,calc(100dvh - 48px));
+    background:#0C0C0D;border-radius:54px;padding:11px;
+    box-shadow:0 44px 90px -24px rgba(38,26,16,.40),0 14px 34px rgba(38,26,16,.20)}
+  .screen{width:100%;height:100%;background:var(--paper);border-radius:43px;overflow:hidden;
+    display:flex;flex-direction:column;position:relative}
+  .statusbar{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;font-size:14.5px;font-weight:600;letter-spacing:.2px}
+  .sb-right{display:flex;align-items:center;gap:7px}
+  .sb-right svg{display:block;color:var(--ink)}
+
+  .scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+
+  /* header */
+  .mkt-head{padding:4px 22px 0}
+  .mh-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .iconbtn{width:34px;height:34px;margin-left:-6px;border:none;background:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:10px}
+  .mh-title{font-size:16px;font-weight:700;letter-spacing:-.3px}
+  /* menu chip */
+  .chip{display:inline-flex;align-items:center;gap:9px;background:var(--ink);color:#fff;
+    padding:8px 13px 8px 9px;border-radius:14px;cursor:pointer;border:none;font-family:inherit;
+    box-shadow:0 8px 18px -8px rgba(26,22,19,.45)}
+  .chip-ic{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.13);
+    display:flex;align-items:center;justify-content:center;color:#fff}
+  .chip-tx b{font-size:14.5px;font-weight:700;letter-spacing:-.3px}
+  .chip-tx span{font-size:11px;color:rgba(255,255,255,.6);margin-left:5px;font-weight:500}
+  .chip svg.cd{color:rgba(255,255,255,.55);margin-left:1px}
+  /* search */
+  .search{display:flex;align-items:center;gap:9px;background:var(--tile);border-radius:14px;
+    padding:12px 15px;margin-top:14px}
+  .search svg{color:var(--muted);flex:0 0 auto}
+  .search input{flex:1;border:none;background:none;font-family:inherit;font-size:14px;color:var(--ink);outline:none}
+  .search input::placeholder{color:var(--muted)}
+
+  /* sticky category bar */
+  .catbar{position:sticky;top:0;z-index:3;background:var(--paper);padding:16px 0 12px;margin-top:4px}
+  .cats{display:flex;gap:8px;overflow-x:auto;padding:0 22px;scrollbar-width:none}
+  .cats::-webkit-scrollbar{display:none}
+  .cat{flex:0 0 auto;border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;
+    letter-spacing:-.2px;padding:8px 15px;border-radius:11px;background:var(--tile);color:var(--ink-soft)}
+  .cat.on{background:var(--ink);color:#fff}
+
+  /* section heads */
+  .sec-head{display:flex;align-items:baseline;justify-content:space-between;padding:6px 22px 12px}
+  .sec-head h2{font-size:17px;font-weight:800;letter-spacing:-.5px}
+  .sec-head .more{font-size:12.5px;font-weight:600;color:var(--muted)}
+  .vsec{padding-top:18px}
+
+  /* horizontal cards */
+  .hscroll{display:flex;gap:12px;overflow-x:auto;padding:0 22px 4px;scrollbar-width:none}
+  .hscroll::-webkit-scrollbar{display:none}
+  .hcard{flex:0 0 auto;width:144px;cursor:pointer}
+  .himg{position:relative;width:144px;height:118px;border-radius:18px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center}
+  .himg svg{opacity:.85}
+  .add{position:absolute;bottom:8px;right:8px;width:34px;height:34px;border-radius:50%;
+    background:var(--paper);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    color:var(--ink);box-shadow:0 4px 12px -2px rgba(40,28,18,.28);transition:transform .15s,background .15s}
+  .add:active{transform:scale(.88)}
+  .add.in{background:var(--ink);color:#fff}
+  .hcard-tx{padding:10px 2px 0}
+  .hcard-tx .nm{font-size:14px;font-weight:700;letter-spacing:-.3px}
+  .hcard-tx .pr{font-size:13px;font-weight:600;color:var(--ink);margin-top:3px}
+  .hcard-tx .pr i{font-size:11.5px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
+
+  /* vertical list */
+  .vlist{display:flex;flex-direction:column}
+  .vitem{display:flex;align-items:center;gap:14px;padding:13px 22px;cursor:pointer}
+  .vitem+.vitem{border-top:1px solid var(--line)}
+  .vthumb{flex:0 0 auto;width:62px;height:62px;border-radius:16px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center}
+  .vthumb svg{opacity:.85;transform:scale(.92)}
+  .vmid{flex:1;min-width:0}
+  .vmid .nm{font-size:15.5px;font-weight:700;letter-spacing:-.3px}
+  .vmid .pr{font-size:13.5px;font-weight:600;margin-top:3px}
+  .vmid .pr i{font-size:12px;font-weight:500;color:var(--muted);font-style:normal;margin-left:3px}
+  .trend{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600;
+    padding:3px 7px;border-radius:7px;margin-top:7px}
+  .trend.dn{color:var(--good-1);background:rgba(22,160,106,.1)}
+  .trend.up{color:var(--bad-1);background:rgba(208,75,63,.1)}
+  .trend.fl{color:var(--muted);background:var(--tile)}
+  .trend svg{display:block}
+  .addv{flex:0 0 auto;width:42px;height:42px;border-radius:13px;border:1.5px solid var(--line);
+    background:var(--paper);cursor:pointer;display:flex;align-items:center;justify-content:center;
+    color:var(--ink);transition:transform .15s,background .15s,border-color .15s}
+  .addv:active{transform:scale(.9)}
+  .addv.in{background:var(--ink);border-color:var(--ink);color:#fff}
+
+  /* floating cart bar */
+  .cartbar{position:absolute;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));
+    background:var(--ink);color:#fff;border-radius:18px;padding:13px 16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;z-index:4;
+    box-shadow:0 16px 34px -10px rgba(26,22,19,.5),0 4px 10px rgba(26,22,19,.3);
+    transition:transform .25s cubic-bezier(.2,.8,.3,1),opacity .2s}
+  .cartbar.hide{transform:translateY(120%);opacity:0;pointer-events:none}
+  .cb-left{display:flex;align-items:center;gap:11px}
+  .cb-cart{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);position:relative;
+    display:flex;align-items:center;justify-content:center;color:#fff}
+  .cb-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;
+    background:#fff;color:var(--ink);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .cb-tx .l1{font-size:14px;font-weight:700;letter-spacing:-.3px}
+  .cb-tx .l2{font-size:12px;color:rgba(255,255,255,.6);margin-top:1px}
+  .cb-right{display:flex;align-items:center;gap:9px}
+  .cb-margin{font-size:12.5px;font-weight:700;color:#6FE0A8;background:rgba(111,224,168,.14);
+    padding:6px 10px;border-radius:10px}
+  .cb-margin span{color:rgba(255,255,255,.55);font-weight:600;margin-right:4px}
+  .cb-right .cr{color:rgba(255,255,255,.55)}
+
+  .toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,12px);background:#322c27;color:#fff;
+    font-size:12.5px;font-weight:500;letter-spacing:-.2px;padding:11px 16px;border-radius:13px;max-width:300px;
+    text-align:center;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;
+    box-shadow:0 12px 28px -8px rgba(26,22,19,.5);z-index:6}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast b{font-weight:700}
+
+  .fade{animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:8px}
+  @media (max-width:440px){
+    body{padding:0}
+    .device{width:100vw;height:100dvh;max-width:none;border-radius:0;padding:0;box-shadow:none}
+    .screen{border-radius:0}.statusbar{height:52px;padding-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="device"><div class="screen">
+    <div class="statusbar">
+      <span class="num">9:41</span>
+      <div class="sb-right">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2C3.2 2.4 5.7 1.4 8.5 1.4S13.8 2.4 16 4.2"/><path d="M3.6 6.9c1.4-1.1 3.1-1.7 4.9-1.7s3.5.6 4.9 1.7"/><path d="M6.2 9.5c.7-.5 1.5-.8 2.3-.8s1.6.3 2.3.8"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="2.8" y="2.8" width="15" height="6.4" rx="1.6" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="mkt-head fade">
+        <div class="mh-top">
+          <button class="iconbtn" aria-label="뒤로" id="back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <span class="mh-title">재료 담기</span>
+        </div>
+        <button class="chip" id="menuchip">
+          <span class="chip-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5h16"/><path d="M5 12.5a7 7 0 0 0 14 0"/><path d="M9.5 6.6c-.5.6-.5 1.2 0 1.8M14.5 6.6c-.5.6-.5 1.2 0 1.8"/></svg></span>
+          <span class="chip-tx"><b>제육덮밥</b><span>담는 중</span></span>
+          <svg class="cd" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input placeholder="삼겹살, 양파, 고추장…" readonly>
+        </div>
+      </div>
+
+      <div class="catbar">
+        <div class="cats" id="cats">
+          <button class="cat on">전체</button>
+          <button class="cat">정육</button>
+          <button class="cat">수산</button>
+          <button class="cat">청과</button>
+          <button class="cat">양념</button>
+          <button class="cat">기타</button>
+        </div>
+      </div>
+
+      <div class="sec-head"><h2>사장님이 많이 담아요</h2><span class="more">더보기 ›</span></div>
+      <div class="hscroll" id="popular"></div>
+
+      <div class="vsec">
+        <div class="sec-head"><h2>정육</h2></div>
+        <div class="vlist" id="meat"></div>
+      </div>
+      <div class="vsec">
+        <div class="sec-head"><h2>청과</h2></div>
+        <div class="vlist" id="veg"></div>
+      </div>
+    </div>
+
+    <!-- floating cart -->
+    <button class="cartbar" id="cartbar">
+      <div class="cb-left">
+        <span class="cb-cart"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.1 11.2a1.5 1.5 0 0 0 1.5 1.2h8a1.5 1.5 0 0 0 1.5-1.2L20.5 8H6.2"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg><span class="cb-badge num" id="cb-badge">2</span></span>
+        <span class="cb-tx"><span class="l1">장바구니 담기 완료</span><span class="l2 num" id="cb-cost">식자재 1,790원</span></span>
+      </div>
+      <div class="cb-right">
+        <span class="cb-margin"><span>예상 마진</span><b class="num" id="cb-margin">52%</b></span>
+        <svg class="cr" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </button>
+
+    <div class="toast" id="toast"></div>
+  </div></div>
+
+<script>
+  const cat={
+    meat:{g:'linear-gradient(140deg,#F7E8E4,#EFD8D2)',c:'#BC857B'},
+    veg:{g:'linear-gradient(140deg,#E9F0E3,#DAE7D1)',c:'#85A06E'},
+    sauce:{g:'linear-gradient(140deg,#F5EDDE,#ECE0C9)',c:'#B89767'},
+    sea:{g:'linear-gradient(140deg,#E5ECF0,#D6E1E7)',c:'#7F98A7'},
+    etc:{g:'linear-gradient(140deg,#F5F0E7,#ECE4D6)',c:'#AF9F85'}
+  };
+  const ic={
+    meat:'<path d="M5.5 9.5c0-2.2 2.9-4 6.5-4s6.5 1.8 6.5 4-1.3 6-6.5 6-6.5-3.8-6.5-6z"/><path d="M9.5 8.8c1 1 1 3.2 0 4.4M13 8.6c1 1 1 3.4 0 4.6"/>',
+    chicken:'<circle cx="9.5" cy="9" r="4.3"/><path d="M12.4 12.1 17 16.7M14.8 16.3l1.9 1.9 1.2-1.2-1.9-1.9"/>',
+    onion:'<path d="M12 7.5c-3.5 0-5.6 3-5.6 6.4S8.5 19 12 19s5.6-1.2 5.6-5.1S15.5 7.5 12 7.5z"/><path d="M9.6 8.8c-1 2.6-1 6.4 0 9.3M14.4 8.8c1 2.6 1 6.4 0 9.3M12 7.5V4.3"/>',
+    scallion:'<path d="M9 3.5c-.5 5-.5 12.5 0 17M12 3.5c-.5 5-.5 12.5 0 17M15 3.5c-.5 5-.5 12.5 0 17"/><path d="M8 20.5h8"/>',
+    garlic:'<path d="M12 4.4c-1.6 1.6-.9 3.6 0 3.6s1.6-2 0-3.6z"/><path d="M12 8c-3.1 0-5.2 2.6-5.2 5.6S8.9 19 12 19s5.2-2.4 5.2-5.4S15.1 8 12 8z"/><path d="M10 9.8c-.6 3-.6 5.8 0 8.4M14 9.8c.6 3 .6 5.8 0 8.4"/>',
+    egg:'<ellipse cx="12" cy="13" rx="5.6" ry="7.2"/><ellipse cx="12" cy="14.5" rx="2.3" ry="2"/>',
+    jar:'<path d="M7 9.2h10v8.6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z"/><path d="M8 9.2V7.2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M10 6.2V4.6h4v1.6"/><path d="M9.5 13.5h5"/>',
+    bottle:'<path d="M10.3 3.5h3.4v2l1 2.2v11.3a1.8 1.8 0 0 1-1.8 1.8h-1.8a1.8 1.8 0 0 1-1.8-1.8V7.7l1-2.2z"/><path d="M9.5 12h5"/>'
+  };
+  // master products
+  const P={
+    samgyup:{nm:'삼겹살', price:12000, unit:'/kg', cat:'meat', icon:'meat', trend:['dn',3], add:1688},
+    apdari:{nm:'앞다리살', price:9000, unit:'/kg', cat:'meat', icon:'meat', trend:['dn',1], add:1350},
+    moksal:{nm:'목살', price:11500, unit:'/kg', cat:'meat', icon:'meat', trend:['up',4], add:1500},
+    dakdari:{nm:'닭다리살', price:7500, unit:'/kg', cat:'meat', icon:'chicken', trend:['dn',6], add:980},
+    onion:{nm:'양파', price:2000, unit:'/kg', cat:'veg', icon:'onion', trend:['dn',8], add:100},
+    daepa:{nm:'대파', price:3500, unit:'/단', cat:'veg', icon:'scallion', trend:['dn',2], add:90},
+    garlic:{nm:'다진마늘', price:8000, unit:'/kg', cat:'veg', icon:'garlic', trend:['fl',0], add:130},
+    egg:{nm:'계란', price:6000, unit:'/30구', cat:'etc', icon:'egg', trend:['up',5], add:250},
+    gochu:{nm:'고추장', price:9000, unit:'/1kg', cat:'sauce', icon:'jar', trend:['fl',0], add:140}
+  };
+  const won=n=>n.toLocaleString('ko-KR');
+  const cart=new Set(['samgyup','onion']);
+  const SALE=9000, OVERHEAD=2500;
+
+  function trendHtml(t){
+    if(t[0]==='fl') return `<span class="trend fl">시세 보통</span>`;
+    const dir=t[0]==='dn'?'dn':'up';
+    const tri=t[0]==='dn'?'<svg width="9" height="9" viewBox="0 0 12 12" fill="currentColor"><path d="M6 9 1.5 4h9z"/></svg>':'<svg width="9" height="9" viewBox="0 0 12 12" fill="currentColor"><path d="M6 3l4.5 5h-9z"/></svg>';
+    const word=t[0]==='dn'?'저렴':'비쌈';
+    return `<span class="trend ${dir}">${tri}${t[1]}% ${word}</span>`;
+  }
+  // horizontal cards
+  const pop=['samgyup','onion','egg','daepa','gochu'];
+  const popEl=document.getElementById('popular');
+  pop.forEach(id=>{
+    const p=P[id], c=cat[p.cat];
+    const el=document.createElement('div'); el.className='hcard';
+    el.innerHTML=`<div class="himg" style="background:${c.g}">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${c.c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ic[p.icon]}</svg>
+        <button class="add ${cart.has(id)?'in':''}" data-id="${id}" aria-label="담기">${addIcon(cart.has(id))}</button>
+      </div>
+      <div class="hcard-tx"><div class="nm">${p.nm}</div><div class="pr num">${won(p.price)}원<i>${p.unit}</i></div></div>`;
+    el.querySelector('.add').addEventListener('click',e=>{e.stopPropagation();toggle(id);});
+    popEl.appendChild(el);
+  });
+  // vertical lists
+  function renderV(target,ids){
+    const wrap=document.getElementById(target);
+    ids.forEach(id=>{
+      const p=P[id], c=cat[p.cat];
+      const el=document.createElement('div'); el.className='vitem';
+      el.innerHTML=`<div class="vthumb" style="background:${c.g}">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${c.c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ic[p.icon]}</svg></div>
+        <div class="vmid"><div class="nm">${p.nm}</div><div class="pr num">${won(p.price)}원<i>${p.unit}</i></div>${trendHtml(p.trend)}</div>
+        <button class="addv ${cart.has(id)?'in':''}" data-id="${id}" aria-label="담기">${addIcon(cart.has(id),true)}</button>`;
+      el.querySelector('.addv').addEventListener('click',e=>{e.stopPropagation();toggle(id);});
+      wrap.appendChild(el);
+    });
+  }
+  renderV('meat',['samgyup','apdari','moksal','dakdari']);
+  renderV('veg',['onion','daepa','garlic']);
+
+  function addIcon(on,big){
+    const s=big?20:19;
+    return on
+      ? `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>`
+      : `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`;
+  }
+  function margin(){const food=[...cart].reduce((a,id)=>a+P[id].add,0);
+    return {food, m:Math.max(8,Math.round((SALE-food-OVERHEAD)/SALE*100))};}
+
+  function refreshButtons(id){
+    document.querySelectorAll(`[data-id="${id}"]`).forEach(b=>{
+      const on=cart.has(id), big=b.classList.contains('addv');
+      b.classList.toggle('in',on); b.innerHTML=addIcon(on,big);
+    });
+  }
+  function updateBar(){
+    const {food,m}=margin();
+    document.getElementById('cb-badge').textContent=cart.size;
+    document.getElementById('cb-cost').textContent=`식자재 ${won(Math.round(food/10)*10)}원`;
+    document.getElementById('cb-margin').textContent=m+'%';
+    document.querySelector('.cb-tx .l1').textContent=`장바구니 ${cart.size}개`;
+    document.getElementById('cartbar').classList.toggle('hide',cart.size===0);
+  }
+  function toggle(id){
+    const before=margin().m;
+    cart.has(id)?cart.delete(id):cart.add(id);
+    const after=margin().m;
+    refreshButtons(id); updateBar();
+    const verb=cart.has(id)?'담음':'뺐어요';
+    toast(`<b>${P[id].nm}</b> ${verb} · 예상 마진 ${before}% → ${after}%`);
+  }
+  updateBar();
+
+  // non-functional affordances
+  document.getElementById('menuchip').addEventListener('click',()=>toast('메뉴를 바꾸거나 새로 만들 수 있어요'));
+  document.getElementById('cartbar').addEventListener('click',()=>toast('장바구니에서 사용량(g)과 수율을 넣고 마진을 확정해요 (다음 단계)'));
+  document.getElementById('back').addEventListener('click',()=>toast('내 메뉴판으로 돌아가요'));
+  [...document.querySelectorAll('.cat')].forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('.cat').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  }));
+
+  let tT; const tEl=document.getElementById('toast');
+  function toast(html){tEl.innerHTML=html;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>tEl.classList.remove('show'),2500);}
+</script>
+</body>
+</html>

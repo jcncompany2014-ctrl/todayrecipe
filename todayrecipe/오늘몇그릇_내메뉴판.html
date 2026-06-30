@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>오늘 몇 그릇? · 내 메뉴판</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{
+    --bg-1:#F2EFEA; --bg-2:#E6E1DA; --bg-3:#DED8D0;
+    --paper:#FFFFFF;
+    --ink:#1A1613; --ink-soft:#55504B; --muted:#A39B92;
+    --line:#EDE9E3; --tile:#F5F2EE; --track:#EEEAE4;
+    --good-1:#16A06A; --good-2:#0E7A4F;
+    --warn-1:#D69412;
+    --bad-1:#D04B3F;
+    --sand:#F3EBE2; --sand-ink:#9A6B3C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
+    background:radial-gradient(125% 90% at 50% -10%, var(--bg-1) 0%, var(--bg-2) 58%, var(--bg-3) 100%);
+    color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    min-height:100dvh;padding:24px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+  /* ---------- device ---------- */
+  .device{
+    width:392px;max-width:100%;height:min(860px,calc(100dvh - 48px));
+    background:#0C0C0D;border-radius:54px;padding:11px;
+    box-shadow:0 44px 90px -24px rgba(38,26,16,.40), 0 14px 34px rgba(38,26,16,.20);
+  }
+  .screen{
+    width:100%;height:100%;background:var(--paper);
+    border-radius:43px;overflow:hidden;display:flex;flex-direction:column;position:relative;
+  }
+  .statusbar{
+    flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;font-size:14.5px;font-weight:600;letter-spacing:.2px;
+  }
+  .sb-right{display:flex;align-items:center;gap:7px}
+  .sb-right svg{display:block;color:var(--ink)}
+
+  /* ---------- scroll area ---------- */
+  .scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:118px;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+
+  /* ---------- header ---------- */
+  .hd{padding:6px 22px 14px}
+  .hd-brand{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+  .logo{width:26px;height:26px;border-radius:8px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+  .logo svg{color:#fff}
+  .hd-wordmark{font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:-.1px}
+  .hd-row{display:flex;align-items:flex-end;justify-content:space-between}
+  .hd-title{font-size:25px;font-weight:800;letter-spacing:-.7px}
+  .hd-count{font-size:13px;font-weight:600;color:var(--muted);padding-bottom:3px}
+
+  /* ---------- hero ledger ---------- */
+  .hero{
+    margin:2px 22px 0;background:var(--ink);color:#fff;border-radius:24px;
+    padding:20px 22px 19px;position:relative;overflow:hidden;
+    box-shadow:0 16px 30px -14px rgba(26,22,19,.5);
+  }
+  .hero-label{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.62);letter-spacing:.1px}
+  .hero-num{display:flex;align-items:baseline;gap:8px;margin-top:5px}
+  .hero-num b{font-size:54px;font-weight:800;line-height:.95;letter-spacing:-2px}
+  .hero-num .unit{font-size:21px;font-weight:700;letter-spacing:-.5px}
+  .hero-num .tail{font-size:14.5px;font-weight:500;color:rgba(255,255,255,.7);margin-left:1px}
+  .hero-rule{border:none;border-top:1px dashed rgba(255,255,255,.2);margin:15px 0 11px}
+  .hero-sub{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.6);line-height:1.5}
+  .hero-sub .accent{color:#5FD6A0;font-weight:600}
+
+  /* ---------- menu list ---------- */
+  .list{padding:18px 22px 4px;display:flex;flex-direction:column;gap:11px}
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:15px 16px 16px;cursor:pointer;
+    box-shadow:0 1px 2px rgba(60,40,25,.035),0 7px 16px -8px rgba(60,40,25,.07);
+    transition:transform .16s cubic-bezier(.2,.8,.3,1),box-shadow .16s;
+  }
+  .card:active{transform:scale(.985);box-shadow:0 1px 2px rgba(60,40,25,.04)}
+  .card-top{display:flex;align-items:center;gap:13px}
+  .tile{flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:var(--tile);
+    display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+  .tile svg{display:block}
+  .card-mid{flex:1;min-width:0}
+  .card-name{display:flex;align-items:center;gap:7px}
+  .card-name h3{font-size:17px;font-weight:700;letter-spacing:-.4px;white-space:nowrap}
+  .badge{font-size:10.5px;font-weight:600;color:var(--sand-ink);background:var(--sand);
+    padding:3px 7px;border-radius:7px;letter-spacing:-.1px;white-space:nowrap}
+  .card-price{font-size:13.5px;font-weight:500;color:var(--muted);margin-top:3px}
+  .card-end{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+  .pct{display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%}
+  .pct b{font-size:20px;font-weight:800;letter-spacing:-.5px}
+  .chev{color:var(--muted);display:block}
+  .bar{height:6px;background:var(--track);border-radius:999px;margin-top:13px;overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:999px}
+
+  .g{color:var(--good-1)} .g-bg{background:var(--good-1)}
+  .w{color:var(--warn-1)} .w-bg{background:var(--warn-1)}
+  .b{color:var(--bad-1)}  .b-bg{background:var(--bad-1)}
+
+  /* ---------- tab bar ---------- */
+  .tabbar{
+    flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);
+    display:flex;align-items:flex-start;padding:11px 12px calc(14px + env(safe-area-inset-bottom));
+    position:relative;
+  }
+  .tab{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;
+    align-items:center;gap:5px;color:var(--muted);font-family:inherit;padding:2px 0}
+  .tab svg{display:block;color:currentColor}
+  .tab span{font-size:11px;font-weight:600;letter-spacing:-.2px}
+  .tab.on{color:var(--ink)}
+  .fab-slot{flex:0 0 auto;width:72px;display:flex;justify-content:center}
+  .fab{margin-top:-26px;width:58px;height:58px;border-radius:20px;background:var(--ink);
+    border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;
+    box-shadow:0 10px 22px -4px rgba(26,22,19,.45),0 3px 8px rgba(26,22,19,.28);
+    transition:transform .16s cubic-bezier(.2,.8,.3,1)}
+  .fab:active{transform:scale(.93)}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:absolute;left:50%;bottom:104px;transform:translate(-50%,12px);
+    background:var(--ink);color:#fff;font-size:12.5px;font-weight:500;letter-spacing:-.2px;
+    padding:11px 16px;border-radius:13px;max-width:300px;text-align:center;line-height:1.45;
+    opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;
+    box-shadow:0 12px 28px -8px rgba(26,22,19,.5);z-index:5;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .fade{animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:8px}
+  @media (max-width:440px){
+    body{padding:0}
+    .device{width:100vw;height:100dvh;max-width:none;border-radius:0;padding:0;box-shadow:none}
+    .screen{border-radius:0}
+    .statusbar{height:52px;padding-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="screen">
+      <!-- status bar -->
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <div class="sb-right">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2C3.2 2.4 5.7 1.4 8.5 1.4S13.8 2.4 16 4.2"/><path d="M3.6 6.9c1.4-1.1 3.1-1.7 4.9-1.7s3.5.6 4.9 1.7"/><path d="M6.2 9.5c.7-.5 1.5-.8 2.3-.8s1.6.3 2.3.8"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="2.8" y="2.8" width="15" height="6.4" rx="1.6" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <!-- header -->
+        <div class="hd fade">
+          <div class="hd-brand">
+            <div class="logo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5h16"/><path d="M5 12.5a7 7 0 0 0 14 0"/><path d="M9.5 6.6c-.5.6-.5 1.2 0 1.8M14.5 6.6c-.5.6-.5 1.2 0 1.8"/></svg>
+            </div>
+            <span class="hd-wordmark">오늘 몇 그릇?</span>
+          </div>
+          <div class="hd-row">
+            <h1 class="hd-title">내 메뉴판</h1>
+            <span class="hd-count num" id="count">메뉴 5개</span>
+          </div>
+        </div>
+
+        <!-- hero ledger -->
+        <div class="hero fade" style="animation-delay:.05s">
+          <div class="hero-label">오늘 본전을 맞추려면</div>
+          <div class="hero-num">
+            <b class="num">66</b><span class="unit">그릇</span><span class="tail">팔면 돼요</span>
+          </div>
+          <hr class="hero-rule">
+          <div class="hero-sub">한 그릇 평균 <span class="accent num" id="avg">2,730원</span> 남아요 · 효자 메뉴는 <span class="accent" id="best">제육덮밥</span></div>
+        </div>
+
+        <!-- menu list -->
+        <div class="list" id="list"></div>
+      </div>
+
+      <!-- tab bar -->
+      <nav class="tabbar">
+        <button class="tab on" data-name="메뉴판">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+          <span>메뉴판</span>
+        </button>
+        <button class="tab" data-name="대시보드">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 20v-6"/><path d="M12 20V6"/><path d="M18 20v-9"/></svg>
+          <span>대시보드</span>
+        </button>
+        <div class="fab-slot">
+          <button class="fab" data-name="새 메뉴" aria-label="새 메뉴 만들기">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg>
+          </button>
+        </div>
+        <button class="tab" data-name="비전">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5l1.7 4.3 4.3 1.7-4.3 1.7L12 16.5l-1.7-4.3L6 10.5l4.3-1.7z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>
+          <span>비전</span>
+        </button>
+        <button class="tab" data-name="설정">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h8M17 8h3"/><circle cx="14.5" cy="8" r="2.3"/><path d="M4 16h3M12 16h8"/><circle cx="9.5" cy="16" r="2.3"/></svg>
+          <span>설정</span>
+        </button>
+      </nav>
+
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+<script>
+  const icons = {
+    donbap:'<path d="M4 13h16"/><path d="M5 13a7 7 0 0 0 14 0"/><path d="M7.2 13a4.8 3.6 0 0 1 9.6 0"/><path d="M9.5 6.8c-.5.6-.5 1.2 0 1.8M14.5 6.4c-.5.6-.5 1.2 0 1.8"/>',
+    pot:'<path d="M5 11.6h14v3.4a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M3.4 11.6h17.2"/><path d="M5 11.6 3.4 9.6M19 11.6l1.6-2"/><path d="M9.4 6.4c-.5.6-.5 1.2 0 1.8M14.6 6.4c-.5.6-.5 1.2 0 1.8"/>',
+    plate:'<ellipse cx="12" cy="14.2" rx="8.4" ry="3.1"/><path d="M8.4 13.6c0-1.7 1.6-2.8 3.6-2.8s3.6 1.1 3.6 2.8"/><path d="M9.9 12.4l.5.6M11.5 11.9l.5.6M13.1 12.1l.5.6"/>',
+    malatang:'<path d="M4 13h16"/><path d="M5 13a7 7 0 0 0 14 0"/><path d="M9 6.2c-.6.7-.6 1.4 0 2.1M12 5.4c-.6.7-.6 1.4 0 2.1M15 6.2c-.6.7-.6 1.4 0 2.1"/>',
+    naengmyeon:'<path d="M4 13h16"/><path d="M5 13a7 7 0 0 0 14 0"/><path d="M7.6 12c1-1.4 2.3-1.4 3.3 0s2.3 1.4 3.3 0 2.3-1.4-.0 0" /><path d="M7.6 12c1-1.4 2.3-1.4 3.4 0s2.4 1.4 3.4 0"/>'
+  };
+  const menus = [
+    {name:'제육덮밥', price:9000, margin:41, icon:'donbap', badge:'방금 계산'},
+    {name:'김치찌개', price:8000, margin:41, icon:'pot'},
+    {name:'돈까스',   price:9500, margin:35, icon:'plate'},
+    {name:'마라탕',   price:9000, margin:24, icon:'malatang'},
+    {name:'물냉면',   price:10000, margin:12, icon:'naengmyeon'}
+  ];
+  const won = n => n.toLocaleString('ko-KR');
+  const sig = m => m>=30 ? 'g' : (m>=20 ? 'w' : 'b');
+
+  // render cards
+  const list = document.getElementById('list');
+  menus.forEach((m,i)=>{
+    const s = sig(m.margin);
+    const el = document.createElement('div');
+    el.className='card fade';
+    el.style.animationDelay=(0.1+i*0.05)+'s';
+    el.innerHTML=`
+      <div class="card-top">
+        <div class="tile"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[m.icon]}</svg></div>
+        <div class="card-mid">
+          <div class="card-name"><h3>${m.name}</h3>${m.badge?`<span class="badge">${m.badge}</span>`:''}</div>
+          <div class="card-price num">${won(m.price)}원</div>
+        </div>
+        <div class="card-end">
+          <div class="pct"><span class="dot ${s}-bg"></span><b class="num ${s}">${m.margin}%</b></div>
+          <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </div>
+      </div>
+      <div class="bar"><span class="${s}-bg" style="width:${m.margin}%"></span></div>`;
+    el.addEventListener('click',()=>toast(`${m.name} · 누르면 상세·수정 화면으로 들어가요 (다음 단계)`));
+    list.appendChild(el);
+  });
+
+  // computed summary
+  document.getElementById('count').textContent=`메뉴 ${menus.length}개`;
+  const avg = Math.round(menus.reduce((a,m)=>a+m.price*m.margin/100,0)/menus.length/10)*10;
+  document.getElementById('avg').textContent=won(avg)+'원';
+  document.getElementById('best').textContent=menus.reduce((a,b)=>b.margin>a.margin?b:a).name;
+
+  // tabs
+  const tabs=[...document.querySelectorAll('.tab')];
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('on'));t.classList.add('on');
+    if(t.dataset.name!=='메뉴판') toast(`'${t.dataset.name}' 화면은 다음 단계에서 만들어요`);
+  }));
+  document.querySelector('.fab').addEventListener('click',()=>toast('여기서 새 메뉴의 재료를 장바구니에 담아요 (다음 단계)'));
+
+  // toast
+  let tT;
+  const tEl=document.getElementById('toast');
+  function toast(msg){tEl.textContent=msg;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>tEl.classList.remove('show'),2400);}
+</script>
+</body>
+</html>

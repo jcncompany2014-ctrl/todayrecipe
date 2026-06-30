@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>오늘 몇 그릇? · 장바구니</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{
+    --bg-1:#F2EFEA;--bg-2:#E6E1DA;--bg-3:#DED8D0;--paper:#FFFFFF;
+    --ink:#1A1613;--ink-soft:#55504B;--muted:#A39B92;
+    --line:#EDE9E3;--tile:#F5F2EE;--track:#EEEAE4;
+    --good-1:#16A06A;--bad-1:#D04B3F;--warn-1:#D69412;
+    --sand:#F3EBE2;--sand-ink:#9A6B3C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
+    background:radial-gradient(125% 90% at 50% -10%,var(--bg-1),var(--bg-2) 58%,var(--bg-3));
+    color:var(--ink);display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:24px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+  .device{width:392px;max-width:100%;height:min(860px,calc(100dvh - 48px));background:#0C0C0D;
+    border-radius:54px;padding:11px;box-shadow:0 44px 90px -24px rgba(38,26,16,.40),0 14px 34px rgba(38,26,16,.20)}
+  .screen{width:100%;height:100%;background:#FBFAF8;border-radius:43px;overflow:hidden;
+    display:flex;flex-direction:column;position:relative}
+  .statusbar{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;font-size:14.5px;font-weight:600;letter-spacing:.2px;background:var(--paper)}
+  .sb-right{display:flex;align-items:center;gap:7px}.sb-right svg{display:block;color:var(--ink)}
+
+  .scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:100px;-webkit-overflow-scrolling:touch;background:#FBFAF8}
+  .scroll::-webkit-scrollbar{width:0}
+
+  /* header */
+  .hd{background:var(--paper);padding:2px 22px 16px}
+  .hd-top{display:flex;align-items:center;gap:6px}
+  .iconbtn{width:34px;height:34px;margin-left:-6px;border:none;background:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;color:var(--ink);border-radius:10px}
+  .hd h1{font-size:21px;font-weight:800;letter-spacing:-.6px}
+  .hd .sub{font-size:13px;font-weight:500;color:var(--muted);margin:3px 0 0 1px}
+
+  /* live summary (B) */
+  .sum{margin:16px 18px 0;background:var(--paper);border:1px solid var(--line);border-radius:20px;
+    padding:17px 18px 16px;box-shadow:0 1px 2px rgba(60,40,25,.035),0 8px 18px -9px rgba(60,40,25,.08)}
+  .sum-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .sum-top .m{font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .sum-top .m b{font-weight:700}
+  .sum-top .edit{font-size:12px;font-weight:600;color:var(--muted);background:var(--tile);
+    padding:5px 10px;border-radius:9px;border:none;cursor:pointer;font-family:inherit}
+  .sum-mid{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:13px}
+  .sum-margin{display:flex;align-items:baseline;gap:7px}
+  .sum-margin .lab{font-size:13px;font-weight:600;color:var(--muted)}
+  .sum-margin b{font-size:38px;font-weight:800;letter-spacing:-1.4px;line-height:.9}
+  .sum-stats{text-align:right}
+  .sum-stats .row{font-size:12.5px;font-weight:500;color:var(--muted);line-height:1.7}
+  .sum-stats .row b{font-weight:700;color:var(--ink);margin-left:5px}
+  .mbar{height:7px;background:var(--track);border-radius:99px;overflow:hidden}
+  .mbar span{display:block;height:100%;border-radius:99px;transition:width .3s cubic-bezier(.2,.8,.3,1)}
+  .g{color:var(--good-1)}.gb{background:var(--good-1)}
+  .w{color:var(--warn-1)}.wb{background:var(--warn-1)}
+  .b{color:var(--bad-1)}.bb{background:var(--bad-1)}
+
+  .sec-head{padding:22px 22px 11px;display:flex;align-items:baseline;gap:8px}
+  .sec-head h2{font-size:16px;font-weight:800;letter-spacing:-.4px}
+  .sec-head .cnt{font-size:13px;font-weight:600;color:var(--muted)}
+
+  /* ingredient cards (A) */
+  .ings{padding:0 18px;display:flex;flex-direction:column;gap:11px}
+  .ing{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px 16px 14px;
+    box-shadow:0 1px 2px rgba(60,40,25,.03)}
+  .ing-x{position:absolute;top:13px;right:13px;width:26px;height:26px;border:none;background:none;cursor:pointer;
+    color:var(--muted);display:flex;align-items:center;justify-content:center;border-radius:8px}
+  .ing-top{display:flex;align-items:center;gap:12px;padding-right:26px}
+  .vthumb{flex:0 0 auto;width:46px;height:46px;border-radius:13px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .vthumb svg{opacity:.85;transform:scale(.9)}
+  .ing-name{flex:1;min-width:0}
+  .ing-name b{font-size:15.5px;font-weight:700;letter-spacing:-.3px}
+  .ing-name span{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
+  .ing-cost{text-align:right;flex:0 0 auto}
+  .ing-cost .yld{font-size:10.5px;font-weight:600;color:var(--sand-ink);background:var(--sand);
+    padding:2px 6px;border-radius:6px;display:inline-block;margin-bottom:4px}
+  .ing-cost .val{font-size:16px;font-weight:800;letter-spacing:-.4px;transition:transform .14s}
+  .ing-cost .val.bump{transform:scale(1.09)}
+
+  .ctrl{display:flex;align-items:center;justify-content:space-between;margin-top:13px}
+  .ctrl-lab{font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .stepper{display:flex;align-items:center;gap:0;background:var(--tile);border-radius:12px;padding:4px}
+  .stepper button{width:32px;height:32px;border:none;background:var(--paper);border-radius:9px;cursor:pointer;
+    color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .12s}
+  .stepper button:active{transform:scale(.9)}
+  .stepper .v{min-width:62px;text-align:center;font-size:15px;font-weight:700}
+  .stepper .v i{font-size:12px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
+  .cooks{display:flex;gap:5px}
+  .cook{border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;letter-spacing:-.2px;
+    padding:7px 11px;border-radius:10px;background:var(--tile);color:var(--ink-soft)}
+  .cook.on{background:var(--ink);color:#fff}
+  .raw{font-size:12.5px;font-weight:600;color:var(--muted)}
+
+  .addmore{margin:11px 18px 0;border:1.5px dashed #DAD4CC;border-radius:16px;background:none;cursor:pointer;
+    width:calc(100% - 36px);padding:14px;display:flex;align-items:center;justify-content:center;gap:7px;
+    color:var(--ink-soft);font-family:inherit;font-size:14px;font-weight:600}
+  .addmore svg{color:var(--ink-soft)}
+
+  /* overhead */
+  .ovh{margin:18px 18px 0;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+  .ovh-head{display:flex;align-items:center;justify-content:space-between;padding:15px 17px;cursor:pointer}
+  .ovh-head .l b{font-size:14.5px;font-weight:700}
+  .ovh-head .l span{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:500}
+  .ovh-head .r{display:flex;align-items:center;gap:9px}
+  .ovh-head .r b{font-size:15px;font-weight:800;letter-spacing:-.3px}
+  .ovh-head .chev{color:var(--muted);transition:transform .25s}
+  .ovh.open .chev{transform:rotate(180deg)}
+  .ovh-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .ovh.open .ovh-body{max-height:200px}
+  .ovh-row{display:flex;justify-content:space-between;padding:9px 17px;font-size:13px;border-top:1px solid var(--line)}
+  .ovh-row span{color:var(--ink-soft);font-weight:500}.ovh-row b{font-weight:700}
+
+  /* bottom CTA */
+  .cta{position:absolute;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));
+    background:var(--ink);color:#fff;border-radius:18px;padding:15px 20px;cursor:pointer;border:none;width:auto;
+    display:flex;align-items:center;justify-content:space-between;font-family:inherit;
+    box-shadow:0 16px 34px -10px rgba(26,22,19,.5),0 4px 10px rgba(26,22,19,.3)}
+  .cta b{font-size:15.5px;font-weight:700;letter-spacing:-.3px}
+  .cta .r{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.65);font-weight:500}
+  .cta .r .num{color:#fff;font-weight:700}
+
+  .toast{position:absolute;left:50%;bottom:92px;transform:translate(-50%,12px);background:#322c27;color:#fff;
+    font-size:12.5px;font-weight:500;letter-spacing:-.2px;padding:11px 16px;border-radius:13px;max-width:300px;
+    text-align:center;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;z-index:6;
+    box-shadow:0 12px 28px -8px rgba(26,22,19,.5)}
+  .toast.show{opacity:1;transform:translate(-50%,0)}.toast b{font-weight:700}
+
+  .fade{animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:8px}
+  @media (max-width:440px){body{padding:0}.device{width:100vw;height:100dvh;max-width:none;border-radius:0;padding:0;box-shadow:none}
+    .screen{border-radius:0}.statusbar{height:52px;padding-top:8px}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="device"><div class="screen">
+    <div class="statusbar">
+      <span class="num">9:41</span>
+      <div class="sb-right">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2C3.2 2.4 5.7 1.4 8.5 1.4S13.8 2.4 16 4.2"/><path d="M3.6 6.9c1.4-1.1 3.1-1.7 4.9-1.7s3.5.6 4.9 1.7"/><path d="M6.2 9.5c.7-.5 1.5-.8 2.3-.8s1.6.3 2.3.8"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" stroke-width="1.2" opacity=".5"/><rect x="2.8" y="2.8" width="15" height="6.4" rx="1.6" fill="currentColor"/><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="hd fade">
+        <div class="hd-top">
+          <button class="iconbtn" id="back" aria-label="뒤로"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <h1>장바구니</h1>
+        </div>
+        <p class="sub">제육덮밥 담는 중 · 재료를 넣으면 마진이 계산돼요</p>
+      </div>
+
+      <!-- live summary -->
+      <div class="sum fade" style="animation-delay:.05s">
+        <div class="sum-top">
+          <div class="m">제육덮밥 · 판매가 <b class="num">9,000원</b></div>
+          <button class="edit" id="editprice">판매가 수정</button>
+        </div>
+        <div class="sum-mid">
+          <div class="sum-margin"><span class="lab">예상 마진</span><b class="num g" id="s-margin">41%</b></div>
+          <div class="sum-stats">
+            <div class="row">1인분 원가<b class="num" id="s-cost">5,310원</b></div>
+            <div class="row">한 그릇 남는 돈<b class="num" id="s-profit">3,690원</b></div>
+          </div>
+        </div>
+        <div class="mbar"><span class="gb" id="s-bar" style="width:41%"></span></div>
+      </div>
+
+      <div class="sec-head"><h2>담은 재료</h2><span class="cnt" id="cnt">5개</span></div>
+      <div class="ings" id="ings"></div>
+
+      <button class="addmore" id="addmore">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        재료 더 담기
+      </button>
+
+      <!-- overhead -->
+      <div class="ovh" id="ovh">
+        <div class="ovh-head" id="ovh-head">
+          <div class="l"><b>부대비용</b><span>배달수수료·포장·인건비 등</span></div>
+          <div class="r"><b class="num">2,750원</b>
+            <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div class="ovh-body">
+          <div class="ovh-row"><span>배달앱 수수료 (12%)</span><b class="num">1,080원</b></div>
+          <div class="ovh-row"><span>포장비</span><b class="num">300원</b></div>
+          <div class="ovh-row"><span>조리 인건비</span><b class="num">880원</b></div>
+          <div class="ovh-row"><span>가스·부자재</span><b class="num">490원</b></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta" id="cta">
+      <b>마진 확정하기</b>
+      <span class="r">1인분 <span class="num" id="cta-cost">5,310원</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </span>
+    </button>
+
+    <div class="toast" id="toast"></div>
+  </div></div>
+
+<script>
+  const cat={
+    meat:{g:'linear-gradient(140deg,#F7E8E4,#EFD8D2)',c:'#BC857B'},
+    veg:{g:'linear-gradient(140deg,#E9F0E3,#DAE7D1)',c:'#85A06E'},
+    sauce:{g:'linear-gradient(140deg,#F5EDDE,#ECE0C9)',c:'#B89767'},
+    etc:{g:'linear-gradient(140deg,#F5F0E7,#ECE4D6)',c:'#AF9F85'}
+  };
+  const ic={
+    meat:'<path d="M5.5 9.5c0-2.2 2.9-4 6.5-4s6.5 1.8 6.5 4-1.3 6-6.5 6-6.5-3.8-6.5-6z"/><path d="M9.5 8.8c1 1 1 3.2 0 4.4M13 8.6c1 1 1 3.4 0 4.6"/>',
+    onion:'<path d="M12 7.5c-3.5 0-5.6 3-5.6 6.4S8.5 19 12 19s5.6-1.2 5.6-5.1S15.5 7.5 12 7.5z"/><path d="M9.6 8.8c-1 2.6-1 6.4 0 9.3M14.4 8.8c1 2.6 1 6.4 0 9.3M12 7.5V4.3"/>',
+    scallion:'<path d="M9 3.5c-.5 5-.5 12.5 0 17M12 3.5c-.5 5-.5 12.5 0 17M15 3.5c-.5 5-.5 12.5 0 17"/><path d="M8 20.5h8"/>',
+    jar:'<path d="M7 9.2h10v8.6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z"/><path d="M8 9.2V7.2a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M10 6.2V4.6h4v1.6"/><path d="M9.5 13.5h5"/>',
+    rice:'<path d="M4 13h16"/><path d="M5 13a7 7 0 0 0 14 0"/><ellipse cx="9" cy="10.4" rx="1.05" ry="1.9"/><ellipse cx="12" cy="9.7" rx="1.05" ry="1.9"/><ellipse cx="15" cy="10.4" rx="1.05" ry="1.9"/>'
+  };
+  const SALE=9000, OVERHEAD=2750;
+  // cart with editable state
+  let cart=[
+    {id:'apdari',nm:'앞다리살',cat:'meat',icon:'meat',perG:9,unit:'9원/g',grams:150,cookable:true,method:'볶기'},
+    {id:'onion', nm:'양파',   cat:'veg', icon:'onion',perG:2,unit:'2원/g',grams:60, cookable:true,method:'생'},
+    {id:'daepa', nm:'대파',   cat:'veg', icon:'scallion',perG:12,unit:'12원/g',grams:15,cookable:true,method:'생'},
+    {id:'gochu', nm:'고추장', cat:'sauce',icon:'jar',perG:9,unit:'9원/g',grams:30,cookable:false,method:'생'},
+    {id:'rice',  nm:'쌀(밥)',cat:'etc', icon:'rice',perG:3,unit:'3원/g',grams:100,cookable:false,method:'생'}
+  ];
+  const YIELD={생:100,볶기:80,삶기:90,튀김:75};
+  const COOKS=['생','볶기','삶기','튀김'];
+  const won=n=>n.toLocaleString('ko-KR');
+  const round10=n=>Math.round(n/10)*10;
+  const yieldOf=it=>it.cookable?YIELD[it.method]:100;
+  const costOf=it=>Math.round(it.perG*it.grams/(yieldOf(it)/100));
+  const sigOf=m=>m>=30?'g':(m>=20?'w':'b');
+
+  const ingsEl=document.getElementById('ings');
+  function render(){
+    ingsEl.innerHTML='';
+    cart.forEach(it=>{
+      const c=cat[it.cat], yld=yieldOf(it);
+      const el=document.createElement('div'); el.className='ing'; el.dataset.id=it.id;
+      const cookCtrl = it.cookable
+        ? `<div class="cooks">${COOKS.map(k=>`<button class="cook ${it.method===k?'on':''}" data-cook="${k}">${k}</button>`).join('')}</div>`
+        : `<span class="raw">생 그대로 · 수율 100%</span>`;
+      el.innerHTML=`
+        <button class="ing-x" aria-label="빼기"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <div class="ing-top">
+          <div class="vthumb" style="background:${c.g}"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c.c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ic[it.icon]}</svg></div>
+          <div class="ing-name"><b>${it.nm}</b><span>${it.unit}</span></div>
+          <div class="ing-cost">
+            <span class="yld">수율 ${yld}%</span>
+            <div class="val num">₩${won(costOf(it))}</div>
+          </div>
+        </div>
+        <div class="ctrl">
+          <span class="ctrl-lab">사용량</span>
+          <div class="stepper">
+            <button data-step="-1" aria-label="감소"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+            <span class="v num">${it.grams}<i>g</i></span>
+            <button data-step="1" aria-label="증가"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+        </div>
+        <div class="ctrl">
+          <span class="ctrl-lab">조리</span>
+          ${cookCtrl}
+        </div>`;
+      // events
+      el.querySelector('.ing-x').addEventListener('click',()=>{cart=cart.filter(x=>x.id!==it.id);render();summary();toast(`<b>${it.nm}</b> 뺐어요`);});
+      el.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{
+        it.grams=Math.max(0,it.grams+(+b.dataset.step)*10);
+        el.querySelector('.v').innerHTML=`${it.grams}<i>g</i>`;
+        bump(el); summary();
+      }));
+      el.querySelectorAll('[data-cook]').forEach(b=>b.addEventListener('click',()=>{
+        it.method=b.dataset.cook;
+        el.querySelectorAll('.cook').forEach(x=>x.classList.toggle('on',x.dataset.cook===it.method));
+        el.querySelector('.yld').textContent=`수율 ${yieldOf(it)}%`;
+        bump(el); summary();
+      }));
+      ingsEl.appendChild(el);
+    });
+    document.getElementById('cnt').textContent=cart.length+'개';
+  }
+  function bump(el){const v=el.querySelector('.val');v.textContent='₩'+won(costOf(cart.find(x=>x.id===el.dataset.id)));
+    v.classList.add('bump');setTimeout(()=>v.classList.remove('bump'),140);}
+
+  function summary(){
+    const food=cart.reduce((a,it)=>a+costOf(it),0);
+    const cost=food+OVERHEAD, profit=SALE-cost, m=Math.round(profit/SALE*100), s=sigOf(m);
+    const mm=document.getElementById('s-margin');
+    mm.textContent=m+'%'; mm.className='num '+s;
+    document.getElementById('s-cost').textContent=won(round10(cost))+'원';
+    document.getElementById('s-profit').textContent=won(round10(profit))+'원';
+    const bar=document.getElementById('s-bar'); bar.style.width=Math.max(2,Math.min(100,m))+'%'; bar.className=s+'b';
+    document.getElementById('cta-cost').textContent=won(round10(cost))+'원';
+  }
+  render(); summary();
+
+  // overhead expand
+  document.getElementById('ovh-head').addEventListener('click',()=>document.getElementById('ovh').classList.toggle('open'));
+  // affordances
+  document.getElementById('back').addEventListener('click',()=>toast('식자재 마트로 돌아가요'));
+  document.getElementById('addmore').addEventListener('click',()=>toast('마트로 돌아가 재료를 더 담아요'));
+  document.getElementById('editprice').addEventListener('click',()=>toast('판매가를 바꾸면 마진이 다시 계산돼요'));
+  document.getElementById('cta').addEventListener('click',()=>toast('최종 결과 화면으로 — 추천가·손익분기 그릇 수가 나와요 (다음 단계)'));
+
+  let tT; const tEl=document.getElementById('toast');
+  function toast(html){tEl.innerHTML=html;tEl.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>tEl.classList.remove('show'),2400);}
+</script>
+</body>
+</html>
