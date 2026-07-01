@@ -1,0 +1,88 @@
+import { createContext, useContext, useState, useCallback, useRef } from 'react'
+import { SEED_MENUS, DEFAULT_BUILD } from '../data/menus'
+import { PRODUCTS } from '../data/catalog'
+import { OVERHEAD } from '../lib/calc'
+
+const StoreCtx = createContext(null)
+export const useStore = () => useContext(StoreCtx)
+
+const clone = (o) => JSON.parse(JSON.stringify(o))
+
+export function StoreProvider({ children }) {
+  // 등록 메뉴 (누적 — GPT 채팅과 달리 데이터가 쌓임)
+  const [menus, setMenus] = useState(() => clone(SEED_MENUS))
+  // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
+  const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
+
+  // 토스트
+  const [toastMsg, setToastMsg] = useState(null)
+  const tRef = useRef()
+  const toast = useCallback((msg) => {
+    setToastMsg(msg)
+    clearTimeout(tRef.current)
+    tRef.current = setTimeout(() => setToastMsg(null), 2400)
+  }, [])
+
+  const inBuild = useCallback((id) => build.items.some((it) => it.id === id), [build])
+
+  const toggleItem = useCallback((id) => {
+    setBuild((b) => {
+      const exists = b.items.some((it) => it.id === id)
+      if (exists) return { ...b, items: b.items.filter((it) => it.id !== id) }
+      const p = PRODUCTS[id]
+      return { ...b, items: [...b.items, { id, grams: p.defG, method: p.method }] }
+    })
+  }, [])
+
+  const removeItem = useCallback((id) => {
+    setBuild((b) => ({ ...b, items: b.items.filter((it) => it.id !== id) }))
+  }, [])
+
+  const setGrams = useCallback((id, grams) => {
+    setBuild((b) => ({
+      ...b,
+      items: b.items.map((it) => (it.id === id ? { ...it, grams: Math.max(0, grams) } : it)),
+    }))
+  }, [])
+
+  const setMethod = useCallback((id, method) => {
+    setBuild((b) => ({
+      ...b,
+      items: b.items.map((it) => (it.id === id ? { ...it, method } : it)),
+    }))
+  }, [])
+
+  const setPrice = useCallback((price) => setBuild((b) => ({ ...b, price })), [])
+
+  const setBuildMeta = useCallback((meta) => setBuild((b) => ({ ...b, ...meta })), [])
+
+  // 새 메뉴 시작 (+ FAB)
+  const newBuild = useCallback(() => {
+    setBuild({ id: 'm' + Date.now(), nm: '새 메뉴', price: 9000, icon: 'donbap', items: [] })
+  }, [])
+
+  // 저장된 메뉴 열기 — 기본 빌드(제육덮밥)는 실제 재료로, 나머지는 저장값에서 원가 역산
+  const loadMenu = useCallback((menu) => {
+    if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
+    const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
+    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, items: [], fixedFood: Math.max(0, cost - OVERHEAD) })
+  }, [])
+
+  // 결과 저장 → 메뉴판에 누적(upsert)
+  const saveBuild = useCallback((margin) => {
+    setMenus((list) => {
+      const cleared = list.map((m) => ({ ...m, badge: undefined }))
+      const idx = cleared.findIndex((m) => m.id === build.id)
+      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', badge: '방금 계산' }
+      if (idx >= 0) { cleared[idx] = entry; return cleared }
+      return [entry, ...cleared]
+    })
+  }, [build])
+
+  const value = {
+    menus, build,
+    inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
+    newBuild, loadMenu, saveBuild, toast, toastMsg,
+  }
+  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
+}
