@@ -272,14 +272,24 @@ export function StorySection({ onEnter }) {
   const beatRefs = useRef([])
   const storyRef = useRef(null)
   useEffect(() => {
-    // 스크롤에 따라 화면 중앙에 온 beat를 active로 (컴포지터 기반 — rAF/scroll 이벤트 불필요)
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(Number(e.target.dataset.i)) }),
-      { rootMargin: '-48% 0px -48% 0px', threshold: 0 }
-    )
-    const els = beatRefs.current.filter(Boolean)
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    // 화면 중앙에 가장 가까운 beat를 active로. scroll·resize·IntersectionObserver 3중 트리거로 견고.
+    const update = () => {
+      const mid = window.innerHeight / 2
+      let best = 0, bestDist = Infinity
+      beatRefs.current.forEach((el, i) => {
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const d = Math.abs(r.top + r.height / 2 - mid)
+        if (d < bestDist) { bestDist = d; best = i }
+      })
+      setActive((prev) => (prev === best ? prev : best))
+    }
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update, { passive: true })
+    const io = new IntersectionObserver(() => update(), { rootMargin: '-35% 0px -35% 0px', threshold: [0, 0.5, 1] })
+    beatRefs.current.forEach((el) => el && io.observe(el))
+    update()
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); io.disconnect() }
   }, [])
   useEffect(() => { setPlayId((p) => p + 1) }, [active])
 
