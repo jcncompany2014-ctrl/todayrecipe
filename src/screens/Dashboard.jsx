@@ -1,15 +1,13 @@
-import { useState } from 'react'
 import Icon from '../components/Icon'
 import { useStore } from '../state/store'
-import { won, breakeven } from '../lib/calc'
+import { won, round10 } from '../lib/calc'
 
 export default function Dashboard() {
-  const { menus } = useStore()
-  const [fixed, setFixed] = useState(243000)
+  const { menus, dailyFixed, setDailyFixed } = useStore()
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
-  const avgProfit = menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length
-  const shopBowls = breakeven(avgProfit, fixed)
+  const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
+  const shopBowls = avgProfit > 0 ? Math.round(dailyFixed / avgProfit) : 0
 
   const counts = { g: 0, w: 0, b: 0 }
   menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
@@ -27,14 +25,14 @@ export default function Dashboard() {
       </div>
 
       <div className="be fade">
-        <div className="lab">하루 고정비 기준, 본전까지</div>
+        <div className="lab">하루 고정비 ÷ 한 그릇 평균 {won(avgProfit)}원 = 본전</div>
         <div className="big"><b className="num">{shopBowls === Infinity ? '—' : shopBowls}</b><span className="unit">그릇</span></div>
         <div className="field">
           <span className="k">하루 고정비</span>
           <div className="stepper2">
-            <button aria-label="감소" onClick={() => setFixed((f) => Math.max(50000, f - 20000))}><Icon name="minus" size={16} stroke={2.4} /></button>
-            <span className="v num">{won(fixed)}원</span>
-            <button aria-label="증가" onClick={() => setFixed((f) => f + 20000)}><Icon name="plus" size={16} stroke={2.4} /></button>
+            <button aria-label="감소" onClick={() => setDailyFixed(Math.max(50000, dailyFixed - 10000))}><Icon name="minus" size={16} stroke={2.4} /></button>
+            <span className="v num">{won(dailyFixed)}원</span>
+            <button aria-label="증가" onClick={() => setDailyFixed(dailyFixed + 10000)}><Icon name="plus" size={16} stroke={2.4} /></button>
           </div>
         </div>
       </div>

@@ -13,6 +13,8 @@ export function StoreProvider({ children }) {
   const [menus, setMenus] = useState(() => clone(SEED_MENUS))
   // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
   const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
+  // 하루 고정비 — 홈·대시보드·결과가 공유. 사장님이 바꾸면 본전 그릇 수가 전부 재계산됨.
+  const [dailyFixed, setDailyFixed] = useState(243000)
 
   // 토스트
   const [toastMsg, setToastMsg] = useState(null)
@@ -65,7 +67,7 @@ export function StoreProvider({ children }) {
   const loadMenu = useCallback((menu) => {
     if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
     const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
-    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, items: [], fixedFood: Math.max(0, cost - OVERHEAD) })
+    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - OVERHEAD) })
   }, [])
 
   // 결과 저장 → 메뉴판에 누적(upsert)
@@ -73,14 +75,14 @@ export function StoreProvider({ children }) {
     setMenus((list) => {
       const cleared = list.map((m) => ({ ...m, badge: undefined }))
       const idx = cleared.findIndex((m) => m.id === build.id)
-      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', badge: '방금 계산' }
+      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', img: build.img, badge: '방금 계산' }
       if (idx >= 0) { cleared[idx] = entry; return cleared }
       return [entry, ...cleared]
     })
   }, [build])
 
   const value = {
-    menus, build,
+    menus, build, dailyFixed, setDailyFixed,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, toast, toastMsg,
   }

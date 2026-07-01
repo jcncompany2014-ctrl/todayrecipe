@@ -7,7 +7,7 @@ import { costOf, yieldOf, summarize, breakeven, won, round10, sig, OVERHEAD } fr
 
 export default function Result() {
   const nav = useNavigate()
-  const { build, setPrice, saveBuild, toast } = useStore()
+  const { build, dailyFixed, setPrice, saveBuild, toast } = useStore()
 
   // 원가(food)는 판매가와 무관 — 재료가 있으면 실계산, 없으면(저장된 메뉴) 역산값 사용
   const foodFixed = useMemo(
@@ -20,7 +20,7 @@ export default function Result() {
   const profit = price - cost
   const margin = price > 0 ? Math.round((profit / price) * 100) : 0
   const s = sig(margin)
-  const bowls = breakeven(profit)
+  const bowls = breakeven(profit, dailyFixed)
   const COOK_VERB = { 볶기: '볶으면', 삶기: '삶으면', 튀김: '튀기면' }
 
   const minP = round10(cost)               // 본전 가격
@@ -89,8 +89,9 @@ export default function Result() {
         </div>
 
         <div className="rcard fade" style={{ animationDelay: '.1s' }}>
-          <div className="lab">오늘 본전 맞추기</div>
-          <div className="big"><b className="num">{bowls === Infinity ? '—' : bowls}</b><span className="unit">그릇</span><span className="sub">하루 고정비 기준</span></div>
+          <div className="lab">이 메뉴로 본전 맞추기</div>
+          <div className="big"><b className="num">{bowls === Infinity ? '—' : bowls}</b><span className="unit">그릇</span><span className="sub">팔면 본전</span></div>
+          <div className="rcard-calc num">하루 고정비 {won(dailyFixed)}원 ÷ 그릇당 {won(round10(Math.max(0, profit)))}원</div>
         </div>
       </div>
 

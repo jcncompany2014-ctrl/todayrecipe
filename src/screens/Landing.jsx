@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
+import Photo from '../components/Photo'
 
 export default function Landing() {
   const nav = useNavigate()
@@ -9,7 +10,7 @@ export default function Landing() {
     <div className="landing">
       <div className="nav">
         <div className="brand">
-          <span className="logo"><Icon name="bowl" size={17} stroke={1.9} /></span>
+          <span className="logo"><Photo src="/img/logo.webp" icon="bowl" iconSize={18} /></span>
           오늘 몇 그릇?
         </div>
         <button className="nav-cta" onClick={enter}>체험해보기</button>
@@ -34,20 +35,22 @@ export default function Landing() {
         <div className="phone-peek">
           <div className="mini">
             <div className="mini-screen">
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0)', height: 0 }} />
-              <div style={{ background: 'var(--ink)', color: '#fff', borderRadius: 18, padding: '16px 17px' }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.6)' }}>오늘 본전을 맞추려면</div>
+              <div style={{ background: 'var(--ink)', color: '#fff', borderRadius: 18, padding: '15px 17px' }}>
+                <div style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,.6)' }}>오늘 이만큼은 팔아야 본전</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 4 }}>
-                  <b className="num" style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: .95 }}>66</b>
+                  <b className="num" style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: .95 }}>89</b>
                   <span style={{ fontSize: 15, fontWeight: 700 }}>그릇</span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,.6)' }}>팔면 돼요</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,.6)' }}>팔면 본전</span>
+                </div>
+                <div style={{ marginTop: 9, paddingTop: 9, borderTop: '1px dashed rgba(255,255,255,.16)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,.5)' }}>
+                  하루 고정비 243,000원 ÷ 평균 2,730원
                 </div>
               </div>
-              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10, padding: '12px 13px', border: '1px solid var(--line)', borderRadius: 15 }}>
-                <span style={{ width: 38, height: 38, borderRadius: 12, background: 'var(--tile)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-soft)' }}><Icon name="donbap" size={22} stroke={1.7} /></span>
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid var(--line)', borderRadius: 15 }}>
+                <span style={{ width: 40, height: 40, borderRadius: 12, background: 'var(--tile)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-soft)' }}><Photo src="/img/dish_jeyuk.webp" icon="donbap" iconSize={22} /></span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>제육덮밥</div>
-                  <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--muted)' }} className="num">9,000원</div>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--muted)' }} className="num">그릇당 +3,690원</div>
                 </div>
                 <b className="num g" style={{ fontSize: 18, fontWeight: 800 }}>41%</b>
               </div>

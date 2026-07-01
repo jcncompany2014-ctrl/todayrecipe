@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon, { TrendTri } from '../components/Icon'
 import Thumb from '../components/Thumb'
+import Photo from '../components/Photo'
 import { useStore } from '../state/store'
 import { PRODUCTS, CATS, POPULAR, SECTIONS } from '../data/catalog'
 import { summarize, won, round10 } from '../lib/calc'
@@ -42,7 +43,7 @@ export default function Market() {
             <span className="mh-title">재료 담기</span>
           </div>
           <button className="chip" onClick={() => toast('메뉴를 바꾸거나 새로 만들 수 있어요')}>
-            <span className="chip-ic"><Icon name={build.icon || 'bowl'} size={16} stroke={1.8} /></span>
+            <span className="chip-ic"><Photo src={build.img} icon={build.icon || 'bowl'} iconSize={16} /></span>
             <span className="chip-tx"><b>{build.nm}</b><span>담는 중</span></span>
             <Icon name="chevD" size={16} stroke={2} className="cd" />
           </button>
