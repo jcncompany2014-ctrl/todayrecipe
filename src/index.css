@@ -560,11 +560,11 @@ a{color:inherit;text-decoration:none}
 /* nav */
 .landing .lnav{position:sticky;top:0;z-index:40;transition:background .25s,box-shadow .25s,border-color .25s;border-bottom:1px solid transparent}
 .landing .lnav.scrolled{background:rgba(242,239,234,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
-.landing .lnav-in{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+.landing .lnav-in{max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(24px,3.2vw,48px)}
 .landing .nav-cta{font-size:13.5px;font-weight:700;color:#fff;background:var(--ink);border:none;padding:9px 16px;border-radius:11px;cursor:pointer;box-shadow:0 8px 18px -8px rgba(26,22,19,.4)}
 
 /* hero */
-.landing .lhero{max-width:1060px;margin:0 auto;padding:30px 24px 10px;display:grid;grid-template-columns:1fr;gap:32px;align-items:center;justify-items:center;text-align:center}
+.landing .lhero{max-width:1300px;margin:0 auto;padding:30px 24px 10px;display:grid;grid-template-columns:1fr;gap:32px;align-items:center;justify-items:center;text-align:center}
 .landing .lhero-copy{max-width:440px}
 .landing .lhero .eyebrow{margin-bottom:22px}
 .landing .lhero h1{font-size:clamp(40px,12vw,60px);font-weight:800;letter-spacing:-2.2px;line-height:1.04;margin:0}
@@ -685,10 +685,17 @@ a{color:inherit;text-decoration:none}
 
 /* ---------- 반응형 ---------- */
 @media (min-width:900px){
-  .landing .lhero{grid-template-columns:1.05fr .95fr;gap:44px;text-align:left;justify-items:start;padding-top:44px}
-  .landing .lhero-copy{max-width:none}
-  .landing .story-stage-in{grid-template-columns:1fr auto;gap:54px;justify-items:start}
-  .landing .story-copy{max-width:none;justify-content:flex-start}
+  .landing .lhero{grid-template-columns:1.08fr .92fr;gap:60px;text-align:left;justify-items:start;padding:52px 40px 24px}
+  .landing .lhero-copy{max-width:none;justify-self:start}
+  .landing .lhero h1{font-size:clamp(46px,4.6vw,66px);letter-spacing:-2.6px}
+  .landing .lhero .lead{max-width:480px;font-size:17px}
+  .landing .lhero-ctas{justify-content:flex-start;margin-top:34px;gap:10px 24px}
+  .landing .lhero-micro{margin-top:22px}
+  .landing .lhero-phone{justify-self:center}
+  .landing .lhero-phone .ios-phone{--pf-scale:.94}
+  .landing .ios-phone{--pf-scale:.82}
+  .landing .story-stage-in{grid-template-columns:auto auto;justify-content:center;gap:72px;justify-items:start}
+  .landing .story-copy{width:min(470px,42vw);max-width:none;justify-content:flex-start}
   .landing .beat-copy{text-align:left;align-items:flex-start}
   .landing .beat-copy p{margin-left:0}
   .landing .beat-copy h2 br{display:inline}
@@ -696,9 +703,16 @@ a{color:inherit;text-decoration:none}
   .landing .story-progress{left:0;transform:none}
   .landing .story-phone{justify-self:center}
 }
+@media (min-width:1500px){
+  .landing .lhero,.landing .lnav-in{max-width:1460px}
+  .landing .lhero h1{font-size:74px;letter-spacing:-3px}
+  .landing .lhero .lead{font-size:18px;max-width:520px}
+  .landing .lhero-phone .ios-phone{--pf-scale:1.06}
+  .landing .lsection,.landing .lfinal{max-width:740px}
+}
 @media (max-width:480px){ .landing .ios-phone{--pf-scale:.64} .landing .ios-phone.wide{--pf-scale:.68} }
 @media (max-width:360px){ .landing .ios-phone{--pf-scale:.58} }
-@media (max-height:730px) and (min-width:900px){ .landing .ios-phone{--pf-scale:.62} }
+@media (max-height:820px) and (min-width:900px){ .landing .ios-phone{--pf-scale:.7} .landing .lhero-phone .ios-phone{--pf-scale:.82} }
 
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
