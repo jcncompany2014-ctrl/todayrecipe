@@ -22,9 +22,20 @@
 html,body,#root{height:100%}
 body{
   font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
-  background:radial-gradient(125% 90% at 50% -10%, var(--bg-1) 0%, var(--bg-2) 58%, var(--bg-3) 100%);
   color:var(--ink);
+  background-color:#F1EDE7;
+  background-image:
+    radial-gradient(52% 42% at 15% 0%, #F9F4ED 0%, rgba(249,244,237,0) 62%),
+    radial-gradient(44% 40% at 87% 3%, #ECEEEC 0%, rgba(236,238,236,0) 58%),
+    radial-gradient(70% 55% at 92% 96%, #EFE7DB 0%, rgba(239,231,219,0) 60%),
+    radial-gradient(95% 70% at 30% 108%, #E6DDD0 0%, rgba(230,221,208,0) 64%);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+/* 파인 그레인 — 매트한 종이 질감(뻔한 그라데이션 제거) */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.05;mix-blend-mode:multiply;
 }
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 button{font-family:inherit}
