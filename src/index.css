@@ -304,6 +304,13 @@ a{color:inherit;text-decoration:none}
 .scr-cart .sum-stats .row b{font-weight:700;color:var(--ink);margin-left:5px}
 .scr-cart .mbar{height:7px;background:var(--track);border-radius:99px;overflow:hidden}
 .scr-cart .mbar span{display:block;height:100%;border-radius:99px;transition:width .3s cubic-bezier(.2,.8,.3,1)}
+.scr-cart .sum-empty{font-size:13.5px;font-weight:500;color:var(--muted);line-height:1.5;padding:2px 0}
+.scr-cart .sum-empty b{color:var(--ink-soft);font-weight:700}
+.scr-cart .cart-empty{margin:8px 18px 0;padding:34px 20px;background:var(--paper);border:1px solid var(--line);border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center}
+.scr-cart .cart-empty .ce-ic{width:56px;height:56px;border-radius:16px;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.scr-cart .cart-empty p{font-size:14px;font-weight:600;color:var(--ink-soft);line-height:1.55}
+.scr-cart .cart-empty .ce-btn{margin-top:2px;font-size:14px;font-weight:700;color:#fff;background:var(--ink);border:none;border-radius:13px;padding:12px 20px;cursor:pointer}
 .scr-cart .sec-head{padding:22px 22px 11px;display:flex;align-items:baseline;gap:8px}
 .scr-cart .sec-head h2{font-size:16px;font-weight:800;letter-spacing:-.4px}
 .scr-cart .sec-head .cnt{font-size:13px;font-weight:600;color:var(--muted)}
@@ -385,6 +392,7 @@ a{color:inherit;text-decoration:none}
 .scr-result .rcard.ledger .row{display:flex;justify-content:space-between;font-size:13px;font-weight:500;color:rgba(255,255,255,.72);line-height:1.9}
 .scr-result .rcard.ledger .row b{font-weight:700;color:#fff}
 .scr-result .rcard.ledger .row .accent{color:#5FD6A0}
+.scr-result .rcard.ledger .ledger-note{margin-top:10px;font-size:11px;font-weight:500;color:rgba(255,255,255,.45);line-height:1.45}
 .scr-result .yieldnote{display:flex;gap:10px;align-items:flex-start;margin:11px 18px 0;background:var(--sand);
   border-radius:16px;padding:14px 16px}
 .scr-result .yieldnote .ic{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:rgba(154,107,60,.14);

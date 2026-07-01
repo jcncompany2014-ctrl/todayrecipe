@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { SEED_MENUS, DEFAULT_BUILD } from '../data/menus'
 import { PRODUCTS } from '../data/catalog'
-import { OVERHEAD } from '../lib/calc'
+import { overheadFor } from '../lib/calc'
 
 const StoreCtx = createContext(null)
 export const useStore = () => useContext(StoreCtx)
@@ -67,7 +67,7 @@ export function StoreProvider({ children }) {
   const loadMenu = useCallback((menu) => {
     if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
     const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
-    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - OVERHEAD) })
+    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price)) })
   }, [])
 
   // 결과 저장 → 메뉴판에 누적(upsert)

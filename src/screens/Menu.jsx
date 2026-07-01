@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
-import { won, round10, sig } from '../lib/calc'
+import { won, round10, sig, breakeven } from '../lib/calc'
 
 const PRESETS = [150000, 200000, 250000, 300000]
 
@@ -15,7 +15,7 @@ export default function Menu() {
 
   const profitOf = (m) => (m.price * m.margin) / 100
   const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length)
-  const bowls = avgProfit > 0 ? Math.round(dailyFixed / avgProfit) : 0
+  const bowls = breakeven(avgProfit, dailyFixed)
   const best = menus.reduce((a, b) => (b.margin > a.margin ? b : a))
   const healthy = menus.filter((m) => m.margin >= 30).length
   const sorted = [...menus].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
@@ -38,13 +38,13 @@ export default function Menu() {
 
       {/* 본전 카드 — 계산식을 그대로 보여주고, 고정비를 직접 조절 */}
       <div className="hero fade" style={{ animationDelay: '.05s' }}>
-        <div className="hero-label">오늘 이만큼은 팔아야 본전이에요</div>
+        <div className="hero-label">오늘 본전을 맞추려면 · 가게 평균 기준</div>
         <div className="hero-num">
-          <b className="num">{bowls}</b><span className="unit">그릇</span><span className="tail">팔면 딱 본전</span>
+          <b className="num">{bowls === Infinity ? '—' : bowls}</b><span className="unit">그릇</span><span className="tail">정도 팔면 돼요</span>
         </div>
         <hr className="hero-rule" />
         <div className="hero-calc">
-          <span>하루 고정비 <b className="num">{won(dailyFixed)}원</b> ÷ 한 그릇 평균 <b className="num">{won(avgProfit)}원</b></span>
+          <span>하루 고정비 <b className="num">{won(dailyFixed)}원</b> ÷ 메뉴 평균 <b className="num">{won(avgProfit)}원</b></span>
           <button className="hero-edit" onClick={() => setEditFixed((v) => !v)}>{editFixed ? '닫기' : '고정비 수정'}</button>
         </div>
         {editFixed && (
@@ -66,9 +66,9 @@ export default function Menu() {
 
       {/* 신호등 범례 */}
       <div className="legend-row fade" style={{ animationDelay: '.08s' }}>
-        <span className="lg-item"><i className="dot g-bg" />건강 30%+</span>
+        <span className="lg-item"><i className="dot g-bg" />건강 30% 이상</span>
         <span className="lg-item"><i className="dot w-bg" />주의 20~29%</span>
-        <span className="lg-item"><i className="dot b-bg" />위험 20%↓</span>
+        <span className="lg-item"><i className="dot b-bg" />위험 20% 미만</span>
       </div>
 
       {/* 메뉴 리스트 */}

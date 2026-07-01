@@ -38,9 +38,9 @@ export default function Landing() {
               <div style={{ background: 'var(--ink)', color: '#fff', borderRadius: 18, padding: '15px 17px' }}>
                 <div style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,.6)' }}>오늘 이만큼은 팔아야 본전</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 4 }}>
-                  <b className="num" style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: .95 }}>89</b>
+                  <b className="num" style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.5px', lineHeight: .95 }}>90</b>
                   <span style={{ fontSize: 15, fontWeight: 700 }}>그릇</span>
-                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,.6)' }}>팔면 본전</span>
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,.6)' }}>정도 팔면</span>
                 </div>
                 <div style={{ marginTop: 9, paddingTop: 9, borderTop: '1px dashed rgba(255,255,255,.16)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,.5)' }}>
                   하루 고정비 243,000원 ÷ 평균 2,730원

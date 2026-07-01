@@ -1,13 +1,13 @@
 import Icon from '../components/Icon'
 import { useStore } from '../state/store'
-import { won, round10 } from '../lib/calc'
+import { won, round10, breakeven } from '../lib/calc'
 
 export default function Dashboard() {
   const { menus, dailyFixed, setDailyFixed } = useStore()
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
   const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
-  const shopBowls = avgProfit > 0 ? Math.round(dailyFixed / avgProfit) : 0
+  const shopBowls = breakeven(avgProfit, dailyFixed)
 
   const counts = { g: 0, w: 0, b: 0 }
   menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
@@ -25,7 +25,7 @@ export default function Dashboard() {
       </div>
 
       <div className="be fade">
-        <div className="lab">하루 고정비 ÷ 한 그릇 평균 {won(avgProfit)}원 = 본전</div>
+        <div className="lab">하루 고정비 ÷ 메뉴 평균 {won(avgProfit)}원 · 가게 전체 기준</div>
         <div className="big"><b className="num">{shopBowls === Infinity ? '—' : shopBowls}</b><span className="unit">그릇</span></div>
         <div className="field">
           <span className="k">하루 고정비</span>
@@ -64,9 +64,9 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="legend">
-            <div className="lg"><i style={{ background: C.g }} />건강 (≥30%)<span className="num">{counts.g}개</span></div>
-            <div className="lg"><i style={{ background: C.w }} />주의 (20~29%)<span className="num">{counts.w}개</span></div>
-            <div className="lg"><i style={{ background: C.b }} />위험 (&lt;20%)<span className="num">{counts.b}개</span></div>
+            <div className="lg"><i style={{ background: C.g }} />건강 30% 이상<span className="num">{counts.g}개</span></div>
+            <div className="lg"><i style={{ background: C.w }} />주의 20~29%<span className="num">{counts.w}개</span></div>
+            <div className="lg"><i style={{ background: C.b }} />위험 20% 미만<span className="num">{counts.b}개</span></div>
           </div>
         </div>
       </div>

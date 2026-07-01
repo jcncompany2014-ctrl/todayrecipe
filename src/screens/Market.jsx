@@ -29,7 +29,7 @@ export default function Market() {
     const next = has ? build.items.filter((i) => i.id !== id) : [...build.items, { id, grams: p.defG, method: p.method }]
     const after = summarize(next, build.price).margin
     toggleItem(id)
-    toast(`<b>${p.nm}</b> ${has ? '뺐어요' : '담음'} · 예상 마진 ${before}% → ${after}%`)
+    toast(`<b>${p.nm}</b> ${has ? '뺐어요' : '담았어요'} · 예상 마진 ${before}% → ${after}%`)
   }
 
   const sections = cat === 'all' ? SECTIONS : SECTIONS.filter((s) => s.cat === cat)
