@@ -1,133 +1,154 @@
 import { useState, useEffect, useRef } from 'react'
 import Icon, { TrendTri } from '../Icon'
-import { useInView, useCountUp, reducedMotion } from './hooks'
+import { useCountUp, useTween, reducedMotion } from './hooks'
 
 const won = (n) => Math.round(n).toLocaleString('ko-KR')
 
-/* 반투명 탭 링 (손가락 대신, 프리미엄) */
+/* iOS 상태바 (앱과 동일) */
+function StatusBar() {
+  return (
+    <div className="statusbar">
+      <span className="num">9:41</span>
+      <div className="sb-right">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5" width="3" height="7" rx="1" /><rect x="10" y="2.5" width="3" height="9.5" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M1 4.2C3.2 2.4 5.7 1.4 8.5 1.4S13.8 2.4 16 4.2" /><path d="M3.6 6.9c1.4-1.1 3.1-1.7 4.9-1.7s3.5.6 4.9 1.7" /><path d="M6.2 9.5c.7-.5 1.5-.8 2.3-.8s1.6.3 2.3.8" /></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" strokeWidth="1.2" opacity=".5" /><rect x="2.8" y="2.8" width="15" height="6.4" rx="1.6" fill="currentColor" /><rect x="23" y="4" width="1.6" height="4" rx=".8" fill="currentColor" opacity=".5" /></svg>
+      </div>
+    </div>
+  )
+}
+
+/* 정석 iOS 폰 프레임: 다이나믹 아일랜드 + 홈 인디케이터 + 실제 앱 화면(392px)을 그대로 스케일다운 */
+function IosPhone({ children, className = '', label }) {
+  return (
+    <div className={`ios-phone ${className}`} aria-label={label} role="img">
+      <div className="ios-screen">
+        <div className="ios-scaler">{children}</div>
+        <div className="ios-island" />
+        <div className="ios-home" />
+      </div>
+    </div>
+  )
+}
+
 function TapRing({ show, style }) {
   return <span className={`tapring${show ? ' on' : ''}`} style={style} aria-hidden="true" />
 }
 
-function StatusBar() {
-  return (
-    <div className="d-status">
-      <span className="num">9:41</span>
-      <span className="d-status-r">
-        <svg width="15" height="10" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5" width="3" height="7" rx="1" /><rect x="10" y="2.5" width="3" height="9.5" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
-        <svg width="20" height="10" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="3" stroke="currentColor" strokeWidth="1.2" opacity=".5" /><rect x="2.8" y="2.8" width="15" height="6.4" rx="1.6" fill="currentColor" /></svg>
-      </span>
-    </div>
-  )
-}
-
 /* =========================================================
-   히어로 폰 — 식자재 마트 '담기 마법' 무한 루프
+   히어로 — 식자재 마트 '담기 마법' 무한 루프
    ========================================================= */
-const POP = [
-  { id: 'samgyup', nm: '삼겹살', pr: '12,000', img: '/img/samgyup.webp' },
-  { id: 'onion', nm: '양파', pr: '2,000', img: '/img/onion.webp' },
-  { id: 'egg', nm: '계란', pr: '6,000', img: '/img/egg.webp' },
-]
-
 export function HeroPhone() {
-  const [ref, inView] = useInView(0.3)
-  const base = { n: 3, m: 52, food: '1,790', onion: false, samgyup: false, tap: null, toast: null, tint: false }
+  const base = { n: 3, food: '1,790', m: 52, onion: false, samgyup: false, tap: null, toast: null }
   const [s, setS] = useState(base)
-
   useEffect(() => {
-    if (reducedMotion() || !inView) { setS({ ...base, m: 51, onion: true, n: 4, food: '1,910' }); return }
+    if (reducedMotion()) { setS({ ...base, n: 4, food: '1,910', m: 51, onion: true }); return }
     let timers = []; let cancelled = false
     const at = (d, fn) => timers.push(setTimeout(fn, d))
     const run = () => {
-      if (cancelled || document.hidden) return
+      if (cancelled) return
       setS(base)
-      at(700, () => setS(v => ({ ...v, tap: 'onion' })))
-      at(1250, () => setS(v => ({ ...v, onion: true, n: 4, food: '1,910', m: 51, tap: null, toast: '양파 담았어요 · 예상 마진 52% → 51%' })))
-      at(3300, () => setS(v => ({ ...v, toast: null })))
-      at(3800, () => setS(v => ({ ...v, tap: 'samgyup' })))
-      at(4350, () => setS(v => ({ ...v, samgyup: true, n: 5, food: '3,350', m: 49, tint: true, tap: null, toast: '삼겹살 담았어요 · 예상 마진 51% → 49%' })))
-      at(4850, () => setS(v => ({ ...v, tint: false })))
-      at(6400, () => setS(v => ({ ...v, toast: null })))
-      at(7300, run)
+      at(900, () => setS(v => ({ ...v, tap: 'onion' })))
+      at(1450, () => setS(v => ({ ...v, onion: true, n: 4, food: '1,910', m: 51, tap: null, toast: '양파 담았어요 · 예상 마진 52% → 51%' })))
+      at(3600, () => setS(v => ({ ...v, toast: null })))
+      at(4100, () => setS(v => ({ ...v, tap: 'samgyup' })))
+      at(4650, () => setS(v => ({ ...v, samgyup: true, n: 5, food: '3,350', m: 49, tap: null, toast: '삼겹살 담았어요 · 예상 마진 51% → 49%' })))
+      at(6800, () => setS(v => ({ ...v, toast: null })))
+      at(7800, run)
     }
     run()
     return () => { cancelled = true; timers.forEach(clearTimeout) }
-  }, [inView])
+  }, [])
 
-  const added = { samgyup: s.samgyup, onion: s.onion, egg: false }
-
+  const pop = [
+    { id: 'samgyup', nm: '삼겹살', pr: '12,000', unit: '/kg', img: '/img/samgyup.webp', in: s.samgyup },
+    { id: 'onion', nm: '양파', pr: '2,000', unit: '/kg', img: '/img/onion.webp', in: s.onion },
+    { id: 'egg', nm: '계란', pr: '6,000', unit: '/30구', img: '/img/egg.webp', in: false },
+  ]
   return (
-    <div className="demo-phone hero-phone" ref={ref} aria-label="식자재 마트에서 재료를 담으면 예상 마진이 실시간으로 바뀌는 화면">
-      <div className="demo-screen scr-hero">
+    <IosPhone label="식자재 마트에서 재료를 담으면 예상 마진이 실시간으로 바뀌는 화면">
+      <div className="app-clone scr-market">
         <StatusBar />
-        <div className="d-mkt-head">
-          <div className="d-mkt-title">재료 담기</div>
-          <div className="d-chip"><span className="d-chip-ic"><img src="/img/dish_jeyuk.webp" alt="" /></span><b>제육덮밥</b><span>담는 중</span></div>
+        <div className="mkt-head">
+          <div className="mh-top"><button className="iconbtn"><Icon name="back" size={22} stroke={2} /></button><span className="mh-title">재료 담기</span></div>
+          <button className="chip"><span className="chip-ic"><img src="/img/dish_jeyuk.webp" alt="" /></span><span className="chip-tx"><b>제육덮밥</b><span>담는 중</span></span><Icon name="chevD" size={16} stroke={2} className="cd" /></button>
+          <div className="search"><Icon name="search" size={18} stroke={2} /><input placeholder="삼겹살, 양파, 고추장…" readOnly /></div>
         </div>
-        <div className="d-sec">사장님이 많이 담아요</div>
-        <div className="d-pop">
-          {POP.map((p) => (
-            <div className="d-hcard" key={p.id}>
-              <div className="d-himg"><img src={p.img} alt={p.nm} /><span className={`d-add${added[p.id] ? ' in' : ''}`}><Icon name={added[p.id] ? 'check' : 'plus'} size={15} stroke={2.5} /></span></div>
-              <div className="d-hnm">{p.nm}</div>
-              <div className="d-hpr num">{p.pr}원<i>/kg</i></div>
+        <div className="catbar"><div className="cats">{['전체', '정육', '수산', '청과', '양념'].map((c, i) => <button key={c} className={`cat${i === 0 ? ' on' : ''}`}>{c}</button>)}</div></div>
+        <div className="sec-head"><h2>사장님이 많이 담아요</h2><span className="more">더보기 ›</span></div>
+        <div className="hscroll" style={{ position: 'relative' }}>
+          {pop.map((p) => (
+            <div className="hcard" key={p.id}>
+              <div className="himg" style={{ background: 'var(--tile)' }}>
+                <img src={p.img} alt={p.nm} />
+                <button className={`add${p.in ? ' in' : ''}`}><Icon name={p.in ? 'check' : 'plus'} size={19} stroke={2.4} /></button>
+              </div>
+              <div className="hcard-tx"><div className="nm">{p.nm}</div><div className="pr num">{p.pr}원<i>{p.unit}</i></div></div>
             </div>
           ))}
-          <TapRing show={s.tap === 'samgyup'} style={{ left: 78, top: 150 }} />
-          <TapRing show={s.tap === 'onion'} style={{ left: 190, top: 150 }} />
+          <TapRing show={s.tap === 'samgyup'} style={{ left: 78, top: 100 }} />
+          <TapRing show={s.tap === 'onion'} style={{ left: 234, top: 100 }} />
         </div>
-        <div className="d-mbar-wrap"><span className="d-mbar-lab">예상 마진</span><div className="d-mbar"><span className="gb" style={{ width: `${s.m}%` }} /></div></div>
-
-        <div className="d-cartbar">
-          <span className="d-cb-cart"><Icon name="cart" size={17} stroke={1.8} /><span className="d-cb-badge num">{s.n}</span></span>
-          <span className="d-cb-tx"><b>장바구니 {s.n}개</b><span className="num">식자재 {s.food}원</span></span>
-          <span className={`d-cb-margin${s.tint ? ' tint' : ''}`}><span>예상 마진</span><b className="num">{s.m}%</b></span>
-        </div>
-
-        <div className={`d-toast${s.toast ? ' show' : ''}`}>{s.toast || ''}</div>
+        <button className="cartbar">
+          <div className="cb-left">
+            <span className="cb-cart"><Icon name="cart" size={20} stroke={1.8} /><span className="cb-badge num">{s.n}</span></span>
+            <span className="cb-tx"><span className="l1">장바구니 {s.n}개</span><span className="l2 num">식자재 {s.food}원</span></span>
+          </div>
+          <div className="cb-right"><span className="cb-margin"><span>예상 마진</span><b className="num">{s.m}%</b></span><Icon name="chevR" size={18} stroke={2.2} className="cr" /></div>
+        </button>
+        <div className={`toast${s.toast ? ' show' : ''}`}>{s.toast || ''}</div>
       </div>
-    </div>
+    </IosPhone>
   )
 }
 
 /* =========================================================
-   스토리 미니 화면들 (sticky 폰 안에서 스크롤로 전환)
+   스토리 미니 화면 (실제 앱 클론)
    ========================================================= */
-function HomeMini({ active, playId }) {
+const HOME_MENUS = [
+  { nm: '제육덮밥', pr: '9,000', prof: '3,690', m: 41, s: 'g', img: '/img/dish_jeyuk.webp', badge: '방금 계산' },
+  { nm: '김치찌개', pr: '8,000', prof: '3,280', m: 41, s: 'g', img: '/img/dish_kimchi.webp' },
+  { nm: '돈까스', pr: '9,500', prof: '3,325', m: 35, s: 'g', img: '/img/dish_donkkaseu.webp' },
+  { nm: '마라탕', pr: '9,000', prof: '2,160', m: 24, s: 'w', img: '/img/dish_mala.webp' },
+]
+function MenuClone({ active, playId }) {
   const [bump, setBump] = useState(false)
-  const fixed = bump ? 270000 : 243000
-  const bowlsTarget = bump ? 99 : 90
-  const bowls = Math.round(useCountUp(bowlsTarget, active, { dur: 900, playId: playId + (bump ? 100 : 0) }))
+  const bowls = Math.round(useTween(active ? (bump ? 99 : 90) : 0, active, { dur: 900 }))
   useEffect(() => {
     if (!active || reducedMotion()) { setBump(false); return }
     setBump(false)
-    const t = setTimeout(() => setBump(true), 2100)
+    const t = setTimeout(() => setBump(true), 2200)
     return () => clearTimeout(t)
   }, [active, playId])
-
-  const menus = [
-    { nm: '제육덮밥', pr: '9,000', prof: '+3,690', m: 41, s: 'g', img: '/img/dish_jeyuk.webp' },
-    { nm: '마라탕', pr: '9,000', prof: '+2,160', m: 24, s: 'w', img: '/img/dish_mala.webp' },
-  ]
   return (
-    <div className="d-home">
-      <div className="d-ledger">
-        <div className="d-ledger-lab">오늘 본전을 맞추려면 · 가게 평균 기준</div>
-        <div className="d-ledger-num"><b className="num">{bowls}</b><span className="u">그릇</span><span className="t">정도 팔면 돼요</span></div>
-        <div className="d-ledger-rule" />
-        <div className="d-ledger-calc">하루 고정비 <b className="num">{won(fixed)}원</b> ÷ 메뉴 평균 <b className="num">2,730원</b></div>
-        <div className="d-fx"><span>하루 고정비</span><span className={`d-fx-step${bump ? ' hit' : ''}`}><i>−</i><b className="num">{won(fixed)}</b><i className="plus">+</i></span></div>
+    <div className="app-clone scr-menu">
+      <StatusBar />
+      <div className="hd">
+        <div className="hd-brand"><div className="logo-img"><img src="/img/logo.webp" alt="" /></div><span className="hd-wordmark">오늘 몇 그릇?</span></div>
+        <div className="hd-row"><h1 className="hd-title">내 메뉴판</h1><span className="hd-count num">메뉴 5 · 효자 제육덮밥</span></div>
       </div>
-      <div className="d-mlist">
-        {menus.map((m, i) => (
-          <div className="d-mcard" key={m.nm}>
-            <span className="d-mphoto"><img src={m.img} alt={m.nm} /></span>
-            <div className="d-mbody">
-              <div className="d-mtop"><b>{m.nm}</b><span className="num">{m.pr}원</span></div>
-              <div className={`d-mbar2`}><span className={`${m.s}b`} style={{ width: active ? `${m.m}%` : '0%', transitionDelay: `${0.2 + i * 0.12}s` }} /></div>
+      <div className="hero">
+        <div className="hero-label">오늘 본전을 맞추려면 · 가게 평균 기준</div>
+        <div className="hero-num"><b className="num">{bowls}</b><span className="unit">그릇</span><span className="tail">정도 팔면 돼요</span></div>
+        <hr className="hero-rule" />
+        <div className="hero-calc"><span>하루 고정비 <b className="num">{bump ? '270,000' : '243,000'}원</b> ÷ 메뉴 평균 <b className="num">2,730원</b></span><button className="hero-edit">고정비 수정</button></div>
+      </div>
+      <div className="legend-row">
+        <span className="lg-item"><i className="dot g-bg" />건강 30% 이상</span>
+        <span className="lg-item"><i className="dot w-bg" />주의 20~29%</span>
+        <span className="lg-item"><i className="dot b-bg" />위험 20% 미만</span>
+      </div>
+      <div className="menu-sec-head"><h2>내 메뉴</h2><button className="sort-btn">마진 높은 순 <Icon name="chevD" size={14} stroke={2} /></button></div>
+      <div className="list">
+        {HOME_MENUS.map((m, i) => (
+          <div className="mcard" key={m.nm}>
+            <div className="mcard-photo"><img src={m.img} alt={m.nm} /></div>
+            <div className="mcard-body">
+              <div className="mcard-name"><h3>{m.nm}</h3>{m.badge && <span className="badge">{m.badge}</span>}</div>
+              <div className="mcard-sub"><span className="num">{m.pr}원</span><span className="mcard-dot">·</span><span className="mcard-profit num">그릇당 <b className={m.s}>+{m.prof}원</b></span></div>
+              <div className="bar"><span className={`${m.s}-bg`} style={{ width: active ? `${m.m}%` : '0%', transition: 'width .8s cubic-bezier(.2,.8,.3,1)', transitionDelay: `${0.25 + i * 0.1}s` }} /></div>
             </div>
-            <b className={`d-mpct num ${m.s}`}>{m.m}%</b>
+            <div className="mcard-end"><div className="mcard-pct"><span className={`dot ${m.s}-bg`} /><b className={`num ${m.s}`}>{m.m}%</b></div><Icon name="chevR" size={16} stroke={2} className="chev" /></div>
           </div>
         ))}
       </div>
@@ -135,144 +156,163 @@ function HomeMini({ active, playId }) {
   )
 }
 
-function MarketMini({ active, playId }) {
+function MarketClone({ active, playId }) {
   const [added, setAdded] = useState(false)
   const [tap, setTap] = useState(false)
-  const [showBar, setShowBar] = useState(false)
+  const [bar, setBar] = useState(false)
   const [m, setM] = useState(52)
   useEffect(() => {
-    if (!active) { setAdded(false); setTap(false); setShowBar(false); setM(52); return }
-    if (reducedMotion()) { setAdded(true); setShowBar(true); setM(50); return }
-    setAdded(false); setShowBar(false); setM(52)
-    const t1 = setTimeout(() => setTap(true), 800)
-    const t2 = setTimeout(() => { setTap(false); setAdded(true); setShowBar(true) }, 1300)
-    const t3 = setTimeout(() => setM(50), 1700)
+    if (!active) { setAdded(false); setTap(false); setBar(false); setM(52); return }
+    if (reducedMotion()) { setAdded(true); setBar(true); setM(50); return }
+    setAdded(false); setBar(false); setM(52)
+    const t1 = setTimeout(() => setTap(true), 900)
+    const t2 = setTimeout(() => { setTap(false); setAdded(true); setBar(true) }, 1450)
+    const t3 = setTimeout(() => setM(50), 1900)
     return () => [t1, t2, t3].forEach(clearTimeout)
   }, [active, playId])
-
-  const cards = [
-    { nm: '삼겹살', img: '/img/samgyup.webp' }, { nm: '양파', img: '/img/onion.webp' },
-    { nm: '계란', img: '/img/egg.webp' }, { nm: '대파', img: '/img/daepa.webp' }, { nm: '고추장', img: '/img/gochu.webp' },
-  ]
+  const pop = [['삼겹살', '/img/samgyup.webp'], ['양파', '/img/onion.webp'], ['계란', '/img/egg.webp'], ['대파', '/img/daepa.webp'], ['고추장', '/img/gochu.webp']]
   const rows = [
-    { nm: '삼겹살', pr: '12,000', unit: '/kg', img: '/img/samgyup.webp', trend: 'dn', t: '3% 저렴' },
-    { nm: '양파', pr: '2,000', unit: '/kg', img: '/img/onion.webp', trend: 'dn', t: '8% 저렴' },
+    { nm: '삼겹살', pr: '12,000', unit: '/kg', img: '/img/samgyup.webp', t: '3% 저렴' },
+    { nm: '앞다리살', pr: '9,000', unit: '/kg', img: '/img/apdari.webp', t: '1% 저렴' },
   ]
   return (
-    <div className="d-mkt">
-      <div className="d-cats">{['전체', '정육', '수산', '청과', '양념'].map((c, i) => <span key={c} className={`d-cat${i === 0 ? ' on' : ''}`}>{c}</span>)}</div>
-      <div className="d-sec">사장님이 많이 담아요</div>
-      <div className="d-pop-clip"><div className={`d-pop-row${active ? ' run' : ''}`}>
-        {cards.map((c) => <div className="d-hcard sm" key={c.nm}><div className="d-himg"><img src={c.img} alt={c.nm} /></div><div className="d-hnm">{c.nm}</div></div>)}
-      </div></div>
-      <div className="d-vlist">
-        {rows.map((r, i) => (
-          <div className="d-vitem" key={r.nm}>
-            <span className="d-vthumb"><img src={r.img} alt={r.nm} /></span>
-            <div className="d-vmid"><b>{r.nm}</b><span className="num">{r.pr}원<i>{r.unit}</i></span><span className="d-trend dn"><TrendTri dir="dn" />▼{r.t}</span></div>
-            <span className={`d-addv${i === 0 && added ? ' in' : ''}`}><Icon name={i === 0 && added ? 'check' : 'plus'} size={16} stroke={2.4} /></span>
-            {i === 0 && <TapRing show={tap} style={{ right: 10, top: 14 }} />}
-          </div>
+    <div className="app-clone scr-market">
+      <StatusBar />
+      <div className="mkt-head">
+        <div className="mh-top"><button className="iconbtn"><Icon name="back" size={22} stroke={2} /></button><span className="mh-title">재료 담기</span></div>
+        <button className="chip"><span className="chip-ic"><img src="/img/dish_jeyuk.webp" alt="" /></span><span className="chip-tx"><b>제육덮밥</b><span>담는 중</span></span><Icon name="chevD" size={16} stroke={2} className="cd" /></button>
+        <div className="search"><Icon name="search" size={18} stroke={2} /><input placeholder="삼겹살, 양파, 고추장…" readOnly /></div>
+      </div>
+      <div className="catbar"><div className="cats">{['전체', '정육', '수산', '청과', '양념'].map((c, i) => <button key={c} className={`cat${i === 0 ? ' on' : ''}`}>{c}</button>)}</div></div>
+      <div className="sec-head"><h2>사장님이 많이 담아요</h2><span className="more">더보기 ›</span></div>
+      <div className="hscroll"><div className={`hscroll-row${active ? ' run' : ''}`}>
+        {pop.map(([nm, img]) => (
+          <div className="hcard" key={nm}><div className="himg" style={{ background: 'var(--tile)' }}><img src={img} alt={nm} /></div><div className="hcard-tx"><div className="nm">{nm}</div></div></div>
         ))}
+      </div></div>
+      <div className="vsec"><div className="sec-head"><h2>정육</h2></div>
+        <div className="vlist">
+          {rows.map((r, i) => (
+            <div className="vitem" key={r.nm} style={{ position: 'relative' }}>
+              <div className="vthumb" style={{ background: 'var(--tile)' }}><img src={r.img} alt={r.nm} /></div>
+              <div className="vmid"><div className="nm">{r.nm}</div><div className="pr num">{r.pr}원<i>{r.unit}</i></div><span className="trend dn"><TrendTri dir="dn" />{r.t}</span></div>
+              <button className={`addv${i === 0 && added ? ' in' : ''}`}><Icon name={i === 0 && added ? 'check' : 'plus'} size={20} stroke={2.4} /></button>
+              {i === 0 && <TapRing show={tap} style={{ right: 22, top: 30 }} />}
+            </div>
+          ))}
+        </div>
       </div>
-      <div className={`d-cartbar float${showBar ? ' show' : ''}`}>
-        <span className="d-cb-cart"><Icon name="cart" size={16} stroke={1.8} /><span className="d-cb-badge num">2</span></span>
-        <span className="d-cb-tx"><b>장바구니 2개</b><span className="num">식자재 1,790원</span></span>
-        <span className="d-cb-margin"><span>예상 마진</span><b className="num">{m}%</b></span>
-      </div>
+      <button className={`cartbar${bar ? '' : ' hide'}`}>
+        <div className="cb-left"><span className="cb-cart"><Icon name="cart" size={20} stroke={1.8} /><span className="cb-badge num">2</span></span><span className="cb-tx"><span className="l1">장바구니 2개</span><span className="l2 num">식자재 1,790원</span></span></div>
+        <div className="cb-right"><span className="cb-margin"><span>예상 마진</span><b className="num">{m}%</b></span><Icon name="chevR" size={18} stroke={2.2} className="cr" /></div>
+      </button>
     </div>
   )
 }
 
-function CartMini({ active, playId }) {
+function CartClone({ active, playId }) {
   const [fry, setFry] = useState(false)
   const [callout, setCallout] = useState(false)
-  const marginTarget = fry ? 40 : 41
-  const margin = Math.round(useCountUp(marginTarget, active, { dur: 700, playId: playId + (fry ? 50 : 0) }))
+  const margin = Math.round(useTween(active ? (fry ? 40 : 41) : 0, active, { dur: 650 }))
   useEffect(() => {
-    if (!active) { setFry(false); setCallout(false); return }
-    if (reducedMotion()) { return }
+    if (!active || reducedMotion()) { setFry(false); setCallout(false); return }
     setFry(false); setCallout(false)
-    const t1 = setTimeout(() => { setFry(true); setCallout(true) }, 1300)
-    const t2 = setTimeout(() => setCallout(false), 3200)
-    const t3 = setTimeout(() => setFry(false), 3400)
+    const t1 = setTimeout(() => { setFry(true); setCallout(true) }, 1400)
+    const t2 = setTimeout(() => setCallout(false), 3300)
+    const t3 = setTimeout(() => setFry(false), 3500)
     return () => [t1, t2, t3].forEach(clearTimeout)
   }, [active, playId])
+  const cost = fry ? '5,420' : '5,310'
+  const profit = fry ? '3,580' : '3,690'
   const yld = fry ? 75 : 80
   const val = fry ? '1,800' : '1,688'
   const cooks = ['생', '볶기', '삶기', '튀김']
-  const activeCook = fry ? '튀김' : '볶기'
+  const cur = fry ? '튀김' : '볶기'
   return (
-    <div className="d-cart">
-      <div className="d-sum">
-        <div className="d-sum-top"><span>제육덮밥 · 판매가 <b className="num">9,000원</b></span></div>
-        <div className="d-sum-mid"><span className="lab">예상 마진</span><b className="num g">{margin}%</b></div>
-        <div className="d-sum-bar"><span className="gb" style={{ width: active ? `${margin}%` : '0%' }} /></div>
-      </div>
-      <div className="d-sec">담은 재료</div>
-      <div className="d-ing">
-        <span className="d-vthumb"><img src="/img/apdari.webp" alt="앞다리살" /></span>
-        <div className="d-ing-mid"><b>앞다리살</b><span>9원/g · 150g</span>
-          <div className="d-cooks">{cooks.map((c) => <span key={c} className={`d-cook${c === activeCook ? ' on' : ''}`}>{c}</span>)}<TapRing show={callout} style={{ right: 4, top: -2 }} /></div>
+    <div className="app-clone scr-cart paper2">
+      <StatusBar />
+      <div className="hd"><div className="hd-top"><button className="iconbtn"><Icon name="back" size={22} stroke={2} /></button><h1>장바구니</h1></div><p className="sub">제육덮밥 담는 중 · 재료를 넣으면 마진이 계산돼요</p></div>
+      <div className="sum">
+        <div className="sum-top"><div className="m">제육덮밥 · 판매가 <b className="num">9,000원</b></div><button className="edit">판매가 조정 ›</button></div>
+        <div className="sum-mid">
+          <div className="sum-margin"><span className="lab">예상 마진</span><b className="num g">{margin}%</b></div>
+          <div className="sum-stats"><div className="row">1인분 원가<b className="num">{cost}원</b></div><div className="row">한 그릇 남는 돈<b className="num">{profit}원</b></div></div>
         </div>
-        <div className="d-ing-cost"><span className="d-yld">수율 {yld}%</span><b className={`num d-val${callout ? ' bump' : ''}`}>₩{val}</b></div>
+        <div className="mbar"><span className="gb" style={{ width: active ? `${margin}%` : '0%' }} /></div>
       </div>
-      <div className={`d-callout${callout ? ' show' : ''}`}>표기 1,350원 → 볶으면 <b>+25%</b> · 수율이 만든 진짜 원가</div>
+      <div className="sec-head"><h2>담은 재료</h2><span className="cnt">5개</span></div>
+      <div className="ings">
+        <div className="ing">
+          <div className="ing-top">
+            <div className="vthumb" style={{ background: 'var(--tile)' }}><img src="/img/apdari.webp" alt="앞다리살" /></div>
+            <div className="ing-name"><b>앞다리살</b><span>9원/g</span></div>
+            <div className="ing-cost"><span className="yld">수율 {yld}%</span><div className={`val num${callout ? ' bump' : ''}`}>₩{val}</div></div>
+          </div>
+          <div className="ctrl"><span className="ctrl-lab">사용량</span><div className="stepper"><button><Icon name="minus" size={16} stroke={2.4} /></button><span className="v num">150<i>g</i></span><button><Icon name="plus" size={16} stroke={2.4} /></button></div></div>
+          <div className="ctrl" style={{ position: 'relative' }}>
+            <span className="ctrl-lab">조리</span>
+            <div className="cooks">{cooks.map((c) => <button key={c} className={`cook${c === cur ? ' on' : ''}`}>{c}</button>)}</div>
+            <TapRing show={callout} style={{ right: 24, top: 20 }} />
+          </div>
+        </div>
+      </div>
+      <div className={`yield-callout${callout ? ' show' : ''}`}>표기 1,350원 → 볶으면 <b>+25%</b> · 수율이 만든 진짜 원가</div>
     </div>
   )
 }
 
-const SLIDE = [
-  { p: 9000, m: 41, be: 66 },
-  { p: 9500, m: 43, be: 59 },
-  { p: 8500, m: 38, be: 75 },
-]
-function ResultMini({ active, playId }) {
+const STEPS = [9000, 9500, 8500, 9000]
+function ResultClone({ active, playId }) {
   const [idx, setIdx] = useState(0)
-  const cost = Math.round(useCountUp(5310, active, { dur: 800, playId }))
-  const cur = SLIDE[idx]
-  const marginC = Math.round(useCountUp(cur.m, active, { dur: 600, playId: playId * 10 + idx }))
-  const beC = Math.round(useCountUp(cur.be, active, { dur: 600, playId: playId * 10 + idx + 3 }))
+  const price = Math.round(useTween(active ? STEPS[idx] : 9000, active, { dur: 1000 }) / 10) * 10
   useEffect(() => {
-    if (!active) { setIdx(0); return }
-    if (reducedMotion()) { setIdx(0); return }
+    if (!active || reducedMotion()) { setIdx(0); return }
     setIdx(0)
     const t1 = setTimeout(() => setIdx(1), 1400)
-    const t2 = setTimeout(() => setIdx(2), 3000)
-    const t3 = setTimeout(() => setIdx(0), 4600)
+    const t2 = setTimeout(() => setIdx(2), 3200)
+    const t3 = setTimeout(() => setIdx(3), 5000)
     return () => [t1, t2, t3].forEach(clearTimeout)
   }, [active, playId])
-  const pct = ((cur.p - 4860) / (16200 - 4860)) * 100
+  const overhead = 1670 + Math.round(price * 0.12)
+  const cost = 2558 + overhead
+  const profit = price - cost
+  const margin = Math.round((profit / price) * 100)
+  const be = profit > 0 ? Math.ceil(243000 / profit) : '—'
+  const pct = ((price - 4860) / (16200 - 4860)) * 100
   return (
-    <div className="d-result">
-      <div className="d-rcards">
-        <div className="d-rcard"><span className="l">1그릇 실원가</span><b className="num">₩{won(cost)}</b></div>
-        <div className="d-rcard ink"><span className="l">{won(cur.p)}원에 팔면</span><b className="num accent">마진 {marginC}%</b></div>
-        <div className="d-rcard"><span className="l">이 메뉴로 본전</span><b className="num">{beC}<i>그릇</i></b></div>
+    <div className="app-clone scr-result paper2">
+      <StatusBar />
+      <div className="hd"><div className="hd-top"><button className="iconbtn"><Icon name="back" size={22} stroke={2} /></button><h1>마진 결과</h1></div><p className="sub">제육덮밥 원가와 마진이에요</p></div>
+      <div className="cards">
+        <div className="rcard"><div className="lab">1그릇 실원가</div><div className="big"><b className="num">₩{won(Math.round(cost / 10) * 10)}</b></div></div>
+        <div className="rcard ledger"><div className="lab">{won(price)}원에 팔면</div><div className="big"><b className="num" style={{ color: '#5FD6A0' }}>마진 {margin}%</b></div><hr className="line" /><div className="row"><span>1인분 원가</span><b className="num">{won(Math.round(cost / 10) * 10)}원</b></div><div className="row"><span>한 그릇 남는 돈</span><b className="num accent">{won(Math.round(profit / 10) * 10)}원</b></div></div>
+        <div className="rcard"><div className="lab">이 메뉴로 본전 맞추기</div><div className="big"><b className="num">{be}</b><span className="unit">그릇</span><span className="sub">팔면 본전</span></div></div>
       </div>
-      <div className="d-tip"><span className="dot gb" /><p>마진이 <b>건강해요</b>. 이 가격, 자신 있게 받으셔도 됩니다.</p></div>
-      <div className="d-slider">
-        <div className="d-slider-top"><span>판매가</span><b className="num">{won(cur.p)}원</b></div>
-        <div className="d-track"><span className="d-fill" style={{ width: `${pct}%` }} /><span className="d-thumb" style={{ left: `${pct}%` }} /></div>
+      <div className="slider">
+        <div className="slider-top"><span className="lab">판매가를 조정해 보세요</span><span className="price num">{won(price)}원</span></div>
+        <div className="fake-range"><span className="fr-fill" style={{ width: `${pct}%` }} /><span className="fr-thumb" style={{ left: `${pct}%` }} /></div>
+        <div className="slider-res">
+          <div className="item"><div className="k">마진</div><div className="v num g">{margin}%</div></div>
+          <div className="item"><div className="k">한 그릇 남는 돈</div><div className="v num">{won(Math.round(profit / 10) * 10)}</div></div>
+          <div className="item"><div className="k">손익분기</div><div className="v num">{be}그릇</div></div>
+        </div>
       </div>
     </div>
   )
 }
 
 const BEATS = [
-  { k: '내 메뉴판', h: '오늘, 몇 그릇 팔면\n본전일까요?', p: '하루 고정비 243,000원 ÷ 메뉴 평균 2,730원 = 90그릇. 고정비를 바꾸면 오늘 목표 그릇 수가 바로 다시 계산돼요.', Cmp: HomeMini, cls: 'scr-menu' },
-  { k: '이렇게 담아요', h: '마켓처럼 담으면\n담는 순간 계산돼요', p: '식자재를 장바구니에 담을 때마다 예상 마진이 바로 움직여요. 담기 한 번에 52% → 50%, 진짜로 계산되는 거예요.', Cmp: MarketMini, cls: 'scr-market' },
-  { k: '우리가 다른 점', h: "원물 단가가 아니라\n'조리 후' 진짜 원가", p: '앞다리살 150g을 볶으면 120g만 남아요(수율 80%). 실제 원가는 표기 단가보다 25% 비싸집니다. 그 차이를 계산에 넣는 게 핵심이에요.', Cmp: CartMini, cls: 'scr-cart' },
-  { k: '결과 한 장', h: '한 그릇의 진짜 원가부터\n오늘 본전 그릇 수까지', p: '1그릇 실원가 ₩5,310 · 마진 41% · 본전 66그릇. 판매가를 밀면 마진과 본전 그릇 수가 실시간으로 바뀌어요.', Cmp: ResultMini, cls: 'scr-result' },
+  { k: '내 메뉴판', h: '오늘, 몇 그릇 팔면\n본전일까요?', p: '하루 고정비 243,000원 ÷ 메뉴 평균 2,730원 = 90그릇. 고정비를 바꾸면 오늘 목표 그릇 수가 바로 다시 계산돼요.', Cmp: MenuClone, cls: 'scr-menu', cap: '고정비를 바꾸면 목표 그릇 수가 다시 계산돼요' },
+  { k: '이렇게 담아요', h: '마켓처럼 담으면\n담는 순간 계산돼요', p: '식자재를 장바구니에 담을 때마다 예상 마진이 바로 움직여요. 담기 한 번에 52% → 50%, 진짜로 계산되는 거예요.', Cmp: MarketClone, cls: 'scr-market', cap: '담는 순간 예상 마진이 움직여요' },
+  { k: '우리가 다른 점', h: "원물 단가가 아니라\n'조리 후' 진짜 원가", p: '앞다리살 150g을 볶으면 120g만 남아요(수율 80%). 실제 원가는 표기 단가보다 25% 비싸집니다. 그 차이를 계산에 넣는 게 핵심이에요.', Cmp: CartClone, cls: 'scr-cart', cap: '조리법만 바꿔도 수율이 원가를 바꿔요' },
+  { k: '결과 한 장', h: '한 그릇의 진짜 원가부터\n오늘 본전 그릇 수까지', p: '1그릇 실원가 ₩5,310 · 마진 41% · 본전 66그릇. 판매가를 밀면 마진과 본전 그릇 수가 실시간으로 바뀌어요.', Cmp: ResultClone, cls: 'scr-result', cap: '판매가를 밀면 본전 그릇 수가 실시간으로' },
 ]
 
-export function StorySection({ onEnter }) {
+export function StorySection() {
   const [active, setActive] = useState(0)
   const [playId, setPlayId] = useState(0)
   const beatRefs = useRef([])
-  const storyRef = useRef(null)
   useEffect(() => {
-    // 화면 중앙에 가장 가까운 beat를 active로. scroll·resize·IntersectionObserver 3중 트리거로 견고.
     const update = () => {
       const mid = window.innerHeight / 2
       let best = 0, bestDist = Infinity
@@ -293,41 +333,34 @@ export function StorySection({ onEnter }) {
   }, [])
   useEffect(() => { setPlayId((p) => p + 1) }, [active])
 
-  const captions = ['고정비를 바꾸면 목표 그릇 수가 다시 계산돼요', '담는 순간 예상 마진이 움직여요', '조리법만 바꿔도 수율이 원가를 바꿔요', '판매가를 밀면 본전 그릇 수가 실시간으로']
-
   return (
-    <section className="story" ref={storyRef}>
+    <section className="story">
       <div className="story-stage">
         <div className="story-stage-in">
           <div className="story-copy">
-            <div className="story-progress">
-              {BEATS.map((_, i) => <span key={i} className={`sp-dot${i === active ? ' on' : i < active ? ' done' : ''}`} />)}
-            </div>
+            <div className="story-progress">{BEATS.map((_, i) => <span key={i} className={`sp-dot${i === active ? ' on' : i < active ? ' done' : ''}`} />)}</div>
             {BEATS.map((b, i) => (
               <div className={`beat-copy${i === active ? ' on' : ''}`} key={i} aria-hidden={i !== active}>
                 <div className="beat-kicker">{b.k}</div>
                 <h2>{b.h.split('\n').map((l, j) => <span key={j}>{l}<br /></span>)}</h2>
                 <p>{b.p}</p>
-                <div className="story-caption">{captions[i]}</div>
+                <div className="story-caption">{b.cap}</div>
               </div>
             ))}
           </div>
           <div className="story-phone">
-            <div className="demo-phone" aria-label="앱 화면이 스크롤에 따라 순서대로 작동하는 데모">
-              <div className={`demo-screen ${BEATS[active].cls}`}>
-                <StatusBar />
-                <div className="story-screens">
-                  {BEATS.map((b, i) => {
-                    const Cmp = b.Cmp
-                    return (
-                      <div className={`story-layer${i === active ? ' on' : i < active ? ' past' : ''}`} key={i} aria-hidden="true">
-                        <Cmp active={i === active} playId={playId} />
-                      </div>
-                    )
-                  })}
-                </div>
+            <IosPhone label="앱 화면이 스크롤에 따라 순서대로 작동하는 데모">
+              <div className="story-screens">
+                {BEATS.map((b, i) => {
+                  const Cmp = b.Cmp
+                  return (
+                    <div className={`story-layer${i === active ? ' on' : i < active ? ' past' : ''}`} key={i} aria-hidden="true">
+                      <Cmp active={i === active} playId={playId} />
+                    </div>
+                  )
+                })}
               </div>
-            </div>
+            </IosPhone>
           </div>
         </div>
       </div>
@@ -339,47 +372,63 @@ export function StorySection({ onEnter }) {
 }
 
 /* =========================================================
-   대시보드 데모 (정적 섹션, 진입 시 1회 재생)
+   대시보드 데모 (실제 앱 클론, 진입 시 1회 재생)
    ========================================================= */
 export function DashDemo() {
-  const [ref, inView] = useInView(0.4)
+  const [on, setOn] = useState(false)
+  const ref = useRef(null)
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setOn(true), { threshold: 0.4 })
+    if (ref.current) io.observe(ref.current)
+    return () => io.disconnect()
+  }, [])
   const ranks = [
-    { nm: '제육덮밥', m: 41, s: 'g' }, { nm: '김치찌개', m: 41, s: 'g' },
-    { nm: '돈까스', m: 35, s: 'g' }, { nm: '마라탕', m: 24, s: 'w' }, { nm: '물냉면', m: 12, s: 'b' },
+    { nm: '제육덮밥', m: 41, s: 'g' }, { nm: '김치찌개', m: 41, s: 'g' }, { nm: '돈까스', m: 35, s: 'g' }, { nm: '마라탕', m: 24, s: 'w' }, { nm: '물냉면', m: 12, s: 'b' },
   ]
   const R = 34, C = 2 * Math.PI * R
-  const good = 60 // 3/5
   return (
-    <div className="demo-phone wide" ref={ref} aria-label="메뉴별 마진 순위와 건강도 대시보드">
-      <div className="demo-screen scr-dash">
-        <StatusBar />
-        <div className="d-dash-title">대시보드</div>
-        <div className="d-panel">
-          <div className="d-panel-h">메뉴 마진 순위</div>
-          {ranks.map((r, i) => (
-            <div className="d-rankrow" key={r.nm}>
-              <span className="d-rk num">{i + 1}</span><span className="d-rnm">{r.nm}</span>
-              <span className="d-rtrack"><span className={`${r.s}b`} style={{ width: inView ? `${r.m}%` : '0%', transitionDelay: `${i * 0.08}s` }} /></span>
-              <b className={`d-rpct num ${r.s}`}>{r.m}%</b>
-            </div>
-          ))}
-        </div>
-        <div className="d-panel">
-          <div className="d-panel-h">마진 건강도</div>
-          <div className="d-donut-wrap">
-            <svg width="92" height="92" viewBox="0 0 92 92" className="d-donut">
-              <circle cx="46" cy="46" r={R} fill="none" stroke="var(--track)" strokeWidth="11" />
-              <circle cx="46" cy="46" r={R} fill="none" stroke="var(--good-1)" strokeWidth="11" strokeLinecap="round"
-                strokeDasharray={C} strokeDashoffset={inView ? C * (1 - good / 100) : C} transform="rotate(-90 46 46)" style={{ transition: 'stroke-dashoffset 1s cubic-bezier(.2,.8,.3,1)' }} />
-            </svg>
-            <div className="d-legend">
-              <span><i className="gb" />건강 30% 이상 <b className="num">3개</b></span>
-              <span><i className="wb" />주의 20~29% <b className="num">1개</b></span>
-              <span><i className="bb" />위험 20% 미만 <b className="num">1개</b></span>
+    <div ref={ref}>
+      <IosPhone className="wide" label="메뉴별 마진 순위와 건강도 대시보드">
+        <div className="app-clone scr-dash scr-tabpage">
+          <StatusBar />
+          <div className="hd"><h1 className="hd-title">대시보드</h1><p className="hd-desc">가게 전체 마진을 한눈에</p></div>
+          <div className="be">
+            <div className="lab">하루 고정비 ÷ 메뉴 평균 2,730원 · 가게 전체 기준</div>
+            <div className="big"><b className="num">90</b><span className="unit">그릇</span></div>
+          </div>
+          <div className="panel">
+            <h2>메뉴 마진 순위</h2>
+            <div className="ph">효자 메뉴부터 적자 메뉴까지</div>
+            {ranks.map((r, i) => (
+              <div className="rankrow" key={r.nm}>
+                <span className="rk num">{i + 1}</span><span className="nm">{r.nm}</span>
+                <span className="track"><span className={`${r.s}-bg`} style={{ width: on ? `${r.m}%` : '0%', transition: 'width .7s cubic-bezier(.2,.8,.3,1)', transitionDelay: `${i * 0.08}s` }} /></span>
+                <span className={`pc num ${r.s}`}>{r.m}%</span>
+              </div>
+            ))}
+          </div>
+          <div className="panel">
+            <h2>마진 건강도</h2>
+            <div className="ph">메뉴 5개 분포</div>
+            <div className="donut-wrap">
+              <div style={{ width: 108, height: 108, position: 'relative', flex: '0 0 auto' }}>
+                <svg width="108" height="108" viewBox="0 0 108 108">
+                  <circle cx="54" cy="54" r={R} fill="none" stroke="var(--track)" strokeWidth="12" />
+                  <circle cx="54" cy="54" r={R} fill="none" stroke="var(--good-1)" strokeWidth="12" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={on ? C * 0.4 : C} transform="rotate(-90 54 54)" style={{ transition: 'stroke-dashoffset 1s cubic-bezier(.2,.8,.3,1)' }} />
+                </svg>
+                <div style={{ position: 'absolute', inset: 16, borderRadius: '50%', background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <b style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-.5px' }} className="num">60%</b><span style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--muted)' }}>건강</span>
+                </div>
+              </div>
+              <div className="legend">
+                <div className="lg"><i style={{ background: '#16A06A' }} />건강 30% 이상<span className="num">3개</span></div>
+                <div className="lg"><i style={{ background: '#D69412' }} />주의 20~29%<span className="num">1개</span></div>
+                <div className="lg"><i style={{ background: '#D04B3F' }} />위험 20% 미만<span className="num">1개</span></div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </IosPhone>
     </div>
   )
 }

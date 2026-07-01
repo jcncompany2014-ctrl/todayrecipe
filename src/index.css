@@ -494,12 +494,6 @@ a{color:inherit;text-decoration:none}
 .landing .nav .brand .logo{width:30px;height:30px;border-radius:9px;background:var(--ink);overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fff}
 .landing .nav .nav-cta{font-size:13.5px;font-weight:700;color:var(--ink);background:var(--paper);border:1px solid var(--line);
   padding:9px 15px;border-radius:11px;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,25,.04)}
-.landing .hero{text-align:center;padding:34px 0 18px}
-.landing .hero .eyebrow{display:inline-block;font-size:12.5px;font-weight:700;color:var(--sand-ink);background:var(--sand);
-  padding:6px 13px;border-radius:99px;letter-spacing:-.1px;margin-bottom:20px}
-.landing .hero h1{font-size:clamp(38px,11vw,58px);font-weight:800;letter-spacing:-2.2px;line-height:1.02}
-.landing .hero .lede{font-size:clamp(15px,4vw,17px);font-weight:500;color:var(--ink-soft);line-height:1.6;margin:18px auto 0;max-width:420px}
-.landing .hero .ctas{display:flex;gap:10px;justify-content:center;margin-top:26px;flex-wrap:wrap}
 .landing .btn-primary{font-size:15.5px;font-weight:700;letter-spacing:-.3px;color:#fff;background:var(--ink);
   border:none;padding:15px 26px;border-radius:15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
   box-shadow:0 16px 30px -12px rgba(26,22,19,.5);transition:transform .16s cubic-bezier(.2,.8,.3,1)}
@@ -618,208 +612,77 @@ a{color:inherit;text-decoration:none}
 .landing .lfinal .btn-primary{margin:0 auto}
 .landing .foot{text-align:center;font-size:12px;font-weight:500;color:var(--muted);padding:26px 24px 40px;line-height:1.7}
 
-/* ---------- 폰 프레임 (공통) ---------- */
-.landing .demo-phone{width:250px;max-width:80vw;background:#0C0C0D;border-radius:38px;padding:8px;
-  box-shadow:0 34px 64px -26px rgba(38,26,16,.5),0 12px 26px rgba(38,26,16,.16)}
-.landing .demo-phone.wide{width:296px}
-.landing .demo-screen{background:var(--paper);border-radius:31px;overflow:hidden;position:relative;height:502px;display:flex;flex-direction:column}
-.landing .demo-phone.wide .demo-screen{height:452px}
-.landing .d-status{flex:0 0 auto;height:26px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:11px;font-weight:600;color:var(--ink)}
-.landing .d-status-r{display:flex;align-items:center;gap:5px}
-.landing .d-status-r svg{display:block}
-.landing .tapring{position:absolute;width:26px;height:26px;border-radius:50%;background:rgba(26,22,19,.26);opacity:0;pointer-events:none;z-index:6;transform:translate(-50%,-50%)}
+/* ---------- 정석 iOS 폰 프레임 (실제 앱 화면 392px을 그대로 스케일다운) ---------- */
+.landing .ios-phone{--pf-scale:.78;position:relative;flex:0 0 auto;
+  width:calc(392px * var(--pf-scale) + 20px);height:calc(850px * var(--pf-scale) + 20px);
+  background:linear-gradient(155deg,#45454c,#0b0b0d 62%);border-radius:calc(58px * var(--pf-scale) + 9px);padding:10px;
+  box-shadow:0 44px 74px -28px rgba(38,26,16,.55),0 16px 32px rgba(38,26,16,.18),inset 0 0 0 1.5px rgba(255,255,255,.07)}
+.landing .ios-phone.wide{--pf-scale:.84}
+.landing .ios-screen{position:relative;width:100%;height:100%;border-radius:calc(50px * var(--pf-scale));overflow:hidden;background:var(--paper)}
+.landing .ios-scaler{position:absolute;top:0;left:0;width:392px;height:850px;transform:scale(var(--pf-scale));transform-origin:top left}
+.landing .ios-island{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:26%;max-width:96px;height:22px;background:#000;border-radius:99px;z-index:9}
+.landing .ios-home{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:35%;height:4px;border-radius:99px;background:rgba(125,125,125,.5);z-index:9}
+
+/* 앱 화면 클론 (실제 앱 CSS 재사용) */
+.landing .app-clone{width:392px;height:850px;position:relative;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.landing .app-clone.paper2{background:#FBFAF8}
+.landing .app-clone .statusbar{height:52px;padding-top:6px}
+.landing .app-clone .cartbar{transition:transform .45s cubic-bezier(.2,.8,.3,1),opacity .3s}
+.landing .app-clone .hscroll{overflow:hidden}
+.landing .hscroll-row{display:flex;gap:12px;width:max-content}
+.landing .hscroll-row.run{animation:hscrollmove 4s cubic-bezier(.3,.1,.3,1) forwards}
+@keyframes hscrollmove{0%{transform:translateX(0)}100%{transform:translateX(-150px)}}
+
+/* 탭 링 (손가락 대신 프리미엄 탭 표현) */
+.landing .tapring{position:absolute;width:36px;height:36px;border-radius:50%;background:rgba(26,22,19,.22);opacity:0;pointer-events:none;z-index:7;transform:translate(-50%,-50%)}
 .landing .tapring.on{animation:tapring .62s ease}
 @keyframes tapring{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}42%{opacity:.5;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.35)}}
 
-/* ---------- 히어로 마트 데모 ---------- */
-.landing .d-mkt-head{padding:8px 14px 2px;display:flex;flex-direction:column;gap:8px}
-.landing .d-mkt-title{font-size:13.5px;font-weight:700}
-.landing .d-chip{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:#fff;border-radius:11px;padding:5px 10px 5px 6px;align-self:flex-start}
-.landing .d-chip-ic{width:22px;height:22px;border-radius:7px;overflow:hidden;flex:0 0 auto}
-.landing .d-chip-ic img{width:100%;height:100%;object-fit:cover;display:block}
-.landing .d-chip b{font-size:12px;font-weight:700}
-.landing .d-chip span{font-size:9.5px;color:rgba(255,255,255,.6)}
-.landing .d-sec{padding:10px 14px 8px;font-size:13px;font-weight:800;letter-spacing:-.3px}
-.landing .d-pop{position:relative;display:flex;gap:9px;padding:0 14px 4px;overflow:hidden}
-.landing .d-hcard{flex:0 0 auto;width:88px}
-.landing .d-hcard.sm{width:78px}
-.landing .d-himg{position:relative;width:88px;height:70px;border-radius:13px;overflow:hidden;background:var(--tile)}
-.landing .d-hcard.sm .d-himg{width:78px;height:62px}
-.landing .d-himg img{width:100%;height:100%;object-fit:cover;display:block}
-.landing .d-add{position:absolute;right:5px;bottom:5px;width:24px;height:24px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 3px 8px -2px rgba(40,28,18,.3);transition:transform .22s cubic-bezier(.2,.8,.3,1),background .22s}
-.landing .d-add.in{background:var(--ink);color:#fff}
-.landing .d-hnm{font-size:11.5px;font-weight:700;margin-top:6px}
-.landing .d-hpr{font-size:11px;font-weight:600;margin-top:2px}
-.landing .d-hpr i{font-size:9.5px;color:var(--muted);font-style:normal;font-weight:500}
-.landing .d-mbar-wrap{margin:8px 14px 0;display:flex;align-items:center;gap:8px}
-.landing .d-mbar-lab{font-size:10px;font-weight:600;color:var(--muted);flex:0 0 auto}
-.landing .d-mbar{flex:1;height:6px;background:var(--track);border-radius:99px;overflow:hidden}
-.landing .d-mbar span{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.3,1)}
-.landing .d-cartbar{position:absolute;left:12px;right:12px;bottom:14px;background:var(--ink);color:#fff;border-radius:15px;padding:9px 11px;display:flex;align-items:center;gap:9px;box-shadow:0 14px 28px -10px rgba(26,22,19,.5)}
-.landing .d-cb-cart{position:relative;width:30px;height:30px;border-radius:10px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:#fff}
-.landing .d-cb-badge{position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:#fff;color:var(--ink);font-size:9.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.landing .d-cb-tx{flex:1;min-width:0;display:flex;flex-direction:column}
-.landing .d-cb-tx b{font-size:12px;font-weight:700}
-.landing .d-cb-tx span{font-size:10px;color:rgba(255,255,255,.6)}
-.landing .d-cb-margin{flex:0 0 auto;text-align:right;background:rgba(111,224,168,.14);border-radius:9px;padding:4px 8px}
-.landing .d-cb-margin>span{display:block;font-size:8.5px;color:rgba(255,255,255,.55);font-weight:600}
-.landing .d-cb-margin b{font-size:13px;font-weight:800;color:#6FE0A8;transition:color .2s}
-.landing .d-cb-margin.tint b{color:#F2C879}
-.landing .d-cb-margin.float,.landing .d-cartbar.float{position:absolute}
-.landing .d-toast{position:absolute;left:50%;bottom:66px;transform:translate(-50%,10px);background:#322c27;color:#fff;font-size:11px;font-weight:500;padding:8px 12px;border-radius:11px;max-width:212px;text-align:center;line-height:1.4;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 10px 24px -8px rgba(26,22,19,.5);z-index:7}
-.landing .d-toast.show{opacity:1;transform:translate(-50%,0)}
+/* 수율 콜아웃 */
+.landing .yield-callout{position:absolute;left:18px;right:18px;bottom:22px;background:var(--sand);color:var(--sand-ink);
+  font-size:14px;font-weight:600;text-align:center;padding:13px 16px;border-radius:15px;opacity:0;transform:translateY(10px);
+  transition:opacity .35s,transform .35s;box-shadow:0 14px 30px -10px rgba(154,107,60,.42);z-index:6}
+.landing .yield-callout.show{opacity:1;transform:none}
+.landing .yield-callout b{font-weight:800;color:var(--bad-1)}
+
+/* 결과 가짜 슬라이더 (부드러운 자동 드래그용) */
+.landing .fake-range{position:relative;height:5px;background:var(--track);border-radius:99px;margin:14px 0 6px}
+.landing .fake-range .fr-fill{position:absolute;left:0;top:0;height:100%;border-radius:99px;background:var(--ink)}
+.landing .fake-range .fr-thumb{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--ink);transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.18)}
 
 /* ---------- 스토리 (sticky 스테이지 + 스페이서) ---------- */
 .landing .story{position:relative}
-.landing .story-stage{position:sticky;top:0;height:100svh;display:flex;align-items:center;z-index:2;pointer-events:none}
-.landing .story-stage-in{max-width:1000px;margin:0 auto;padding:0 24px;width:100%;display:grid;grid-template-columns:1fr;gap:20px;align-items:center;justify-items:center}
-.landing .story-copy{position:relative;width:100%;max-width:430px;min-height:250px;display:flex;align-items:center;justify-content:center}
-.landing .story-progress{position:absolute;top:-6px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.landing .story-stage{position:sticky;top:0;height:100svh;display:flex;align-items:center;z-index:2;pointer-events:none;overflow:hidden}
+.landing .story-stage-in{max-width:1040px;margin:0 auto;padding:0 24px;width:100%;display:grid;grid-template-columns:1fr;gap:22px;align-items:center;justify-items:center}
+.landing .story-copy{position:relative;width:100%;max-width:440px;min-height:210px;display:flex;align-items:center;justify-content:center}
+.landing .story-progress{position:absolute;top:-2px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
 .landing .sp-dot{width:6px;height:6px;border-radius:50%;background:var(--track);transition:background .3s,width .3s}
 .landing .sp-dot.on{background:var(--ink);width:18px;border-radius:99px}
 .landing .sp-dot.done{background:var(--muted)}
 .landing .beat-copy{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;text-align:center;opacity:0;transform:translateY(14px);transition:opacity .5s cubic-bezier(.2,.8,.3,1),transform .5s cubic-bezier(.2,.8,.3,1)}
 .landing .beat-copy.on{opacity:1;transform:none}
-.landing .beat-kicker{font-size:12px;font-weight:700;color:var(--sand-ink);letter-spacing:.2px}
-.landing .beat-copy h2{font-size:clamp(23px,6vw,30px);font-weight:800;letter-spacing:-1px;line-height:1.18;margin:9px 0 0}
+.landing .beat-kicker{font-size:12.5px;font-weight:700;color:var(--sand-ink);letter-spacing:.2px}
+.landing .beat-copy h2{font-size:clamp(24px,6vw,31px);font-weight:800;letter-spacing:-1px;line-height:1.18;margin:10px 0 0}
 .landing .beat-copy h2 br{display:none}
-.landing .beat-copy p{font-size:14px;font-weight:500;color:var(--ink-soft);line-height:1.6;margin:13px auto 0;max-width:400px}
-.landing .story-caption{margin-top:14px;font-size:11.5px;font-weight:600;color:var(--sand-ink);background:var(--sand);padding:6px 12px;border-radius:99px;align-self:center}
+.landing .beat-copy p{font-size:14.5px;font-weight:500;color:var(--ink-soft);line-height:1.6;margin:14px auto 0;max-width:400px}
+.landing .story-caption{margin-top:15px;font-size:12px;font-weight:600;color:var(--sand-ink);background:var(--sand);padding:6px 13px;border-radius:99px;align-self:center}
 .landing .story-phone{pointer-events:auto}
-.landing .story-screens{position:relative;flex:1;overflow:hidden}
-.landing .story-layer{position:absolute;inset:0;opacity:0;transform:translateX(7%);transition:opacity .42s cubic-bezier(.2,.8,.3,1),transform .5s cubic-bezier(.2,.8,.3,1)}
+.landing .story-screens{position:absolute;inset:0}
+.landing .story-layer{position:absolute;inset:0;opacity:0;transform:translateX(24px);transition:opacity .45s cubic-bezier(.2,.8,.3,1),transform .55s cubic-bezier(.2,.8,.3,1)}
 .landing .story-layer.on{opacity:1;transform:none}
-.landing .story-layer.past{transform:translateX(-7%)}
+.landing .story-layer.past{transform:translateX(-24px)}
 .landing .story-spacers{position:relative;z-index:1}
 .landing .beat-spacer{height:100svh}
-
-/* ---------- 홈 미니 ---------- */
-.landing .d-home{padding:10px 13px;display:flex;flex-direction:column;gap:11px;height:100%}
-.landing .d-ledger{background:var(--ink);color:#fff;border-radius:18px;padding:15px 16px}
-.landing .d-ledger-lab{font-size:10.5px;font-weight:600;color:rgba(255,255,255,.6)}
-.landing .d-ledger-num{display:flex;align-items:baseline;gap:6px;margin-top:4px}
-.landing .d-ledger-num b{font-size:40px;font-weight:800;letter-spacing:-1.6px;line-height:.95}
-.landing .d-ledger-num .u{font-size:15px;font-weight:700}
-.landing .d-ledger-num .t{font-size:10.5px;color:rgba(255,255,255,.6)}
-.landing .d-ledger-rule{border-top:1px dashed rgba(255,255,255,.2);margin:12px 0 9px}
-.landing .d-ledger-calc{font-size:10.5px;font-weight:500;color:rgba(255,255,255,.6)}
-.landing .d-ledger-calc b{color:rgba(255,255,255,.92);font-weight:700}
-.landing .d-fx{display:flex;align-items:center;justify-content:space-between;margin-top:12px;background:rgba(255,255,255,.08);border-radius:11px;padding:8px 11px}
-.landing .d-fx>span{font-size:11px;font-weight:600;color:rgba(255,255,255,.72)}
-.landing .d-fx-step{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800}
-.landing .d-fx-step i{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:14px}
-.landing .d-fx-step.hit .plus{background:#fff;color:var(--ink);transition:background .2s,color .2s}
-.landing .d-mlist{display:flex;flex-direction:column;gap:9px}
-.landing .d-mcard{display:flex;align-items:center;gap:11px;background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:9px 10px}
-.landing .d-mphoto{width:44px;height:44px;border-radius:12px;overflow:hidden;background:var(--tile);flex:0 0 auto}
-.landing .d-mphoto img{width:100%;height:100%;object-fit:cover;display:block}
-.landing .d-mbody{flex:1;min-width:0}
-.landing .d-mtop{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.landing .d-mtop b{font-size:13.5px;font-weight:700}
-.landing .d-mtop span{font-size:11.5px;font-weight:500;color:var(--muted)}
-.landing .d-mbar2{height:5px;background:var(--track);border-radius:99px;margin-top:8px;overflow:hidden}
-.landing .d-mbar2 span{display:block;height:100%;border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.3,1)}
-.landing .d-mpct{font-size:15px;font-weight:800;flex:0 0 auto}
-
-/* ---------- 마트 미니 ---------- */
-.landing .d-mkt{padding:8px 0 0;display:flex;flex-direction:column;height:100%;position:relative}
-.landing .d-cats{display:flex;gap:6px;padding:0 13px;overflow:hidden}
-.landing .d-cat{flex:0 0 auto;font-size:11px;font-weight:600;padding:6px 11px;border-radius:9px;background:var(--tile);color:var(--ink-soft)}
-.landing .d-cat.on{background:var(--ink);color:#fff}
-.landing .d-pop-clip{overflow:hidden;padding:0 13px}
-.landing .d-pop-row{display:flex;gap:8px;width:max-content}
-.landing .d-pop-row.run{animation:popscroll 4s cubic-bezier(.3,.1,.3,1) forwards}
-@keyframes popscroll{0%{transform:translateX(0)}100%{transform:translateX(-118px)}}
-.landing .d-vlist{padding:4px 13px 0;display:flex;flex-direction:column}
-.landing .d-vitem{position:relative;display:flex;align-items:center;gap:11px;padding:10px 0}
-.landing .d-vitem+.d-vitem{border-top:1px solid var(--line)}
-.landing .d-vthumb{width:44px;height:44px;border-radius:12px;overflow:hidden;background:var(--tile);flex:0 0 auto}
-.landing .d-vthumb img{width:100%;height:100%;object-fit:cover;display:block}
-.landing .d-vmid{flex:1;min-width:0}
-.landing .d-vmid b{font-size:13px;font-weight:700;display:block}
-.landing .d-vmid>span{font-size:11.5px;font-weight:600;display:block;margin-top:1px}
-.landing .d-vmid>span i{font-size:10px;color:var(--muted);font-style:normal;font-weight:500}
-.landing .d-trend{display:inline-flex!important;align-items:center;gap:2px;font-size:10px;font-weight:600;color:var(--good-1);background:rgba(22,160,106,.1);padding:2px 6px;border-radius:6px;margin-top:5px}
-.landing .d-trend svg{display:none}
-.landing .d-addv{width:34px;height:34px;border-radius:11px;border:1.5px solid var(--line);background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--ink);flex:0 0 auto;transition:background .2s,border-color .2s}
-.landing .d-addv.in{background:var(--ink);border-color:var(--ink);color:#fff}
-.landing .d-cartbar.float{left:12px;right:12px;bottom:14px;transform:translateY(70px);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.3,1),opacity .3s}
-.landing .d-cartbar.float.show{transform:none;opacity:1}
-
-/* ---------- 장바구니 미니 ---------- */
-.landing .d-cart{padding:10px 13px;display:flex;flex-direction:column;gap:11px;height:100%;position:relative}
-.landing .d-sum{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px 15px;box-shadow:0 1px 2px rgba(60,40,25,.03)}
-.landing .d-sum-top{font-size:11.5px;font-weight:600;color:var(--ink-soft)}
-.landing .d-sum-mid{display:flex;align-items:baseline;gap:7px;margin:9px 0 11px}
-.landing .d-sum-mid .lab{font-size:12px;font-weight:600;color:var(--muted)}
-.landing .d-sum-mid b{font-size:34px;font-weight:800;letter-spacing:-1.2px;line-height:.9}
-.landing .d-sum-bar{height:7px;background:var(--track);border-radius:99px;overflow:hidden}
-.landing .d-sum-bar span{display:block;height:100%;border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.3,1)}
-.landing .d-ing{position:relative;display:flex;align-items:flex-start;gap:11px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
-.landing .d-ing .d-vthumb{width:42px;height:42px}
-.landing .d-ing-mid{flex:1;min-width:0}
-.landing .d-ing-mid>b{font-size:14px;font-weight:700}
-.landing .d-ing-mid>span{font-size:11px;font-weight:500;color:var(--muted);display:block;margin-top:2px}
-.landing .d-cooks{position:relative;display:flex;gap:4px;margin-top:9px}
-.landing .d-cook{font-size:11px;font-weight:600;padding:5px 9px;border-radius:8px;background:var(--tile);color:var(--ink-soft)}
-.landing .d-cook.on{background:var(--ink);color:#fff}
-.landing .d-ing-cost{text-align:right;flex:0 0 auto}
-.landing .d-yld{font-size:9.5px;font-weight:600;color:var(--sand-ink);background:var(--sand);padding:2px 6px;border-radius:6px;display:inline-block;margin-bottom:4px}
-.landing .d-val{font-size:15px;font-weight:800;display:block;transition:transform .16s}
-.landing .d-val.bump{transform:scale(1.1)}
-.landing .d-callout{position:absolute;left:13px;right:13px;bottom:14px;background:var(--sand);color:var(--sand-ink);font-size:11.5px;font-weight:600;text-align:center;padding:10px 12px;border-radius:13px;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s;box-shadow:0 10px 24px -10px rgba(154,107,60,.4)}
-.landing .d-callout.show{opacity:1;transform:none}
-.landing .d-callout b{font-weight:800;color:var(--bad-1)}
-
-/* ---------- 결과 미니 ---------- */
-.landing .d-result{padding:11px 13px;display:flex;flex-direction:column;gap:10px;height:100%}
-.landing .d-rcards{display:flex;flex-direction:column;gap:9px}
-.landing .d-rcard{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.landing .d-rcard .l{font-size:11px;font-weight:600;color:var(--muted)}
-.landing .d-rcard b{font-size:24px;font-weight:800;letter-spacing:-1px;display:block;margin-top:3px}
-.landing .d-rcard b i{font-size:13px;font-weight:700;font-style:normal;margin-left:3px}
-.landing .d-rcard.ink{background:var(--ink);color:#fff}
-.landing .d-rcard.ink .l{color:rgba(255,255,255,.6)}
-.landing .d-rcard.ink .accent{color:#5FD6A0}
-.landing .d-tip{display:flex;gap:9px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:11px 12px}
-.landing .d-tip .dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:0 0 auto}
-.landing .d-tip p{font-size:12px;font-weight:500;color:var(--ink-soft);line-height:1.5}
-.landing .d-tip p b{font-weight:700;color:var(--ink)}
-.landing .d-slider{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 15px;margin-top:auto}
-.landing .d-slider-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:11px}
-.landing .d-slider-top span{font-size:11.5px;font-weight:600;color:var(--ink-soft)}
-.landing .d-slider-top b{font-size:16px;font-weight:800;letter-spacing:-.4px}
-.landing .d-track{position:relative;height:5px;background:var(--track);border-radius:99px}
-.landing .d-fill{position:absolute;left:0;top:0;height:100%;border-radius:99px;background:var(--ink);transition:width 1s cubic-bezier(.2,.8,.3,1)}
-.landing .d-thumb{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--ink);transform:translate(-50%,-50%);transition:left 1s cubic-bezier(.2,.8,.3,1);box-shadow:0 2px 6px rgba(0,0,0,.15)}
-
-/* ---------- 대시보드 데모 ---------- */
-.landing .d-dash-title{padding:10px 16px 4px;font-size:19px;font-weight:800;letter-spacing:-.5px}
-.landing .d-panel{margin:10px 14px 0;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px 15px}
-.landing .d-panel-h{font-size:12.5px;font-weight:800;margin-bottom:10px}
-.landing .d-rankrow{display:flex;align-items:center;gap:9px;padding:6px 0}
-.landing .d-rankrow+.d-rankrow{border-top:1px solid var(--line)}
-.landing .d-rk{width:16px;font-size:11px;font-weight:800;color:var(--muted);text-align:center;flex:0 0 auto}
-.landing .d-rnm{flex:1;font-size:12.5px;font-weight:700}
-.landing .d-rtrack{flex:0 0 84px;height:6px;background:var(--track);border-radius:99px;overflow:hidden}
-.landing .d-rtrack span{display:block;height:100%;border-radius:99px;transition:width .7s cubic-bezier(.2,.8,.3,1)}
-.landing .d-rpct{width:34px;text-align:right;font-size:12px;font-weight:800;flex:0 0 auto}
-.landing .d-donut-wrap{display:flex;align-items:center;gap:16px}
-.landing .d-donut{flex:0 0 auto}
-.landing .d-legend{display:flex;flex-direction:column;gap:7px}
-.landing .d-legend span{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--ink-soft)}
-.landing .d-legend i{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
-.landing .d-legend b{margin-left:auto;font-weight:800}
 
 /* ---------- 진입 애니메이션 ---------- */
 .landing .lhero-copy,.landing .lhero-phone{animation:fadeUp .6s ease both}
 .landing .lhero-phone{animation-delay:.1s}
 
-/* ---------- 데스크톱 2단 ---------- */
+/* ---------- 반응형 ---------- */
 @media (min-width:900px){
   .landing .lhero{grid-template-columns:1.05fr .95fr;gap:44px;text-align:left;justify-items:start;padding-top:44px}
   .landing .lhero-copy{max-width:none}
-  .landing .story-stage-in{grid-template-columns:1fr 250px;gap:56px;justify-items:start}
+  .landing .story-stage-in{grid-template-columns:1fr auto;gap:54px;justify-items:start}
   .landing .story-copy{max-width:none;justify-content:flex-start}
   .landing .beat-copy{text-align:left;align-items:flex-start}
   .landing .beat-copy p{margin-left:0}
@@ -828,9 +691,9 @@ a{color:inherit;text-decoration:none}
   .landing .story-progress{left:0;transform:none}
   .landing .story-phone{justify-self:center}
 }
-@media (max-width:380px){
-  .landing .demo-phone{width:230px}
-}
+@media (max-width:480px){ .landing .ios-phone{--pf-scale:.64} .landing .ios-phone.wide{--pf-scale:.68} }
+@media (max-width:360px){ .landing .ios-phone{--pf-scale:.58} }
+@media (max-height:730px) and (min-width:900px){ .landing .ios-phone{--pf-scale:.62} }
 
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
