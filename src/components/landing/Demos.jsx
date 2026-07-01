@@ -49,10 +49,10 @@ export function HeroPhone() {
       if (cancelled) return
       setS(base)
       at(900, () => setS(v => ({ ...v, tap: 'onion' })))
-      at(1450, () => setS(v => ({ ...v, onion: true, n: 4, food: '1,910', m: 51, tap: null, toast: '양파 담았어요 · 예상 마진 52% → 51%' })))
+      at(1450, () => setS(v => ({ ...v, onion: true, n: 4, food: '1,910', m: 51, tap: null, toast: '양파 담았어요 · 마진 52% → 51%' })))
       at(3600, () => setS(v => ({ ...v, toast: null })))
       at(4100, () => setS(v => ({ ...v, tap: 'samgyup' })))
-      at(4650, () => setS(v => ({ ...v, samgyup: true, n: 5, food: '3,350', m: 49, tap: null, toast: '삼겹살 담았어요 · 예상 마진 51% → 49%' })))
+      at(4650, () => setS(v => ({ ...v, samgyup: true, n: 5, food: '3,350', m: 49, tap: null, toast: '삼겹살 담았어요 · 마진 51% → 49%' })))
       at(6800, () => setS(v => ({ ...v, toast: null })))
       at(7800, run)
     }
