@@ -89,6 +89,17 @@ export function HeroPhone() {
           <TapRing show={s.tap === 'samgyup'} style={{ left: 78, top: 100 }} />
           <TapRing show={s.tap === 'onion'} style={{ left: 234, top: 100 }} />
         </div>
+        <div className="vsec"><div className="sec-head"><h2>정육</h2></div>
+          <div className="vlist">
+            {[['삼겹살', '12,000', '/img/samgyup.webp', '3% 저렴'], ['앞다리살', '9,000', '/img/apdari.webp', '1% 저렴'], ['목살', '11,500', '/img/moksal.webp', '보통']].map(([nm, pr, img, t], i) => (
+              <div className="vitem" key={nm}>
+                <div className="vthumb" style={{ background: 'var(--tile)' }}><img src={img} alt={nm} /></div>
+                <div className="vmid"><div className="nm">{nm}</div><div className="pr num">{pr}원<i>/kg</i></div><span className={`trend ${t === '보통' ? 'fl' : 'dn'}`}>{t === '보통' ? '시세 보통' : <><TrendTri dir="dn" />{t}</>}</span></div>
+                <button className="addv"><Icon name="plus" size={20} stroke={2.4} /></button>
+              </div>
+            ))}
+          </div>
+        </div>
         <button className="cartbar">
           <div className="cb-left">
             <span className="cb-cart"><Icon name="cart" size={20} stroke={1.8} /><span className="cb-badge num">{s.n}</span></span>
