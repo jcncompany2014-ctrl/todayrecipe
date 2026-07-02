@@ -23,19 +23,18 @@ html,body,#root{height:100%}
 body{
   font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
   color:var(--ink);
-  background-color:#F1EDE7;
+  background-color:#F0EBE3;
   background-image:
-    radial-gradient(52% 42% at 15% 0%, #F9F4ED 0%, rgba(249,244,237,0) 62%),
-    radial-gradient(44% 40% at 87% 3%, #ECEEEC 0%, rgba(236,238,236,0) 58%),
-    radial-gradient(70% 55% at 92% 96%, #EFE7DB 0%, rgba(239,231,219,0) 60%),
-    radial-gradient(95% 70% at 30% 108%, #E6DDD0 0%, rgba(230,221,208,0) 64%);
+    radial-gradient(135% 120% at 18% -18%, #F9F4EC 0%, rgba(249,244,236,0) 72%),
+    radial-gradient(125% 115% at 96% -12%, #EDEFEB 0%, rgba(237,239,235,0) 66%),
+    radial-gradient(150% 125% at 62% 128%, #EBE2D4 0%, rgba(235,226,212,0) 74%);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
 /* 파인 그레인 — 매트한 종이 질감(뻔한 그라데이션 제거) */
 body::before{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.11;mix-blend-mode:multiply;
 }
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 button{font-family:inherit}
@@ -705,21 +704,45 @@ a{color:inherit;text-decoration:none}
   .landing .lhero-phone{justify-self:center}
   .landing .lhero-phone .ios-phone{--pf-scale:.94}
   .landing .ios-phone{--pf-scale:.82}
-  .landing .story-stage-in{grid-template-columns:auto auto;justify-content:center;gap:72px;justify-items:start}
-  .landing .story-copy{width:min(470px,42vw);max-width:none;justify-content:flex-start}
+  .landing .story-stage-in{grid-template-columns:auto auto;justify-content:center;gap:76px;justify-items:start}
+  .landing .story-copy{width:min(520px,44vw);max-width:none;justify-content:flex-start}
   .landing .beat-copy{text-align:left;align-items:flex-start}
   .landing .beat-copy p{margin-left:0}
   .landing .beat-copy h2 br{display:inline}
   .landing .story-caption{align-self:flex-start}
   .landing .story-progress{left:0;transform:none}
   .landing .story-phone{justify-self:center}
+  /* 데스크톱 타이포 확대 */
+  .landing .kicker{font-size:13px}
+  .landing .lsection{max-width:680px}
+  .landing .lh2{font-size:clamp(30px,3.2vw,40px);letter-spacing:-1.3px}
+  .landing .lsectlede{font-size:16px}
+  .landing .beat-kicker{font-size:13.5px}
+  .landing .beat-copy h2{font-size:clamp(30px,2.7vw,40px);letter-spacing:-1.2px}
+  .landing .beat-copy p{font-size:16.5px;max-width:450px}
+  .landing .story-caption{font-size:12.5px}
+  .landing .probcard{padding:24px 26px}
+  .landing .probcard .q{font-size:17.5px}
+  .landing .probcard p{font-size:14.5px}
+  .landing .sooncard h3{font-size:17.5px}
+  .landing .sooncard p{font-size:14.5px}
+  .landing .stat b{font-size:32px}
+  .landing .lfinal h2{font-size:clamp(30px,3.6vw,44px)}
 }
 @media (min-width:1500px){
   .landing .lhero,.landing .lnav-in{max-width:1460px}
   .landing .lhero h1{font-size:74px;letter-spacing:-3px}
   .landing .lhero .lead{font-size:18px;max-width:520px}
   .landing .lhero-phone .ios-phone{--pf-scale:1.06}
-  .landing .lsection,.landing .lfinal{max-width:740px}
+  .landing .lsection,.landing .lfinal{max-width:760px}
+  .landing .lh2{font-size:46px}
+  .landing .lsectlede{font-size:17px}
+  .landing .beat-copy h2{font-size:44px}
+  .landing .beat-copy p{font-size:18px;max-width:480px}
+  .landing .story-copy{width:min(560px,40vw)}
+  .landing .probcard .q{font-size:18.5px}
+  .landing .probcard p{font-size:15px}
+  .landing .lfinal h2{font-size:48px}
 }
 @media (max-width:480px){ .landing .ios-phone{--pf-scale:.64} .landing .ios-phone.wide{--pf-scale:.68} }
 @media (max-width:360px){ .landing .ios-phone{--pf-scale:.58} }
