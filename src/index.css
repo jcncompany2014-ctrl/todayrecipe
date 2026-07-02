@@ -955,10 +955,23 @@ a{color:inherit;text-decoration:none}
 .landing .sooncard h3,.landing .sooncard p,.landing .stat span{word-break:keep-all}
 .landing .lead,.landing .lsectlede,.landing .beat-copy p{text-wrap:pretty}
 
-/* ---------- 스토리 레이아웃: 좁아도 콘텐츠 잘리지 않게 ---------- */
+/* ---------- 스토리 레이아웃: 비트 헤드라인 잘림·모바일 네비 겹침 해결 ---------- */
+/* 컨테이너가 가장 큰 비트(비트3, 데스크톱 ~272px)를 담도록 min-height 확보 → 윗부분 잘림 제거 */
+.landing .story-copy{min-height:264px}
 @media (min-width:900px){
   .landing .story-stage-in{grid-template-columns:minmax(0,500px) auto;justify-content:center;gap:60px}
-  .landing .story-copy{width:100%;max-width:500px}
+  .landing .story-copy{width:100%;max-width:500px;min-height:300px}
+}
+/* 모바일: 스택을 네비 아래 영역에서 중앙정렬(네비에 파묻힘 방지) + 폰 축소로 잘림 없이 수납 */
+@media (max-width:899px){
+  .landing .story-stage{padding-top:67px;box-sizing:border-box}
+  .landing .story-stage-in{gap:18px}
+  .landing .story-phone .ios-phone{--pf-scale:.6}
+}
+@media (max-width:480px){
+  .landing .story-phone .ios-phone{--pf-scale:.56}
+  .landing .story-copy{min-height:200px}
+  .landing .story-caption{display:none}
 }
 
 /* ---------- 그린 밴드 피날레 ---------- */
