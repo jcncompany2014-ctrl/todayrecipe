@@ -1131,3 +1131,73 @@ a{color:inherit;text-decoration:none}
 .scr-result .rc-btns button:active{transform:scale(.97)}
 .scr-result .rc-btns button:disabled{opacity:.55;cursor:default}
 .scr-result .rc-btns button svg{flex:0 0 auto}
+
+/* ============================================================
+   앱 온보딩 (첫 진입 3슬라이드 — 인메모리 1회)
+   ============================================================ */
+.onb{position:absolute;inset:0;z-index:20;background:var(--paper);display:flex;flex-direction:column;
+  animation:onbIn .34s cubic-bezier(.2,.8,.3,1) both}
+@keyframes onbIn{from{opacity:0}to{opacity:1}}
+.onb-skip{position:absolute;top:14px;right:14px;z-index:4;border:none;background:rgba(255,255,255,.14);
+  color:rgba(255,255,255,.9);font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:99px;cursor:pointer;backdrop-filter:blur(6px)}
+.onb-track{flex:1;min-height:0;overflow:hidden;position:relative}
+.onb-slides{display:flex;height:100%;transition:transform .42s cubic-bezier(.2,.8,.3,1)}
+.onb-slide{flex:0 0 100%;display:flex;flex-direction:column;min-width:0}
+
+/* 상단 그린 씬 */
+.onb-scene{flex:1;min-height:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:26px;
+  background:radial-gradient(120% 120% at 82% -12%, rgba(65,211,146,.3) 0%, rgba(65,211,146,0) 56%),linear-gradient(162deg,#123A29 0%,#0C2B1E 60%,#071D14 100%)}
+.onb-scene::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background-image:radial-gradient(42% 32% at 60% 4%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 70%)}
+
+/* 씬 카드 */
+.onb-card{position:relative;z-index:1;width:min(268px,80%);background:#fff;border-radius:20px;padding:18px 18px 17px;
+  box-shadow:0 26px 54px -22px rgba(0,0,0,.55),0 8px 20px rgba(0,0,0,.16);animation:onbCard .5s cubic-bezier(.2,.8,.3,1) both}
+@keyframes onbCard{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.onb-card.dark{background:var(--ink);color:#fff}
+/* 씬1 — 장바구니 */
+.oc-head{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800}
+.oc-ic{width:26px;height:26px;border-radius:8px;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.oc-cnt{margin-left:auto;font-size:11px;font-weight:700;color:var(--muted)}
+.oc-chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.oc-chips span{font-size:11.5px;font-weight:700;color:var(--sand-ink);background:var(--sand);padding:5px 9px;border-radius:8px}
+.oc-chips .more{color:var(--muted);background:var(--tile)}
+.oc-margin{display:flex;align-items:center;gap:7px;border-top:1px solid var(--line);padding-top:13px}
+.oc-margin>span{font-size:12px;font-weight:600;color:var(--muted)}
+.oc-margin b{margin-left:auto;font-size:24px;font-weight:800;color:var(--good-1);letter-spacing:-.6px}
+.oc-margin .up{color:var(--good-1);display:flex;transform:rotate(-90deg)}
+/* 씬2 — 수율 */
+.oy-tag{display:inline-block;font-size:11px;font-weight:800;color:var(--good-2);background:rgba(22,160,106,.1);padding:4px 9px;border-radius:8px;margin-bottom:15px}
+.oy-row{display:flex;align-items:center;gap:9px;margin:9px 0}
+.oy-row>span{flex:0 0 auto;width:28px;font-size:12px;font-weight:700;color:var(--ink-soft)}
+.oy-bar{flex:1;height:9px;background:var(--track);border-radius:99px;overflow:hidden}
+.oy-bar b{display:block;height:100%;background:var(--good-1);border-radius:99px}
+.oy-bar b.ghost{background:var(--muted);opacity:.32}
+.oy-row em{flex:0 0 auto;width:38px;text-align:right;font-size:12px;font-weight:800}
+.oy-note{font-size:11.5px;font-weight:500;color:var(--muted);margin-top:13px;line-height:1.5}
+/* 씬3 — 본전 */
+.ob-lab{font-size:12px;font-weight:600;color:rgba(255,255,255,.55)}
+.ob-big{display:flex;align-items:baseline;gap:8px;margin-top:5px}
+.ob-big b{font-size:52px;font-weight:800;letter-spacing:-2px;line-height:1}
+.ob-big span{font-size:17px;font-weight:700;color:rgba(255,255,255,.82)}
+.ob-diag{display:flex;align-items:center;gap:7px;margin-top:16px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.2);font-size:12.5px;font-weight:700;color:#5FD6A0}
+.ob-dot{width:7px;height:7px;border-radius:50%;background:#5FD6A0}
+
+/* 하단 카피 */
+.onb-copy{flex:0 0 auto;padding:24px 28px 6px}
+.onb-kicker{font-size:11.5px;font-weight:800;letter-spacing:1.6px;color:var(--good-2)}
+.onb-copy h2{font-size:24px;font-weight:800;letter-spacing:-1px;line-height:1.24;margin:9px 0 0}
+.onb-copy h2 span{display:block}
+.onb-copy p{font-size:14px;font-weight:500;color:var(--ink-soft);line-height:1.6;margin-top:11px;word-break:keep-all;max-width:300px}
+
+/* 하단 컨트롤 */
+.onb-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px 24px calc(18px + env(safe-area-inset-bottom))}
+.onb-dots{display:flex;align-items:center;gap:7px}
+.onb-dot{width:7px;height:7px;padding:0;border:none;border-radius:99px;background:var(--track);cursor:pointer;transition:width .3s,background .3s}
+.onb-dot.on{width:22px;background:var(--ink)}
+.onb-cta{display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:#fff;border:none;border-radius:14px;
+  padding:13px 22px;font-size:15px;font-weight:700;letter-spacing:-.3px;cursor:pointer;
+  box-shadow:0 14px 28px -10px rgba(26,22,19,.5);transition:transform .15s}
+.onb-cta:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.onb,.onb-card{animation:none}.onb-slides{transition:none}}

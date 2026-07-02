@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import StatusBar from './StatusBar'
 import TabBar from './TabBar'
+import Onboarding from './Onboarding'
 import { useStore } from '../state/store'
 
 // 라우트 → 화면 스코프 클래스 + 하단 탭 노출 여부
@@ -16,7 +17,7 @@ const ROUTE = {
 
 export default function AppShell() {
   const { pathname } = useLocation()
-  const { toastMsg } = useStore()
+  const { toastMsg, onboarded } = useStore()
   const r = ROUTE[pathname] || ROUTE['/app']
 
   return (
@@ -28,6 +29,7 @@ export default function AppShell() {
           {r.tab && <TabBar />}
           <div className={`toast${toastMsg ? ' show' : ''}`}
             dangerouslySetInnerHTML={{ __html: toastMsg || '' }} />
+          {!onboarded && <Onboarding />}
         </div>
       </div>
     </div>

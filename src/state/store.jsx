@@ -13,6 +13,9 @@ export function StoreProvider({ children }) {
   const [menus, setMenus] = useState(() => clone(SEED_MENUS))
   // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
   const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
+  // 온보딩 — 앱 첫 진입 시 1회(인메모리, 사양상 저장 없음). '건너뛰기'/'시작하기'로 해제.
+  const [onboarded, setOnboardedState] = useState(false)
+  const setOnboarded = useCallback((v = true) => setOnboardedState(v), [])
   // 하루 고정비 — 홈·대시보드·결과가 공유. 사장님이 바꾸면 본전 그릇 수가 전부 재계산됨.
   const [dailyFixed, setDailyFixed] = useState(243000)
   // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
@@ -86,6 +89,7 @@ export function StoreProvider({ children }) {
   }, [build])
 
   const value = {
+    onboarded, setOnboarded,
     menus, build, dailyFixed, setDailyFixed, costOpts, setRate, setPackaging,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, toast, toastMsg,
