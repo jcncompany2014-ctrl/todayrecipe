@@ -13,20 +13,20 @@ export const CATS = {
 // perG=원/g · defG=담을 때 기본 사용량 · cookable=조리로 수율 변하는지 · method=기본 조리법
 // img=실사진 경로(있으면 placeholder 대신 사용, 라이선스 안전 소스만)
 export const PRODUCTS = {
-  samgyup: { nm: '삼겹살',   cat: 'meat',  icon: 'meat',     price: 12000, unit: '/kg',   perG: 12,  trend: ['dn', 3], popular: true,  cookable: true,  method: '볶기', defG: 120, img: '/img/samgyup.webp' },
-  apdari:  { nm: '앞다리살', cat: 'meat',  icon: 'meat',     price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 1], popular: false, cookable: true,  method: '볶기', defG: 150, img: '/img/apdari.webp' },
-  moksal:  { nm: '목살',     cat: 'meat',  icon: 'meat',     price: 11500, unit: '/kg',   perG: 11.5,trend: ['up', 4], popular: false, cookable: true,  method: '볶기', defG: 130, img: '/img/moksal.webp' },
-  dakdari: { nm: '닭다리살', cat: 'meat',  icon: 'chicken',  price: 7500,  unit: '/kg',   perG: 7.5, trend: ['dn', 6], popular: false, cookable: true,  method: '볶기', defG: 130, img: '/img/dakdari.webp' },
-  shrimp:  { nm: '흰다리새우',cat: 'sea',   icon: 'shrimp',   price: 18000, unit: '/kg',   perG: 18,  trend: ['up', 3], popular: false, cookable: true,  method: '볶기', defG: 60,  img: '/img/shrimp.webp' },
-  squid:   { nm: '오징어',   cat: 'sea',   icon: 'squid',    price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 4], popular: false, cookable: true,  method: '볶기', defG: 70,  img: '/img/squid.webp' },
-  onion:   { nm: '양파',     cat: 'veg',   icon: 'onion',    price: 2000,  unit: '/kg',   perG: 2,   trend: ['dn', 8], popular: true,  cookable: true,  method: '생',   defG: 60,  img: '/img/onion.webp' },
-  daepa:   { nm: '대파',     cat: 'veg',   icon: 'scallion', price: 3500,  unit: '/단',   perG: 12,  trend: ['dn', 2], popular: true,  cookable: true,  method: '생',   defG: 15,  img: '/img/daepa.webp' },
-  garlic:  { nm: '다진마늘', cat: 'veg',   icon: 'garlic',   price: 8000,  unit: '/kg',   perG: 8,   trend: ['fl', 0], popular: false, cookable: true,  method: '생',   defG: 10,  img: '/img/garlic.webp' },
-  egg:     { nm: '계란',     cat: 'etc',   icon: 'egg',      price: 6000,  unit: '/30구', perG: 4,   trend: ['up', 5], popular: true,  cookable: true,  method: '삶기', defG: 50,  img: '/img/egg.webp' },
-  rice:    { nm: '쌀(밥)',   cat: 'etc',   icon: 'rice',     price: 3000,  unit: '/kg',   perG: 3,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 100, img: '/img/rice.webp' },
-  oil:     { nm: '식용유',   cat: 'etc',   icon: 'oil',      price: 6000,  unit: '/1.8L', perG: 3,   trend: ['up', 2], popular: false, cookable: false, method: '생',   defG: 10,  img: '/img/oil.webp' },
-  gochu:   { nm: '고추장',   cat: 'sauce', icon: 'jar',      price: 9000,  unit: '/1kg',  perG: 9,   trend: ['fl', 0], popular: true,  cookable: false, method: '생',   defG: 30,  img: '/img/gochu.webp' },
-  ganjang: { nm: '간장',     cat: 'sauce', icon: 'bottle',   price: 5000,  unit: '/900ml',perG: 5,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 15,  img: '/img/ganjang.webp' },
+  samgyup: { nm: '삼겹살',   cat: 'meat',  icon: 'meat',     price: 12000, unit: '/kg',   perG: 12,  trend: ['dn', 3], popular: true,  cookable: true,  method: '볶기', defG: 120, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/samgyup.webp' },
+  apdari:  { nm: '앞다리살', cat: 'meat',  icon: 'meat',     price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 1], popular: false, cookable: true,  method: '볶기', defG: 150, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/apdari.webp' },
+  moksal:  { nm: '목살',     cat: 'meat',  icon: 'meat',     price: 11500, unit: '/kg',   perG: 11.5,trend: ['up', 4], popular: false, cookable: true,  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/moksal.webp' },
+  dakdari: { nm: '닭다리살', cat: 'meat',  icon: 'chicken',  price: 7500,  unit: '/kg',   perG: 7.5, trend: ['dn', 6], popular: false, cookable: true,  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 정육 1kg', img: '/img/dakdari.webp' },
+  shrimp:  { nm: '흰다리새우',cat: 'sea',   icon: 'shrimp',   price: 18000, unit: '/kg',   perG: 18,  trend: ['up', 3], popular: false, cookable: true,  method: '볶기', defG: 60,  origin: '베트남산', spec: '냉동 · 껍질제거', img: '/img/shrimp.webp' },
+  squid:   { nm: '오징어',   cat: 'sea',   icon: 'squid',    price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 4], popular: false, cookable: true,  method: '볶기', defG: 70,  origin: '원양산', spec: '냉동 · 손질', img: '/img/squid.webp' },
+  onion:   { nm: '양파',     cat: 'veg',   icon: 'onion',    price: 2000,  unit: '/kg',   perG: 2,   trend: ['dn', 8], popular: true,  cookable: true,  method: '생',   defG: 60,  origin: '국내산', spec: '망 · 1.5kg', img: '/img/onion.webp' },
+  daepa:   { nm: '대파',     cat: 'veg',   icon: 'scallion', price: 3500,  unit: '/단',   perG: 12,  trend: ['dn', 2], popular: true,  cookable: true,  method: '생',   defG: 15,  origin: '국내산', spec: '흙대파 · 1단', img: '/img/daepa.webp' },
+  garlic:  { nm: '다진마늘', cat: 'veg',   icon: 'garlic',   price: 8000,  unit: '/kg',   perG: 8,   trend: ['fl', 0], popular: false, cookable: true,  method: '생',   defG: 10,  origin: '국내산', spec: '간 마늘 · 팩', img: '/img/garlic.webp' },
+  egg:     { nm: '계란',     cat: 'etc',   icon: 'egg',      price: 6000,  unit: '/30구', perG: 4,   trend: ['up', 5], popular: true,  cookable: true,  method: '삶기', defG: 50,  origin: '국내산', spec: '특란 · 30구', img: '/img/egg.webp' },
+  rice:    { nm: '쌀(밥)',   cat: 'etc',   icon: 'rice',     price: 3000,  unit: '/kg',   perG: 3,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 100, origin: '국내산', spec: '백미 · 1kg', img: '/img/rice.webp' },
+  oil:     { nm: '식용유',   cat: 'etc',   icon: 'oil',      price: 6000,  unit: '/1.8L', perG: 3,   trend: ['up', 2], popular: false, cookable: false, method: '생',   defG: 10,  origin: '수입 원료', spec: '콩기름 · 1.8L', img: '/img/oil.webp' },
+  gochu:   { nm: '고추장',   cat: 'sauce', icon: 'jar',      price: 9000,  unit: '/1kg',  perG: 9,   trend: ['fl', 0], popular: true,  cookable: false, method: '생',   defG: 30,  origin: '국내산', spec: '태양초 · 1kg', img: '/img/gochu.webp' },
+  ganjang: { nm: '간장',     cat: 'sauce', icon: 'bottle',   price: 5000,  unit: '/900ml',perG: 5,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 15,  origin: '국내산', spec: '양조 · 900ml', img: '/img/ganjang.webp' },
 }
 
 // 인기 (가로 스크롤 "사장님이 많이 담아요")

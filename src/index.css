@@ -9,9 +9,6 @@
   --paper:#FFFFFF;
   /* 텍스트 */
   --ink:#17130F; --ink-soft:#55504B; --muted:#A39B92;
-  /* 에디토리얼 v2 */
-  --serif:'Noto Serif KR','Nanum Myeongjo',serif;
-  --stamp:#BE3E2C;
   /* 라인·면 보조 */
   --line:#EDE9E3; --tile:#F5F2EE; --track:#EEEAE4;
   /* 마진 신호등 */
@@ -866,44 +863,62 @@ a{color:inherit;text-decoration:none}
 .vp-noti-tx span{font-size:10.5px;font-weight:500;color:var(--muted);line-height:1.4;display:block;margin-top:1px}
 .vp-noti-t{flex:0 0 auto;font-size:9.5px;font-weight:600;color:var(--muted)}
 
+
 /* ============================================================
-   마스터피스 v2 — "오늘의 장부" (명조 에디토리얼 × 장부 크래프트 × 키네틱 넘버)
+   마스터피스 v3 — "딥 그린 마켓" (컬러 모먼트 × 정돈된 타이포 × 살아있는 효과)
+   폰트는 Pretendard 원복. 색으로 밋밋함을 깬다: 마진의 초록을 브랜드 컬러로 승격.
    ============================================================ */
+:root{ --pine:#0C2B1E; --pine-2:#123A29; --mint:#41D392; --mint-soft:#A9E8C9; }
 
-/* ---------- 명조 디스플레이 (랜딩 헤드라인) ---------- */
-.landing .lhero h1,
-.landing .lh2,
-.landing .beat-copy h2,
-.landing .lfinal h2{font-family:var(--serif);font-weight:900;letter-spacing:-.5px}
-.landing .lhero h1{letter-spacing:-1.2px;line-height:1.14}
-.landing .beat-copy h2{line-height:1.22}
-.landing .lh2{line-height:1.24}
-.landing .stat b{font-family:var(--serif);font-weight:900;letter-spacing:-.5px}
+/* ---------- 히어로: 딥 그린 캔버스 ---------- */
+.landing .lhero{
+  width:min(1300px,calc(100% - 20px));
+  background:
+    radial-gradient(120% 135% at 85% -25%, rgba(58,150,105,.5) 0%, rgba(58,150,105,0) 55%),
+    radial-gradient(140% 120% at -12% 115%, rgba(8,46,31,.95) 0%, rgba(8,46,31,0) 62%),
+    linear-gradient(152deg, var(--pine-2) 0%, var(--pine) 60%, #081F15 100%);
+  border-radius:30px;
+  padding:52px 26px 56px;
+  box-shadow:0 30px 60px -30px rgba(8,31,21,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+}
+.landing .lhero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:radial-gradient(46% 38% at 62% 6%, rgba(255,255,255,.09) 0%, rgba(255,255,255,0) 70%)}
+.landing .lhero>*{position:relative;z-index:1}
+.landing .lhero h1{color:#FCFCF8}
+.landing .lhero h1 span{display:block;animation:fadeUp .65s cubic-bezier(.2,.8,.3,1) both}
+.landing .lhero h1 span:nth-child(1){animation-delay:.04s}
+.landing .lhero h1 span:nth-child(2){animation-delay:.13s}
+.landing .lhero h1 span:nth-child(3){animation-delay:.22s}
+.landing .lhero h1 .hl{font-style:normal;color:var(--mint)}
+.landing .lhero .lead{color:rgba(240,247,242,.72)}
+.landing .lhero .lead b{color:#fff}
+.landing .lhero .eyebrow{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);
+  color:var(--mint-soft);letter-spacing:.2px}
+.landing .lhero .btn-primary{background:#fff;color:var(--pine);
+  box-shadow:0 18px 36px -12px rgba(0,0,0,.5)}
+.landing .lhero .btn-primary:hover{box-shadow:0 22px 42px -12px rgba(0,0,0,.55)}
+.landing .lhero .btn-ghost{color:rgba(255,255,255,.6);border-bottom-color:transparent}
+.landing .lhero .btn-ghost:hover{color:#fff;border-bottom-color:rgba(255,255,255,.3)}
+.landing .lhero .lhero-micro{color:rgba(255,255,255,.55)}
+.landing .lhero .lhero-micro::before{color:var(--mint)}
+.landing .lhero .lhero-caption{background:rgba(255,255,255,.1);color:var(--mint-soft)}
+.landing .lhero .ios-phone{box-shadow:0 46px 80px -30px rgba(0,0,0,.6),0 16px 34px rgba(0,0,0,.28),inset 0 0 0 1.5px rgba(255,255,255,.08)}
+@media (min-width:900px){
+  .landing .lhero{padding:62px 58px 64px}
+}
 
-/* ---------- 낙관(도장) 마크 ---------- */
-.stamp-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
-  width:27px;height:27px;border:2.5px solid var(--stamp);color:var(--stamp);border-radius:8px;
-  font-family:var(--serif);font-weight:900;font-size:13px;line-height:1;
-  transform:rotate(-5deg);box-shadow:inset 0 0 7px rgba(190,62,44,.16)}
-.stamp-mark.lg{width:46px;height:46px;font-size:22px;border-width:3px;border-radius:12px;
-  box-shadow:inset 0 0 12px rgba(190,62,44,.18);margin-bottom:22px}
+/* ---------- 섹션 킥커 (미니멀 룰) ---------- */
+.landing .kicker{display:flex;align-items:center;justify-content:center;gap:13px;
+  text-transform:none;letter-spacing:1.8px;font-size:12.5px;color:var(--ink-soft)}
+.landing .kicker::before,.landing .kicker::after{content:"";width:34px;height:1px;background:var(--muted);opacity:.4}
 
-/* 히어로 아이브로우 — 스탬프 + 레터스페이스드 라벨 */
-.landing .lhero .eyebrow{background:none;border:none;padding:0;border-radius:0;
-  display:inline-flex;align-items:center;gap:11px;
-  font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:2.5px}
-
-/* ---------- 장부 킥커 (01 · 라벨, 양쪽 룰) ---------- */
-.landing .kicker{display:flex;align-items:center;justify-content:center;gap:14px;
-  text-transform:none;letter-spacing:2.5px;font-size:12.5px;color:var(--ink-soft)}
-.landing .kicker::before,.landing .kicker::after{content:"";width:36px;height:1px;background:var(--muted);opacity:.45}
-
-/* ---------- 시세 티커 (장부 띠) ---------- */
-.landing .ticker{margin:40px 0 0;border-top:1px dashed #D8D0C4;border-bottom:1px dashed #D8D0C4;
+/* ---------- 시세 티커 ---------- */
+.landing .ticker{margin:34px 0 0;border-top:1px dashed #D8D0C4;border-bottom:1px dashed #D8D0C4;
   padding:12px 0;overflow:hidden;position:relative}
 .landing .ticker::before{content:"오늘 참고 시세";position:absolute;left:0;top:0;bottom:0;z-index:2;
   display:flex;align-items:center;padding:0 16px 0 clamp(16px,3vw,44px);
-  font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--sand-ink);
+  font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--pine-2);
   background:linear-gradient(90deg,#EEE9E1 68%,rgba(238,233,225,0))}
 .landing .ticker-track{display:flex;width:max-content;animation:tickmove 38s linear infinite}
 .landing .ticker-group{display:flex;gap:38px;padding-right:38px;padding-left:170px}
@@ -921,30 +936,94 @@ a{color:inherit;text-decoration:none}
 .landing .story-copy,.landing .story-phone{position:relative;z-index:1}
 .landing .story-ghost{display:none;position:absolute;right:-3%;bottom:2%;z-index:0;
   font-weight:800;font-size:clamp(180px,24vw,360px);line-height:1;letter-spacing:-.05em;
-  color:rgba(23,19,15,.05);pointer-events:none;user-select:none;
+  color:rgba(18,58,41,.06);pointer-events:none;user-select:none;
   animation:ghostIn .8s cubic-bezier(.2,.8,.3,1) both}
 @keyframes ghostIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 @media (min-width:900px){.landing .story-ghost{display:block}}
 @media (prefers-reduced-motion:reduce){.landing .story-ghost{animation:none}}
 
-/* ---------- 잉크 밴드 피날레 ---------- */
-.landing .lfinal.inkband{max-width:none;background:var(--ink);color:#fff;
-  margin-top:76px;padding:92px 24px 96px;position:relative;overflow:hidden}
-.landing .lfinal.inkband::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;
-  background-image:radial-gradient(90% 90% at 82% -10%, rgba(255,244,230,.55) 0%, rgba(255,244,230,0) 58%)}
+/* ---------- 그린 밴드 피날레 ---------- */
+.landing .lfinal.inkband{max-width:none;color:#fff;margin-top:76px;padding:92px 24px 96px;
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(110% 130% at 85% -15%, rgba(65,211,146,.24) 0%, rgba(65,211,146,0) 55%),
+    linear-gradient(152deg, var(--pine-2) 0%, var(--pine) 62%, #081F15 100%)}
 .landing .lfinal.inkband>*{position:relative;z-index:1}
 .landing .lfinal.inkband h2{color:#fff}
-.landing .lfinal.inkband .btn-primary{background:#fff;color:var(--ink);
+.landing .lfinal.inkband .btn-primary{background:#fff;color:var(--pine);
   box-shadow:0 20px 40px -14px rgba(0,0,0,.55)}
 .landing .lfinal.inkband .btn-primary:hover{box-shadow:0 24px 46px -14px rgba(0,0,0,.6)}
 .landing .lfinal.inkband .lhero-micro{color:rgba(255,255,255,.55)}
-.landing .lfinal.inkband .lhero-micro::before{color:#5FD6A0}
-.landing .lfinal.inkband .stamp-mark.lg{border-color:#E06A4F;color:#E06A4F;box-shadow:inset 0 0 12px rgba(224,106,79,.22)}
+.landing .lfinal.inkband .lhero-micro::before{color:var(--mint)}
 .landing .foot{padding-top:34px}
 
-/* 비트 킥커 — 번호 + 스탬프색 룰 */
-.landing .beat-kicker{letter-spacing:2px;font-size:12.5px}
+/* ---------- 비트 킥커 (번호 + 뉴트럴 룰) ---------- */
+.landing .beat-kicker{letter-spacing:1.6px;font-size:12.5px;color:var(--ink-soft)}
 @media (min-width:900px){
   .landing .beat-kicker{display:flex;align-items:center;gap:11px}
-  .landing .beat-kicker::before{content:"";width:28px;height:1px;background:var(--stamp);opacity:.55}
+  .landing .beat-kicker::before{content:"";width:26px;height:1px;background:var(--muted);opacity:.5}
 }
+
+/* ---------- 정돈: 통계·문제 카드에 컬러 포인트 ---------- */
+.landing .stat b{color:var(--pine-2)}
+.landing .probcard{border-radius:20px}
+.landing .sooncard{border-radius:20px}
+
+/* ============================================================
+   마트 편의성 v3 — 작동 검색 · 재료 정보 · 상세 시트
+   ============================================================ */
+.scr-market .vmeta{font-size:11px;font-weight:500;color:var(--muted);margin-top:3px}
+.scr-market .search input{cursor:text}
+.scr-market .search-x{flex:0 0 auto;width:22px;height:22px;border:none;border-radius:50%;
+  background:var(--track);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.scr-market .search-empty{padding:34px 22px 20px;text-align:center}
+.scr-market .search-empty p{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.scr-market .search-empty span{display:block;margin-top:7px;font-size:12.5px;font-weight:500;color:var(--muted);line-height:1.5}
+
+/* 재료 상세 시트 */
+.scr-market .psheet-wrap{position:absolute;inset:0;z-index:8;background:rgba(20,16,12,.42);
+  animation:psfade .22s ease both}
+@keyframes psfade{from{opacity:0}to{opacity:1}}
+.scr-market .psheet{position:absolute;left:0;right:0;bottom:0;background:var(--paper);
+  border-radius:24px 24px 0 0;padding:10px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow:0 -18px 44px -18px rgba(26,22,19,.4);
+  animation:psup .32s cubic-bezier(.2,.8,.3,1) both}
+@keyframes psup{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+.scr-market .ps-grab{width:38px;height:4px;border-radius:99px;background:var(--track);margin:2px auto 14px}
+.scr-market .ps-top{display:flex;align-items:flex-start;gap:13px;position:relative;padding-right:26px}
+.scr-market .ps-img{flex:0 0 auto;width:64px;height:64px;border-radius:16px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.scr-market .ps-img img{width:100%;height:100%;object-fit:cover}
+.scr-market .ps-head{flex:1;min-width:0}
+.scr-market .ps-head>b{font-size:18px;font-weight:800;letter-spacing:-.4px}
+.scr-market .ps-chips{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.scr-market .ps-chips span{font-size:10.5px;font-weight:600;color:var(--ink-soft);background:var(--tile);
+  padding:3px 8px;border-radius:7px}
+.scr-market .ps-price{margin-top:8px;font-size:16px;font-weight:800;letter-spacing:-.3px}
+.scr-market .ps-price i{font-size:12px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
+.scr-market .ps-price em{font-size:11.5px;font-weight:600;color:var(--sand-ink);font-style:normal;margin-left:8px}
+.scr-market .ps-x{position:absolute;top:0;right:-4px;width:28px;height:28px;border:none;background:var(--tile);
+  border-radius:9px;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.scr-market .ps-yield{margin-top:16px;background:#FBFAF8;border:1px solid var(--line);border-radius:15px;padding:13px 14px}
+.scr-market .ps-yt{font-size:12.5px;font-weight:700;margin-bottom:10px}
+.scr-market .ps-yt span{font-weight:500;color:var(--muted);font-size:11px;margin-left:5px}
+.scr-market .ps-yr{display:flex;align-items:center;gap:9px;padding:5px 0}
+.scr-market .ps-ck{flex:0 0 auto;width:34px;font-size:12px;font-weight:700;color:var(--ink-soft)}
+.scr-market .ps-track{flex:1;height:6px;background:var(--track);border-radius:99px;overflow:hidden}
+.scr-market .ps-track b{display:block;height:100%;border-radius:99px;background:var(--sand-ink);opacity:.75;
+  transition:width .5s cubic-bezier(.2,.8,.3,1)}
+.scr-market .ps-real{flex:0 0 auto;width:56px;text-align:right;font-size:13px;font-weight:800}
+.scr-market .ps-yr em{flex:0 0 auto;width:56px;text-align:right;font-size:10.5px;font-weight:600;color:var(--muted);font-style:normal}
+.scr-market .ps-raw{margin-top:16px;font-size:12.5px;font-weight:600;color:var(--muted);
+  background:#FBFAF8;border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+.scr-market .ps-trend{margin-top:10px;font-size:12.5px;font-weight:500;color:var(--ink-soft);
+  border-radius:13px;padding:11px 14px;background:var(--tile)}
+.scr-market .ps-trend.dn{background:rgba(22,160,106,.08);color:var(--good-2)}
+.scr-market .ps-trend.up{background:rgba(208,75,63,.08);color:var(--bad-1)}
+.scr-market .ps-trend b{font-weight:800}
+.scr-market .ps-add{margin-top:14px;width:100%;border:none;border-radius:15px;padding:15px;cursor:pointer;
+  font-size:15px;font-weight:700;letter-spacing:-.3px;background:var(--ink);color:#fff;
+  box-shadow:0 14px 28px -10px rgba(26,22,19,.45);transition:transform .15s}
+.scr-market .ps-add:active{transform:scale(.98)}
+.scr-market .ps-add.in{background:var(--tile);color:var(--ink-soft);box-shadow:none}
+@media (prefers-reduced-motion:reduce){.scr-market .psheet,.scr-market .psheet-wrap{animation:none}}

@@ -44,8 +44,8 @@ export default function Landing() {
       {/* 히어로 */}
       <header className="lhero">
         <div className="lhero-copy">
-          <span className="eyebrow"><i className="stamp-mark" aria-hidden="true">몇</i>외식 소상공인을 위한 AI 마진 도우미</span>
-          <h1>담으면<br />마진이<br />살아나요</h1>
+          <span className="eyebrow">외식 소상공인을 위한 AI 마진 도우미</span>
+          <h1><span>담으면</span><span><em className="hl">마진이</em></span><span>살아나요</span></h1>
           <p className="lead">식자재를 마켓컬리처럼 장바구니에 담기만 하세요. 조리 <b>수율</b>까지 반영한 진짜 1인분 원가·적정 판매가·하루 몇 그릇이 본전인지, 담는 순간 숫자가 바로 움직여요.</p>
           <div className="lhero-ctas">
             <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
@@ -129,7 +129,6 @@ export default function Landing() {
 
       {/* 최종 CTA — 잉크 밴드 */}
       <section className="lfinal inkband">
-        <i className="stamp-mark lg" aria-hidden="true">몇</i>
         <h2>방금 본 제육덮밥,<br />이번엔 사장님 메뉴로.</h2>
         <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
         <div className="lhero-micro">30초면 첫 계산이 나와요</div>
