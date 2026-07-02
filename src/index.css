@@ -1061,3 +1061,73 @@ a{color:inherit;text-decoration:none}
 .scr-market .ps-add:active{transform:scale(.98)}
 .scr-market .ps-add.in{background:var(--tile);color:var(--ink-soft);box-shadow:none}
 @media (prefers-reduced-motion:reduce){.scr-market .psheet,.scr-market .psheet-wrap{animation:none}}
+
+/* ============================================================
+   기능 확장(2026-07-02): 원가 도넛 · 마진 진단 · 재료 대체 · 명세서 내보내기
+   ============================================================ */
+/* 공통 카드 여백 */
+.scr-result .viz,.scr-result .diag,.scr-result .subs,.scr-result .receipt{
+  margin:18px 18px 0;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px 17px}
+.scr-result .viz .advice-head,.scr-result .diag .advice-head,.scr-result .subs .advice-head{padding:0;margin-bottom:13px}
+.scr-result .advice-head .tag svg{display:block}
+.scr-result .advice-head .tag{display:inline-flex;align-items:center;gap:4px}
+
+/* 원가 도넛 */
+.scr-result .cv-wrap{display:flex;align-items:center;gap:15px}
+.scr-result .cv-donut{position:relative;flex:0 0 auto;width:132px;height:132px}
+.scr-result .cv-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.scr-result .cv-center span{font-size:10.5px;font-weight:600;color:var(--muted)}
+.scr-result .cv-center b{font-size:19px;font-weight:800;letter-spacing:-.6px}
+.scr-result .cv-legend{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.scr-result .cv-li{display:flex;align-items:center;gap:7px}
+.scr-result .cv-dot{flex:0 0 auto;width:8px;height:8px;border-radius:3px}
+.scr-result .cv-lb{flex:1;min-width:0;font-size:12px;font-weight:600;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scr-result .cv-v{flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--muted)}
+.scr-result .cv-pct{flex:0 0 auto;width:32px;text-align:right;font-size:12px;font-weight:800;color:var(--ink)}
+.scr-result .viz-hint{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;font-weight:500;color:var(--muted);line-height:1.5}
+.scr-result .viz-hint b{font-weight:800;color:var(--ink-soft)}
+
+/* 마진 진단 */
+.scr-result .diag-verdict{display:flex;align-items:center;gap:11px;border-radius:14px;padding:13px 14px;background:var(--tile)}
+.scr-result .diag-verdict.g{background:rgba(22,160,106,.08)}
+.scr-result .diag-verdict.w{background:rgba(214,148,18,.09)}
+.scr-result .diag-verdict.b{background:rgba(208,75,63,.08)}
+.scr-result .dv-dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%}
+.scr-result .dv-tx{flex:1;min-width:0}
+.scr-result .dv-tx b{display:block;font-size:15px;font-weight:800;letter-spacing:-.3px}
+.scr-result .dv-tx span{display:block;font-size:12.5px;font-weight:500;color:var(--ink-soft);margin-top:2px;line-height:1.4}
+.scr-result .dv-m{flex:0 0 auto;font-size:24px;font-weight:800;letter-spacing:-1px}
+.scr-result .diag-lab{font-size:12px;font-weight:700;color:var(--muted);margin:15px 2px 9px}
+.scr-result .diag-acts{display:flex;flex-direction:column;gap:8px}
+.scr-result .da{display:flex;align-items:center;gap:10px;background:#FBFAF8;border:1px solid var(--line);border-radius:13px;padding:11px 12px}
+.scr-result .da-ic{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.scr-result .da-tx{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--ink-soft);line-height:1.35}
+.scr-result .da-eff{flex:0 0 auto;font-size:12px;font-weight:800;color:var(--good-2);background:rgba(22,160,106,.1);padding:5px 9px;border-radius:8px;white-space:nowrap}
+
+/* 재료 대체 */
+.scr-result .subs-list{display:flex;flex-direction:column;gap:8px}
+.scr-result .sub-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FBFAF8;border:1px solid var(--line);border-radius:13px;padding:11px 13px}
+.scr-result .sr-swap{display:flex;align-items:center;gap:6px;min-width:0}
+.scr-result .sr-swap svg{color:var(--muted);flex:0 0 auto}
+.scr-result .sr-from{font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.scr-result .sr-to{font-size:13.5px;font-weight:800;color:var(--ink);white-space:nowrap}
+.scr-result .sr-delta{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.scr-result .sr-cost{font-size:11px;font-weight:600;color:var(--muted)}
+.scr-result .sub-row .sr-m{font-size:13px;font-weight:800}
+.scr-result .subs-hint{margin-top:11px;font-size:11.5px;font-weight:500;color:var(--muted);line-height:1.5}
+
+/* 명세서 내보내기 */
+.scr-result .receipt{display:flex;flex-direction:column;gap:13px}
+.scr-result .rc-info{display:flex;align-items:center;gap:11px}
+.scr-result .rc-ic{flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.scr-result .rc-tx{flex:1;min-width:0}
+.scr-result .rc-tx b{display:block;font-size:15px;font-weight:800;letter-spacing:-.3px}
+.scr-result .rc-tx span{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px;line-height:1.4}
+.scr-result .rc-btns{display:flex;gap:8px}
+.scr-result .rc-btns button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:11px 6px;
+  font-size:12.5px;font-weight:700;cursor:pointer;transition:transform .14s,background .16s,border-color .16s}
+.scr-result .rc-btns button:first-child{background:var(--ink);color:#fff;border-color:var(--ink)}
+.scr-result .rc-btns button:active{transform:scale(.97)}
+.scr-result .rc-btns button:disabled{opacity:.55;cursor:default}
+.scr-result .rc-btns button svg{flex:0 0 auto}
