@@ -6,9 +6,10 @@ import { PRODUCTS } from '../data/catalog'
 import {
   costOf, yieldOf, summarize, breakeven, won, round10, sig,
   overheadFor, deliveryFeeFor, fixedOverheadFor, marginWithFoodShift, orderPlan, fmtGrams,
-  costSegments, bestSubstitutions, diagnose,
+  costSegments, bestSubstitutions, diagnose, goalPlan,
 } from '../lib/calc'
 import { exportReceipt } from '../lib/receipt'
+import GoalGauge from '../components/GoalGauge'
 
 // 원가 도넛 색 램프 — 재료는 그린, 부대비용은 웜/뉴트럴 (원물 vs 부대 한눈에)
 const ING_RAMP = ['#0C2B1E', '#1C5B3D', '#2E8B57', '#49B27E', '#79CDA3', '#A9E3C4']
@@ -55,7 +56,7 @@ function CostDonut({ data }) {
 
 export default function Result() {
   const nav = useNavigate()
-  const { build, dailyFixed, costOpts, setPrice, saveBuild, toast } = useStore()
+  const { build, dailyFixed, goal, setGoal, costOpts, setPrice, saveBuild, toast } = useStore()
   const hasItems = build.items.length > 0
 
   const foodFixed = useMemo(
@@ -73,6 +74,7 @@ export default function Result() {
   const margin = price > 0 ? Math.round((profit / price) * 100) : 0
   const s = sig(margin)
   const bowls = breakeven(profit, dailyFixed)
+  const gp = goalPlan(profit, goal, dailyFixed)   // 목표 역산: 본전·목표달성 그릇 수
   const COOK_VERB = { 볶기: '볶으면', 삶기: '삶으면', 튀김: '튀기면' }
 
   const minP = round10(fixedCost / (1 - rate))
@@ -178,10 +180,25 @@ export default function Result() {
           <div className="ledger-note">내 인건비(880원)까지 비용으로 빼고 남는 사업이익이에요</div>
         </div>
 
-        <div className="rcard fade" style={{ animationDelay: '.1s' }}>
-          <div className="lab">이 메뉴로 본전 맞추기</div>
-          <div className="big"><b className="num">{bowls === Infinity ? '—' : bowls}</b><span className="unit">그릇</span><span className="sub">팔면 본전</span></div>
-          <div className="rcard-calc num">하루 고정비 {won(dailyFixed)}원 ÷ 그릇당 {won(round10(Math.max(0, profit)))}원</div>
+        <div className="rcard goalcard fade" style={{ animationDelay: '.1s' }}>
+          <div className="gc-head">
+            <span className="lab">하루에 이만큼 벌고 싶어요</span>
+            <div className="oe-stepper gc-step">
+              <button aria-label="목표 감소" onClick={() => setGoal(goal - 10000)}><Icon name="minus" size={14} stroke={2.4} /></button>
+              <span className="v num">{won(goal)}<i>원</i></span>
+              <button aria-label="목표 증가" onClick={() => setGoal(goal + 10000)}><Icon name="plus" size={14} stroke={2.4} /></button>
+            </div>
+          </div>
+          <div className="gc-hero">
+            이 메뉴로 하루 <b className="num">{gp.total === Infinity ? '—' : gp.total}</b>그릇 팔면{' '}
+            {goal > 0 ? <><b className="num">{won(goal)}원</b> 남아요</> : <>본전이에요</>}
+          </div>
+          <GoalGauge be={gp.be} total={gp.total} />
+          <div className="gc-split">
+            <span>본전 <b className="num">{gp.be === Infinity ? '—' : `${gp.be}그릇`}</b></span>
+            {goal > 0 && gp.total !== Infinity && <span>목표까지 <b className="num g">+{gp.extra}그릇</b></span>}
+            <span className="gc-note">하루 고정비 {won(dailyFixed)}원 · 그릇당 {won(round10(Math.max(0, profit)))}원</span>
+          </div>
         </div>
       </div>
 

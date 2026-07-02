@@ -62,6 +62,18 @@ export function breakeven(profit, dailyFixed = DAILY_FIXED) {
   return Math.ceil(dailyFixed / profit)
 }
 
+// 목표 역산: 하루 목표 순이익(goal)까지 벌려면 몇 그릇? = ceil( (고정비 + 목표) ÷ 그릇당 남는 돈 )
+export function bowlsForGoal(profit, goal = 0, dailyFixed = DAILY_FIXED) {
+  if (profit <= 0) return Infinity
+  return Math.ceil((dailyFixed + Math.max(0, goal)) / profit)
+}
+// {be:본전그릇, total:목표달성그릇, extra:목표분(=total-be)}
+export function goalPlan(profit, goal = 0, dailyFixed = DAILY_FIXED) {
+  const be = bowlsForGoal(profit, 0, dailyFixed)
+  const total = bowlsForGoal(profit, goal, dailyFixed)
+  return { be, total, extra: total === Infinity ? Infinity : Math.max(0, total - be) }
+}
+
 // 식자재 원가가 pct% 변할 때의 마진 (스트레스 테스트)
 export function marginWithFoodShift(food, price, pct, opts = {}) {
   const shifted = Math.round(food * (1 + pct / 100))

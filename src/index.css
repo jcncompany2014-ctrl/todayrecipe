@@ -1201,3 +1201,40 @@ a{color:inherit;text-decoration:none}
   box-shadow:0 14px 28px -10px rgba(26,22,19,.5);transition:transform .15s}
 .onb-cta:active{transform:scale(.97)}
 @media (prefers-reduced-motion:reduce){.onb,.onb-card{animation:none}.onb-slides{transition:none}}
+
+/* ============================================================
+   목표 역산 게이지 (결과·대시보드 공용) + 목표 카드
+   ============================================================ */
+.gg{margin:15px 0 2px}
+.gg-nums{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.gg-n{display:inline-flex;align-items:baseline;gap:3px;font-size:12px;font-weight:600}
+.gg-n b{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.gg-n em{font-style:normal;font-size:11px;font-weight:700;margin-left:3px}
+.gg-n.muted{color:var(--muted)} .gg-n.muted b{color:var(--ink-soft)}
+.gg-n.good{color:var(--good-2)} .gg-n.good b{color:var(--good-1)}
+.gg-bar{position:relative;display:flex;height:16px;border-radius:99px;overflow:hidden;background:var(--track)}
+.gg-fix{height:100%;background:#D8D0C4}
+.gg-goal{height:100%;background:var(--good-1)}
+.gg-div{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);border-radius:2px;transform:translateX(-1px);z-index:1}
+.gg-zones{display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-top:7px}
+.gg-zones .muted{color:var(--muted)} .gg-zones .good{color:var(--good-2)}
+.gg-inf{font-size:12.5px;font-weight:600;color:var(--bad-1);background:rgba(208,75,63,.08);padding:11px 13px;border-radius:12px;margin:12px 0 2px;line-height:1.45}
+
+/* 결과 화면 목표 카드 */
+.scr-result .goalcard{padding:16px 18px 17px}
+.scr-result .gc-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.scr-result .gc-step .v{min-width:72px}
+.scr-result .gc-hero{font-size:15px;font-weight:600;color:var(--ink-soft);line-height:1.5;margin-top:13px}
+.scr-result .gc-hero b{font-weight:800;color:var(--ink)}
+.scr-result .gc-hero b.num:first-of-type{font-size:23px;color:var(--good-2);letter-spacing:-.5px;margin:0 1px}
+.scr-result .gc-split{display:flex;flex-wrap:wrap;align-items:center;gap:3px 15px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.scr-result .gc-split>span b{font-weight:800;color:var(--ink)}
+.scr-result .gc-split .gc-note{flex-basis:100%;font-size:11px;font-weight:500;color:var(--muted);margin-top:3px}
+
+/* 대시보드 목표 패널 */
+.scr-dash .goal-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.scr-dash .gt-lab{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.scr-dash .gt-val{font-size:19px;font-weight:800;letter-spacing:-.5px}
+.scr-dash .goal-hero{font-size:14px;font-weight:600;color:var(--ink-soft);line-height:1.5;margin-top:4px}
+.scr-dash .goal-hero b{font-weight:800;color:var(--ink)}
+.scr-dash .goal-hero b.num:first-of-type{font-size:20px;color:var(--good-2);letter-spacing:-.5px}
