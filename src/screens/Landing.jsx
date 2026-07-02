@@ -4,6 +4,19 @@ import Icon from '../components/Icon'
 import { HeroPhone, StorySection, DashDemo } from '../components/landing/Demos'
 import { WholesalePreview, PosPreview, AlertPreview } from '../components/VisionPreviews'
 
+// 시세 티커 — 카탈로그 시드와 동일한 참고 시세
+const TICKS = [
+  { nm: '삼겹살', pr: '12,000', pct: '▼3%', d: 'dn' },
+  { nm: '양파', pr: '2,000', pct: '▼8%', d: 'dn' },
+  { nm: '계란', pr: '6,000', pct: '▲5%', d: 'up' },
+  { nm: '대파', pr: '3,500', pct: '▼2%', d: 'dn' },
+  { nm: '목살', pr: '11,500', pct: '▲4%', d: 'up' },
+  { nm: '닭다리살', pr: '7,500', pct: '▼6%', d: 'dn' },
+  { nm: '고추장', pr: '9,000', pct: '보통', d: 'fl' },
+  { nm: '흰다리새우', pr: '18,000', pct: '▲3%', d: 'up' },
+  { nm: '다진마늘', pr: '8,000', pct: '보통', d: 'fl' },
+]
+
 export default function Landing() {
   const nav = useNavigate()
   const enter = () => nav('/app')
@@ -31,7 +44,7 @@ export default function Landing() {
       {/* 히어로 */}
       <header className="lhero">
         <div className="lhero-copy">
-          <span className="eyebrow">외식 소상공인을 위한 AI 마진 도우미</span>
+          <span className="eyebrow"><i className="stamp-mark" aria-hidden="true">몇</i>외식 소상공인을 위한 AI 마진 도우미</span>
           <h1>담으면<br />마진이<br />살아나요</h1>
           <p className="lead">식자재를 마켓컬리처럼 장바구니에 담기만 하세요. 조리 <b>수율</b>까지 반영한 진짜 1인분 원가·적정 판매가·하루 몇 그릇이 본전인지, 담는 순간 숫자가 바로 움직여요.</p>
           <div className="lhero-ctas">
@@ -46,9 +59,25 @@ export default function Landing() {
         </div>
       </header>
 
+      {/* 시세 티커 — 장부 띠 */}
+      <div className="ticker" aria-hidden="true">
+        <div className="ticker-track">
+          {[0, 1].map((k) => (
+            <div className="ticker-group" key={k}>
+              {TICKS.map((t) => (
+                <span className="tick" key={t.nm + k}>
+                  <b>{t.nm}</b><i className="num">{t.pr}</i>
+                  <em className={t.d === 'dn' ? 'g' : t.d === 'up' ? 'b' : ''}>{t.pct}</em>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* 문제 공감 */}
       <section className="lsection" id="how">
-        <div className="kicker">왜 필요한가요</div>
+        <div className="kicker">01 · 왜 필요한가요</div>
         <h2 className="lh2">가격을 감으로 정하면<br />마진이 새요</h2>
         <div className="probcards">
           <div className="probcard"><div className="q">원물 단가, 일일이 찾기 힘들어요</div><p>마트·도매처마다 다른 가격을 매번 비교하는 건 시간 싸움이에요.</p></div>
@@ -80,7 +109,7 @@ export default function Landing() {
 
       {/* 대시보드 */}
       <section className="lsection ldash">
-        <div className="kicker">한눈에</div>
+        <div className="kicker">02 · 한눈에</div>
         <h2 className="lh2">어느 메뉴에서 새는지,<br />한눈에</h2>
         <p className="lsectlede">메뉴별 마진 순위와 건강도를 매일 확인하세요.</p>
         <div className="ldash-phone"><DashDemo /></div>
@@ -88,7 +117,7 @@ export default function Landing() {
 
       {/* Coming Soon */}
       <section className="lsection">
-        <div className="kicker">Coming Soon</div>
+        <div className="kicker">03 · Coming Soon</div>
         <h2 className="lh2">다음 단계의 비전</h2>
         <p className="lsectlede">정식 출시되면 이런 모습이에요 — 예시 화면으로 미리 보세요.</p>
         <div className="soongrid">
@@ -98,8 +127,9 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 최종 CTA */}
-      <section className="lfinal">
+      {/* 최종 CTA — 잉크 밴드 */}
+      <section className="lfinal inkband">
+        <i className="stamp-mark lg" aria-hidden="true">몇</i>
         <h2>방금 본 제육덮밥,<br />이번엔 사장님 메뉴로.</h2>
         <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
         <div className="lhero-micro">30초면 첫 계산이 나와요</div>

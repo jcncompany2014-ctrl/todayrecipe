@@ -313,10 +313,10 @@ function ResultClone({ active, playId }) {
 }
 
 const BEATS = [
-  { k: '내 메뉴판', h: '오늘, 몇 그릇 팔면\n본전일까요?', p: '하루 고정비 243,000원 ÷ 메뉴 평균 2,730원 = 90그릇. 고정비를 바꾸면 오늘 목표 그릇 수가 바로 다시 계산돼요.', Cmp: MenuClone, cls: 'scr-menu', cap: '고정비를 바꾸면 목표 그릇 수가 다시 계산돼요' },
-  { k: '이렇게 담아요', h: '마켓처럼 담으면\n담는 순간 계산돼요', p: '식자재를 장바구니에 담을 때마다 예상 마진이 바로 움직여요. 담기 한 번에 52% → 50%, 진짜로 계산되는 거예요.', Cmp: MarketClone, cls: 'scr-market', cap: '담는 순간 예상 마진이 움직여요' },
-  { k: '우리가 다른 점', h: "원물 단가가 아니라\n'조리 후' 진짜 원가", p: '앞다리살 150g을 볶으면 120g만 남아요(수율 80%). 실제 원가는 표기 단가보다 25% 비싸집니다. 그 차이를 계산에 넣는 게 핵심이에요.', Cmp: CartClone, cls: 'scr-cart', cap: '조리법만 바꿔도 수율이 원가를 바꿔요' },
-  { k: '결과 한 장', h: '한 그릇의 진짜 원가부터\n오늘 본전 그릇 수까지', p: '1그릇 실원가 ₩5,310 · 마진 41% · 본전 66그릇. 판매가를 밀면 마진과 본전 그릇 수가 실시간으로 바뀌어요.', Cmp: ResultClone, cls: 'scr-result', cap: '판매가를 밀면 본전 그릇 수가 실시간으로' },
+  { k: '01 · 내 메뉴판', g: '90', h: '오늘, 몇 그릇 팔면\n본전일까요?', p: '하루 고정비 243,000원 ÷ 메뉴 평균 2,730원 = 90그릇. 고정비를 바꾸면 오늘 목표 그릇 수가 바로 다시 계산돼요.', Cmp: MenuClone, cls: 'scr-menu', cap: '고정비를 바꾸면 목표 그릇 수가 다시 계산돼요' },
+  { k: '02 · 이렇게 담아요', g: '52%', h: '마켓처럼 담으면\n담는 순간 계산돼요', p: '식자재를 장바구니에 담을 때마다 예상 마진이 바로 움직여요. 담기 한 번에 52% → 50%, 진짜로 계산되는 거예요.', Cmp: MarketClone, cls: 'scr-market', cap: '담는 순간 예상 마진이 움직여요' },
+  { k: '03 · 우리가 다른 점', g: '80%', h: "원물 단가가 아니라\n'조리 후' 진짜 원가", p: '앞다리살 150g을 볶으면 120g만 남아요(수율 80%). 실제 원가는 표기 단가보다 25% 비싸집니다. 그 차이를 계산에 넣는 게 핵심이에요.', Cmp: CartClone, cls: 'scr-cart', cap: '조리법만 바꿔도 수율이 원가를 바꿔요' },
+  { k: '04 · 결과 한 장', g: '66', h: '한 그릇의 진짜 원가부터\n오늘 본전 그릇 수까지', p: '1그릇 실원가 ₩5,310 · 마진 41% · 본전 66그릇. 판매가를 밀면 마진과 본전 그릇 수가 실시간으로 바뀌어요.', Cmp: ResultClone, cls: 'scr-result', cap: '판매가를 밀면 본전 그릇 수가 실시간으로' },
 ]
 
 export function StorySection() {
@@ -348,6 +348,7 @@ export function StorySection() {
     <section className="story">
       <div className="story-stage">
         <div className="story-stage-in">
+          <div className="story-ghost num" aria-hidden="true" key={active}>{BEATS[active].g}</div>
           <div className="story-copy">
             <div className="story-progress">{BEATS.map((_, i) => <span key={i} className={`sp-dot${i === active ? ' on' : i < active ? ' done' : ''}`} />)}</div>
             {BEATS.map((b, i) => (

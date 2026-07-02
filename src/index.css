@@ -8,7 +8,10 @@
   /* 면 */
   --paper:#FFFFFF;
   /* 텍스트 */
-  --ink:#1A1613; --ink-soft:#55504B; --muted:#A39B92;
+  --ink:#17130F; --ink-soft:#55504B; --muted:#A39B92;
+  /* 에디토리얼 v2 */
+  --serif:'Noto Serif KR','Nanum Myeongjo',serif;
+  --stamp:#BE3E2C;
   /* 라인·면 보조 */
   --line:#EDE9E3; --tile:#F5F2EE; --track:#EEEAE4;
   /* 마진 신호등 */
@@ -862,3 +865,86 @@ a{color:inherit;text-decoration:none}
 .vp-noti-tx b{font-size:12.5px;font-weight:700;display:block}
 .vp-noti-tx span{font-size:10.5px;font-weight:500;color:var(--muted);line-height:1.4;display:block;margin-top:1px}
 .vp-noti-t{flex:0 0 auto;font-size:9.5px;font-weight:600;color:var(--muted)}
+
+/* ============================================================
+   마스터피스 v2 — "오늘의 장부" (명조 에디토리얼 × 장부 크래프트 × 키네틱 넘버)
+   ============================================================ */
+
+/* ---------- 명조 디스플레이 (랜딩 헤드라인) ---------- */
+.landing .lhero h1,
+.landing .lh2,
+.landing .beat-copy h2,
+.landing .lfinal h2{font-family:var(--serif);font-weight:900;letter-spacing:-.5px}
+.landing .lhero h1{letter-spacing:-1.2px;line-height:1.14}
+.landing .beat-copy h2{line-height:1.22}
+.landing .lh2{line-height:1.24}
+.landing .stat b{font-family:var(--serif);font-weight:900;letter-spacing:-.5px}
+
+/* ---------- 낙관(도장) 마크 ---------- */
+.stamp-mark{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:27px;height:27px;border:2.5px solid var(--stamp);color:var(--stamp);border-radius:8px;
+  font-family:var(--serif);font-weight:900;font-size:13px;line-height:1;
+  transform:rotate(-5deg);box-shadow:inset 0 0 7px rgba(190,62,44,.16)}
+.stamp-mark.lg{width:46px;height:46px;font-size:22px;border-width:3px;border-radius:12px;
+  box-shadow:inset 0 0 12px rgba(190,62,44,.18);margin-bottom:22px}
+
+/* 히어로 아이브로우 — 스탬프 + 레터스페이스드 라벨 */
+.landing .lhero .eyebrow{background:none;border:none;padding:0;border-radius:0;
+  display:inline-flex;align-items:center;gap:11px;
+  font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:2.5px}
+
+/* ---------- 장부 킥커 (01 · 라벨, 양쪽 룰) ---------- */
+.landing .kicker{display:flex;align-items:center;justify-content:center;gap:14px;
+  text-transform:none;letter-spacing:2.5px;font-size:12.5px;color:var(--ink-soft)}
+.landing .kicker::before,.landing .kicker::after{content:"";width:36px;height:1px;background:var(--muted);opacity:.45}
+
+/* ---------- 시세 티커 (장부 띠) ---------- */
+.landing .ticker{margin:40px 0 0;border-top:1px dashed #D8D0C4;border-bottom:1px dashed #D8D0C4;
+  padding:12px 0;overflow:hidden;position:relative}
+.landing .ticker::before{content:"오늘 참고 시세";position:absolute;left:0;top:0;bottom:0;z-index:2;
+  display:flex;align-items:center;padding:0 16px 0 clamp(16px,3vw,44px);
+  font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--sand-ink);
+  background:linear-gradient(90deg,#EEE9E1 68%,rgba(238,233,225,0))}
+.landing .ticker-track{display:flex;width:max-content;animation:tickmove 38s linear infinite}
+.landing .ticker-group{display:flex;gap:38px;padding-right:38px;padding-left:170px}
+.landing .tick{display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap;font-size:13px}
+.landing .tick b{font-weight:700;color:var(--ink-soft)}
+.landing .tick i{font-style:normal;font-weight:800;color:var(--ink)}
+.landing .tick em{font-style:normal;font-weight:800;font-size:11.5px;color:var(--muted)}
+.landing .tick em.g{color:var(--good-1)}
+.landing .tick em.b{color:var(--bad-1)}
+@keyframes tickmove{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.landing .ticker-track{animation:none}}
+
+/* ---------- 스토리 고스트 숫자 ---------- */
+.landing .story-stage-in{position:relative}
+.landing .story-copy,.landing .story-phone{position:relative;z-index:1}
+.landing .story-ghost{display:none;position:absolute;right:-3%;bottom:2%;z-index:0;
+  font-weight:800;font-size:clamp(180px,24vw,360px);line-height:1;letter-spacing:-.05em;
+  color:rgba(23,19,15,.05);pointer-events:none;user-select:none;
+  animation:ghostIn .8s cubic-bezier(.2,.8,.3,1) both}
+@keyframes ghostIn{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@media (min-width:900px){.landing .story-ghost{display:block}}
+@media (prefers-reduced-motion:reduce){.landing .story-ghost{animation:none}}
+
+/* ---------- 잉크 밴드 피날레 ---------- */
+.landing .lfinal.inkband{max-width:none;background:var(--ink);color:#fff;
+  margin-top:76px;padding:92px 24px 96px;position:relative;overflow:hidden}
+.landing .lfinal.inkband::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;
+  background-image:radial-gradient(90% 90% at 82% -10%, rgba(255,244,230,.55) 0%, rgba(255,244,230,0) 58%)}
+.landing .lfinal.inkband>*{position:relative;z-index:1}
+.landing .lfinal.inkband h2{color:#fff}
+.landing .lfinal.inkband .btn-primary{background:#fff;color:var(--ink);
+  box-shadow:0 20px 40px -14px rgba(0,0,0,.55)}
+.landing .lfinal.inkband .btn-primary:hover{box-shadow:0 24px 46px -14px rgba(0,0,0,.6)}
+.landing .lfinal.inkband .lhero-micro{color:rgba(255,255,255,.55)}
+.landing .lfinal.inkband .lhero-micro::before{color:#5FD6A0}
+.landing .lfinal.inkband .stamp-mark.lg{border-color:#E06A4F;color:#E06A4F;box-shadow:inset 0 0 12px rgba(224,106,79,.22)}
+.landing .foot{padding-top:34px}
+
+/* 비트 킥커 — 번호 + 스탬프색 룰 */
+.landing .beat-kicker{letter-spacing:2px;font-size:12.5px}
+@media (min-width:900px){
+  .landing .beat-kicker{display:flex;align-items:center;gap:11px}
+  .landing .beat-kicker::before{content:"";width:28px;height:1px;background:var(--stamp);opacity:.55}
+}
