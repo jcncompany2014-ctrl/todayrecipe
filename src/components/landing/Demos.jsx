@@ -348,7 +348,6 @@ export function StorySection() {
     <section className="story">
       <div className="story-stage">
         <div className="story-stage-in">
-          <div className="story-ghost num" aria-hidden="true" key={active}>{BEATS[active].g}</div>
           <div className="story-copy">
             <div className="story-progress">{BEATS.map((_, i) => <span key={i} className={`sp-dot${i === active ? ' on' : i < active ? ' done' : ''}`} />)}</div>
             {BEATS.map((b, i) => (
