@@ -38,6 +38,11 @@ const P = {
   bars: '<path d="M6 20v-6"/><path d="M12 20V6"/><path d="M18 20v-9"/>',
   sparkle: '<path d="M12 4.5l1.7 4.3 4.3 1.7-4.3 1.7L12 16.5l-1.7-4.3L6 10.5l4.3-1.7z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
   sliders: '<path d="M4 8h8M17 8h3"/><circle cx="14.5" cy="8" r="2.3"/><path d="M4 16h3M12 16h8"/><circle cx="9.5" cy="16" r="2.3"/>',
+  swap: '<path d="M7 8h11l-2.6-2.6M17 16H6l2.6 2.6"/>',
+  pie: '<path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z"/><path d="M12 3.5V12"/>',
+  download: '<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M5 19h14"/>',
+  share: '<circle cx="6" cy="12" r="2.4"/><circle cx="17.5" cy="6" r="2.4"/><circle cx="17.5" cy="18" r="2.4"/><path d="M8.1 10.9l7.3-3.8M8.1 13.1l7.3 3.8"/>',
+  print: '<path d="M7 9V4h10v5"/><rect x="4.5" y="9" width="15" height="7" rx="1.6"/><path d="M7 14h10v6H7z"/>',
 
   /* 결과 / 비전 / 설정 */
   link: '<path d="M9.5 14.5l5-5"/><path d="M8 11l-2 2a3.2 3.2 0 0 0 4.5 4.5l2-2"/><path d="M16 13l2-2a3.2 3.2 0 0 0-4.5-4.5l-2 2"/>',
