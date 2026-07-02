@@ -15,6 +15,10 @@ export function StoreProvider({ children }) {
   const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
   // 하루 고정비 — 홈·대시보드·결과가 공유. 사장님이 바꾸면 본전 그릇 수가 전부 재계산됨.
   const [dailyFixed, setDailyFixed] = useState(243000)
+  // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
+  const [costOpts, setCostOpts] = useState({ rate: 0.12, packaging: 300 })
+  const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])
+  const setPackaging = useCallback((p) => setCostOpts((o) => ({ ...o, packaging: Math.max(0, p) })), [])
 
   // 토스트
   const [toastMsg, setToastMsg] = useState(null)
@@ -82,7 +86,7 @@ export function StoreProvider({ children }) {
   }, [build])
 
   const value = {
-    menus, build, dailyFixed, setDailyFixed,
+    menus, build, dailyFixed, setDailyFixed, costOpts, setRate, setPackaging,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, toast, toastMsg,
   }

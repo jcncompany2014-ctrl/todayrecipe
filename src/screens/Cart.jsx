@@ -8,12 +8,12 @@ import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadB
 
 export default function Cart() {
   const nav = useNavigate()
-  const { build, setGrams, setMethod, removeItem, toast } = useStore()
+  const { build, setGrams, setMethod, removeItem, toast, costOpts, setRate, setPackaging } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
 
   const empty = build.items.length === 0
-  const { cost, profit, margin, sig } = summarize(build.items, build.price)
+  const { cost, profit, margin, sig } = summarize(build.items, build.price, costOpts)
   const doBump = (id) => { setBumped(id); setTimeout(() => setBumped((b) => (b === id ? null : b)), 150) }
 
   return (
@@ -108,16 +108,33 @@ export default function Cart() {
           </>
         )}
 
-        {/* 부대비용 (판매가 연동) */}
+        {/* 부대비용 (판매가·가게 설정 연동 — 사장님이 직접 조절) */}
         <div className={`ovh${ovhOpen ? ' open' : ''}`}>
           <div className="ovh-head" onClick={() => setOvhOpen((v) => !v)}>
-            <div className="l"><b>부대비용</b><span>배달수수료·포장·인건비 등</span></div>
-            <div className="r"><b className="num">{won(overheadFor(build.price))}원</b><Icon name="chevD" size={18} stroke={2} className="chev" /></div>
+            <div className="l"><b>부대비용</b><span>배달수수료·포장·인건비 — 우리 가게 기준으로 조절</span></div>
+            <div className="r"><b className="num">{won(overheadFor(build.price, costOpts))}원</b><Icon name="chevD" size={18} stroke={2} className="chev" /></div>
           </div>
           <div className="ovh-body">
-            {overheadBreakdown(build.price).map((r) => (
+            {overheadBreakdown(build.price, costOpts).map((r) => (
               <div key={r.k} className="ovh-row"><span>{r.k}</span><b className="num">{won(r.v)}원</b></div>
             ))}
+            <div className="ovh-edit">
+              <div className="oe-row">
+                <span className="oe-lab">배달앱 수수료율</span>
+                <input type="range" min="0" max="18" step="1" value={Math.round(costOpts.rate * 100)}
+                  onChange={(e) => setRate(Number(e.target.value) / 100)} aria-label="배달앱 수수료율" />
+                <b className="num oe-val">{Math.round(costOpts.rate * 100)}%</b>
+              </div>
+              <div className="oe-row">
+                <span className="oe-lab">포장비</span>
+                <div className="stepper oe-stepper">
+                  <button aria-label="감소" onClick={() => setPackaging(costOpts.packaging - 100)}><Icon name="minus" size={14} stroke={2.4} /></button>
+                  <span className="v num">{won(costOpts.packaging)}<i>원</i></span>
+                  <button aria-label="증가" onClick={() => setPackaging(costOpts.packaging + 100)}><Icon name="plus" size={14} stroke={2.4} /></button>
+                </div>
+              </div>
+              <p className="oe-hint">배민·쿠팡이츠 요금제, 용기값이 가게마다 달라요. 바꾸면 마진이 바로 다시 계산돼요.</p>
+            </div>
           </div>
         </div>
       </div>

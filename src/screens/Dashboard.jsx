@@ -1,13 +1,21 @@
+import { useState } from 'react'
 import Icon from '../components/Icon'
 import { useStore } from '../state/store'
 import { won, round10, breakeven } from '../lib/calc'
 
 export default function Dashboard() {
   const { menus, dailyFixed, setDailyFixed } = useStore()
+  const [sold, setSold] = useState(60)
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
   const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
   const shopBowls = breakeven(avgProfit, dailyFixed)
+
+  // 오늘 장사 시뮬레이터
+  const simMax = shopBowls === Infinity ? 200 : Math.ceil((shopBowls * 2) / 10) * 10
+  const net = Math.round(sold * avgProfit - dailyFixed)
+  const prog = shopBowls === Infinity ? 0 : Math.min(100, (sold / shopBowls) * 100)
+  const left = shopBowls === Infinity ? null : Math.max(0, shopBowls - sold)
 
   const counts = { g: 0, w: 0, b: 0 }
   menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
@@ -35,6 +43,26 @@ export default function Dashboard() {
             <button aria-label="증가" onClick={() => setDailyFixed(dailyFixed + 10000)}><Icon name="plus" size={16} stroke={2.4} /></button>
           </div>
         </div>
+      </div>
+
+      {/* 오늘 장사 시뮬레이터 */}
+      <div className="panel fade" style={{ animationDelay: '.03s' }}>
+        <h2>오늘 장사 시뮬레이터</h2>
+        <div className="ph">오늘 몇 그릇 팔았는지(팔 것 같은지) 밀어보세요</div>
+        <div className="sim-top">
+          <div className="sim-sold"><b className="num">{sold}</b><span>그릇</span></div>
+          <div className={`sim-net num ${net >= 0 ? 'g' : 'b'}`}>{net >= 0 ? '+' : '−'}₩{won(Math.abs(net))}</div>
+        </div>
+        <input type="range" className="sim-range" min="0" max={simMax} step="1" value={Math.min(sold, simMax)}
+          onChange={(e) => setSold(Number(e.target.value))} aria-label="오늘 판매량" />
+        <div className="sim-bar"><span className={net >= 0 ? 'g-bg' : 'w-bg'} style={{ width: `${Math.max(2, prog)}%` }} />
+          {shopBowls !== Infinity && <i className="sim-be" style={{ left: '50%' }} />}
+        </div>
+        <p className="sim-msg">
+          {net >= 0
+            ? <>본전 넘었어요! 지금부터 파는 건 전부 <b className="g">순이익</b>이에요</>
+            : <>본전까지 <b>{left}그릇</b> 남았어요 · 그릇당 평균 {won(avgProfit)}원 기준</>}
+        </p>
       </div>
 
       <div className="panel fade" style={{ animationDelay: '.05s' }}>

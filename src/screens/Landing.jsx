@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { HeroPhone, StorySection, DashDemo } from '../components/landing/Demos'
+import { WholesalePreview, PosPreview, AlertPreview } from '../components/VisionPreviews'
 
 export default function Landing() {
   const nav = useNavigate()
@@ -89,10 +90,11 @@ export default function Landing() {
       <section className="lsection">
         <div className="kicker">Coming Soon</div>
         <h2 className="lh2">다음 단계의 비전</h2>
+        <p className="lsectlede">정식 출시되면 이런 모습이에요 — 예시 화면으로 미리 보세요.</p>
         <div className="soongrid">
-          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="link" size={22} stroke={1.7} /></div><h3>실시간 도매가 제휴 연동</h3><p>도매 플랫폼과 정식 제휴해, 오늘의 단가를 비교하고 바로 발주까지.</p></div>
-          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="receipt" size={22} stroke={1.7} /></div><h3>POS·배달앱 매출 연동</h3><p>오늘 실제 몇 그릇 팔렸는지 자동 추적, 예상과 실제를 나란히.</p></div>
-          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="bell" size={22} stroke={1.7} /></div><h3>시세 변동 알림</h3><p>원가가 흔들리면 먼저 알려드려, 제때 가격을 다듬게.</p></div>
+          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="link" size={22} stroke={1.7} /></div><h3>실시간 도매가 제휴 연동</h3><p>도매 플랫폼과 정식 제휴해, 오늘의 단가를 비교하고 최저가로 바로 발주까지.</p><WholesalePreview /></div>
+          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="receipt" size={22} stroke={1.7} /></div><h3>POS·배달앱 매출 연동</h3><p>오늘 실제 몇 그릇 팔렸는지 자동 추적, 예상과 실제를 나란히.</p><PosPreview /></div>
+          <div className="sooncard"><span className="badge">출시 예정</span><div className="ic"><Icon name="bell" size={22} stroke={1.7} /></div><h3>시세 변동 알림</h3><p>원가가 흔들리면 먼저 알려드려, 제때 가격을 다듬게.</p><AlertPreview /></div>
         </div>
       </section>
 
