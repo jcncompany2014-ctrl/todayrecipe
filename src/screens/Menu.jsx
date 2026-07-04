@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
+import GoalGauge from '../components/GoalGauge'
 import { useStore } from '../state/store'
 import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
 
@@ -14,7 +15,6 @@ export default function Menu() {
   const profitOf = (m) => (m.price * m.margin) / 100
   const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length)
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
-  const bePct = gp.total !== Infinity && gp.total > gp.be ? Math.max(8, Math.min(92, Math.round((gp.be / gp.total) * 100))) : 100
   const best = menus.reduce((a, b) => (b.margin > a.margin ? b : a))
   const healthy = menus.filter((m) => m.margin >= 30).length
   const sorted = [...menus].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
@@ -39,27 +39,16 @@ export default function Menu() {
       <div className="hero fade" style={{ animationDelay: '.05s' }}>
         <div className="hero-label">
           {monthlyGoal > 0
-            ? <>한 달 <b>{manwon(monthlyGoal)}</b> 벌려면 · 영업 {workDays}일 기준</>
-            : <>가게를 유지만 하려면 · 영업 {workDays}일 기준</>}
+            ? <>한 달 <b>{manwon(monthlyGoal)}</b> 목표 · 영업 {workDays}일 기준</>
+            : <>가게 유지 기준 · 영업 {workDays}일</>}
         </div>
         <div className="hero-num">
           <span className="pre">하루</span><b className="num">{gp.total === Infinity ? '—' : gp.total}</b><span className="unit">그릇</span><span className="tail">팔면 돼요</span>
         </div>
 
-        {gp.total === Infinity ? (
-          <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요</div>
-        ) : (
-          <div className="hero-gauge">
-            <div className="hg-labels">
-              <span>본전 <b className="num">{gp.be}</b>그릇</span>
-              {monthlyGoal > 0 && <span className="goal">목표 <b className="num">{gp.total}</b>그릇</span>}
-            </div>
-            <div className="hg-bar">
-              <span className="hg-fix" style={{ width: `${bePct}%` }} />
-              {monthlyGoal > 0 && <span className="hg-goal" style={{ width: `${100 - bePct}%` }} />}
-            </div>
-          </div>
-        )}
+        {gp.total === Infinity
+          ? <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요</div>
+          : <GoalGauge be={gp.be} total={gp.total} />}
 
         <div className="hero-foot">
           <span>그릇당 평균 <b className="num">{won(avgProfit)}원</b></span>

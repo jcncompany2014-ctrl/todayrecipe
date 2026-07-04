@@ -113,17 +113,15 @@ a{color:inherit;text-decoration:none}
 .scr-menu .hd-row{display:flex;align-items:flex-end;justify-content:space-between}
 .scr-menu .hd-title{font-size:25px;font-weight:800;letter-spacing:-.7px}
 .scr-menu .hd-count{font-size:13px;font-weight:600;color:var(--muted);padding-bottom:3px}
-.scr-menu .hero{margin:2px 22px 0;color:#fff;border-radius:24px;
-  padding:20px 22px 19px;position:relative;overflow:hidden;
-  background:radial-gradient(120% 130% at 88% -25%, rgba(65,211,146,.24) 0%, rgba(65,211,146,0) 55%),linear-gradient(158deg,#143D2B 0%,#0C2B1E 62%,#081B13 100%);
-  box-shadow:0 18px 34px -16px rgba(8,31,21,.6)}
-.scr-menu .hero-label{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.1px}
-.scr-menu .hero-label b{color:#5FD6A0;font-weight:800}
-.scr-menu .hero-num{display:flex;align-items:baseline;gap:8px;margin-top:5px}
-.scr-menu .hero-num .pre{font-size:16px;font-weight:700;color:rgba(255,255,255,.72);margin-right:-2px}
-.scr-menu .hero-num b{font-size:54px;font-weight:800;line-height:.95;letter-spacing:-2px}
-.scr-menu .hero-num .unit{font-size:21px;font-weight:700;letter-spacing:-.5px}
-.scr-menu .hero-num .tail{font-size:14.5px;font-weight:500;color:rgba(255,255,255,.7);margin-left:1px}
+.scr-menu .hero{margin:2px 22px 0;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:22px;
+  padding:19px 21px 17px;position:relative;overflow:hidden;box-shadow:0 10px 26px -14px rgba(60,40,25,.16)}
+.scr-menu .hero-label{font-size:12.5px;font-weight:500;color:var(--muted);letter-spacing:.1px}
+.scr-menu .hero-label b{color:var(--good-1);font-weight:700}
+.scr-menu .hero-num{display:flex;align-items:baseline;gap:7px;margin-top:6px}
+.scr-menu .hero-num .pre{font-size:15px;font-weight:600;color:var(--ink-soft);margin-right:-1px}
+.scr-menu .hero-num b{font-size:52px;font-weight:800;line-height:.95;letter-spacing:-2px;color:var(--ink)}
+.scr-menu .hero-num .unit{font-size:20px;font-weight:700;letter-spacing:-.5px;color:var(--ink)}
+.scr-menu .hero-num .tail{font-size:14px;font-weight:500;color:var(--muted);margin-left:1px}
 .scr-menu .hero-rule{border:none;border-top:1px dashed rgba(255,255,255,.2);margin:15px 0 11px}
 .scr-menu .hero-sub{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.6);line-height:1.5}
 .scr-menu .hero-sub .accent{color:#5FD6A0;font-weight:600}
@@ -155,33 +153,24 @@ a{color:inherit;text-decoration:none}
   display:flex;align-items:center;justify-content:center;color:var(--ink-soft);flex:0 0 auto}
 .scr-menu .hd-count{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56%}
 
-/* 목표 역산 카드 — 미니 게이지 + 하단 정보 */
-.scr-menu .hero-gauge{margin-top:17px}
-.scr-menu .hg-labels{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.scr-menu .hg-labels span{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.5)}
-.scr-menu .hg-labels b{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.3px;margin:0 1px}
-.scr-menu .hg-labels .goal{color:#5FD6A0}
-.scr-menu .hg-labels .goal b{color:#5FD6A0}
-.scr-menu .hg-bar{display:flex;height:9px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.1)}
-.scr-menu .hg-fix{height:100%;background:rgba(255,255,255,.3)}
-.scr-menu .hg-goal{height:100%;background:linear-gradient(90deg,#3BC98A,#5FD6A0);border-radius:0 99px 99px 0}
-.scr-menu .hero-warn{margin-top:15px;font-size:12.5px;font-weight:600;color:#FFC1B6;background:rgba(208,75,63,.2);padding:11px 13px;border-radius:12px}
-.scr-menu .hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
-.scr-menu .hero-foot>span{font-size:12px;font-weight:500;color:rgba(255,255,255,.55)}
-.scr-menu .hero-foot>span b{color:rgba(255,255,255,.9);font-weight:700}
-.scr-menu .hero-edit{flex:0 0 auto;font-size:12px;font-weight:700;color:#fff;background:rgba(255,255,255,.15);
-  border:none;border-radius:10px;padding:8px 14px;cursor:pointer;transition:background .15s}
+/* 목표 역산 카드(라이트) — 결과화면 GoalGauge 재사용 + 하단 정보 */
+.scr-menu .hero .gg{margin-top:16px}
+.scr-menu .hero-warn{margin-top:15px;font-size:12.5px;font-weight:600;color:var(--bad-1);background:rgba(208,75,63,.08);padding:11px 13px;border-radius:12px;line-height:1.45}
+.scr-menu .hero-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}
+.scr-menu .hero-foot>span{font-size:12px;font-weight:500;color:var(--muted)}
+.scr-menu .hero-foot>span b{color:var(--ink-soft);font-weight:700}
+.scr-menu .hero-edit{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--ink);background:var(--tile);
+  border:none;border-radius:10px;padding:8px 14px;cursor:pointer;transition:transform .12s,background .15s}
 .scr-menu .hero-edit:active{transform:scale(.95)}
-.scr-menu .hero-label b{color:#5FD6A0;font-weight:800}
-.scr-menu .hero-editor{margin-top:14px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.16);display:flex;flex-direction:column;gap:10px}
+.scr-menu .hero-editor{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
 .scr-menu .he-field{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.scr-menu .he-lab{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.72)}
-.scr-menu .he-step{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.09);border-radius:11px;padding:5px 7px}
+.scr-menu .he-lab{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.scr-menu .he-step{display:flex;align-items:center;gap:8px;background:var(--tile);border-radius:11px;padding:5px 7px}
 .scr-menu .he-step button{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;
-  background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+  background:var(--paper);color:var(--ink);display:flex;align-items:center;justify-content:center;transition:transform .12s;box-shadow:0 1px 2px rgba(0,0,0,.05)}
 .scr-menu .he-step button:active{transform:scale(.9)}
 .scr-menu .he-step>.num{font-size:14.5px;font-weight:800;letter-spacing:-.3px;min-width:84px;text-align:center}
-.scr-menu .fx-hint{margin-top:3px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.5);line-height:1.5}
+.scr-menu .fx-hint{margin-top:3px;font-size:11.5px;font-weight:500;color:var(--muted);line-height:1.5}
 
 /* 신호등 범례 */
 .scr-menu .legend-row{display:flex;gap:14px;padding:15px 22px 0}
