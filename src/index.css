@@ -935,19 +935,18 @@ a{color:inherit;text-decoration:none}
 .landing .kicker::before,.landing .kicker::after{content:"";width:34px;height:1px;background:var(--muted);opacity:.4}
 
 /* ---------- 시세 티커 ---------- */
-.landing .ticker{margin:34px 0 0;border-top:1px solid #E3DCCF;border-bottom:1px solid #E3DCCF;
-  padding:13px 0;overflow:hidden;position:relative;background:#F4EFE7}
-.landing .ticker::before{content:"";position:absolute;left:0;top:0;bottom:0;z-index:1;pointer-events:none;
-  width:clamp(150px,22vw,240px);background:linear-gradient(90deg,#F4EFE7 55%,rgba(244,239,231,0))}
-.landing .ticker-label{position:absolute;left:clamp(16px,3vw,44px);top:50%;transform:translateY(-50%);z-index:2;
-  display:inline-flex;align-items:center;gap:7px;background:var(--paper);border:1px solid #E3DCCF;border-radius:99px;
-  padding:6px 13px;font-size:10.5px;font-weight:800;letter-spacing:.8px;color:var(--pine-2);box-shadow:0 1px 3px rgba(60,40,25,.07)}
+.landing .ticker{margin:34px 0 0;border-top:1px dashed #DBD3C6;border-bottom:1px dashed #DBD3C6;
+  padding:12px 0;overflow:hidden;position:relative}
+.landing .ticker-label{position:absolute;left:0;top:0;bottom:0;z-index:2;
+  display:flex;align-items:center;gap:7px;padding:0 26px 0 clamp(16px,3vw,44px);
+  font-size:11px;font-weight:800;letter-spacing:1.3px;color:var(--pine-2);
+  background:linear-gradient(90deg,#EFEAE2 0,#EFEAE2 60%,rgba(239,234,226,0))}
 .landing .live-dot{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:var(--good-1);
-  box-shadow:0 0 0 3px rgba(22,160,106,.16);animation:livepulse 1.9s ease-in-out infinite}
-@keyframes livepulse{0%,100%{box-shadow:0 0 0 3px rgba(22,160,106,.16)}50%{box-shadow:0 0 0 5px rgba(22,160,106,.04)}}
+  box-shadow:0 0 0 3px rgba(22,160,106,.14);animation:livepulse 1.9s ease-in-out infinite}
+@keyframes livepulse{0%,100%{box-shadow:0 0 0 3px rgba(22,160,106,.14)}50%{box-shadow:0 0 0 5px rgba(22,160,106,.03)}}
 @media (prefers-reduced-motion:reduce){.landing .live-dot{animation:none}}
 .landing .ticker-track{display:flex;width:max-content;animation:tickmove 38s linear infinite}
-.landing .ticker-group{display:flex;gap:38px;padding-right:38px;padding-left:210px}
+.landing .ticker-group{display:flex;gap:38px;padding-right:38px;padding-left:185px}
 .landing .tick{display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap;font-size:13px}
 .landing .tick b{font-weight:700;color:var(--ink-soft)}
 .landing .tick i{font-style:normal;font-weight:800;color:var(--ink)}
