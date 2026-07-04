@@ -63,6 +63,7 @@ export default function Landing() {
 
       {/* 시세 티커 — 장부 띠 */}
       <div className="ticker" aria-hidden="true">
+        <div className="ticker-label"><i className="live-dot" />오늘 참고 시세</div>
         <div className="ticker-track">
           {[0, 1].map((k) => (
             <div className="ticker-group" key={k}>
