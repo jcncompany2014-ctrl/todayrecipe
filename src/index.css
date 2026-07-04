@@ -23,8 +23,7 @@ html,body,#root{height:100%}
 body{
   font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo',sans-serif;
   color:var(--ink);
-  background-color:#EEE9E1;
-  background-image:radial-gradient(118% 105% at 6% -5%, rgba(250,246,239,.8) 0%, rgba(250,246,239,0) 56%);
+  background-color:#EFEAE2;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
 /* 파인 그레인 — 매트한 종이 질감(뻔한 그라데이션 제거) */
