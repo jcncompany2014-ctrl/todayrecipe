@@ -53,6 +53,8 @@ const P = {
   sparkle: '<path d="M12 4.5l1.7 4.3 4.3 1.7-4.3 1.7L12 16.5l-1.7-4.3L6 10.5l4.3-1.7z"/><path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
   sliders: '<path d="M4 8h8M17 8h3"/><circle cx="14.5" cy="8" r="2.3"/><path d="M4 16h3M12 16h8"/><circle cx="9.5" cy="16" r="2.3"/>',
   swap: '<path d="M7 8h11l-2.6-2.6M17 16H6l2.6 2.6"/>',
+  edit: '<path d="M4 20.5h4L18.7 9.8a1.9 1.9 0 0 0-2.7-2.7L5.3 17.8z"/><path d="M14.2 8.6l2.7 2.7"/>',
+  camera: '<rect x="3" y="7" width="18" height="12.5" rx="3"/><circle cx="12" cy="13.2" r="3.2"/><path d="M8.2 7l1.3-2.1h5l1.3 2.1"/>',
   pie: '<path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z"/><path d="M12 3.5V12"/>',
   download: '<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M5 19h14"/>',
   share: '<circle cx="6" cy="12" r="2.4"/><circle cx="17.5" cy="6" r="2.4"/><circle cx="17.5" cy="18" r="2.4"/><path d="M8.1 10.9l7.3-3.8M8.1 13.1l7.3 3.8"/>',

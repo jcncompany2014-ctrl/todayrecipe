@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import GoalGauge from '../components/GoalGauge'
+import MenuEditSheet from '../components/MenuEditSheet'
 import { useStore } from '../state/store'
 import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
 
@@ -11,6 +12,7 @@ export default function Menu() {
   const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu } = useStore()
   const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
+  const [editMenu, setEditMenu] = useState(null)
 
   const profitOf = (m) => (m.price * m.margin) / 100
   const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length)
@@ -22,6 +24,7 @@ export default function Menu() {
   const openMenu = (m) => { loadMenu(m); nav('/app/result') }
 
   return (
+    <>
     <div className="scroll">
       {/* 브랜드 헤더 */}
       <div className="hd fade">
@@ -107,6 +110,7 @@ export default function Menu() {
           const profit = round10(profitOf(m))
           return (
             <div key={m.id} className="mcard fade" style={{ animationDelay: `${0.1 + i * 0.04}s` }} onClick={() => openMenu(m)}>
+              <button className="mcard-edit" aria-label={`${m.nm} 편집`} onClick={(e) => { e.stopPropagation(); setEditMenu(m) }}><Icon name="edit" size={14} stroke={1.9} /></button>
               <div className="mcard-photo"><Photo src={m.img} icon={m.icon} iconSize={30} alt={m.nm} /></div>
               <div className="mcard-body">
                 <div className="mcard-name">
@@ -129,5 +133,7 @@ export default function Menu() {
         })}
       </div>
     </div>
+    {editMenu && <MenuEditSheet menu={editMenu} onClose={() => setEditMenu(null)} />}
+    </>
   )
 }

@@ -93,6 +93,11 @@ export function StoreProvider({ children }) {
     setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price)) })
   }, [])
 
+  // 메뉴 편집(이름·사진 등) — 메뉴판에서 바로 수정
+  const updateMenu = useCallback((id, patch) => {
+    setMenus((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)))
+  }, [])
+
   // 결과 저장 → 메뉴판에 누적(upsert)
   const saveBuild = useCallback((margin) => {
     setMenus((list) => {
@@ -110,7 +115,7 @@ export function StoreProvider({ children }) {
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
-    newBuild, loadMenu, saveBuild, toast, toastMsg,
+    newBuild, loadMenu, saveBuild, updateMenu, toast, toastMsg,
   }
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }

@@ -6,11 +6,11 @@ export const SEED_MENUS = [
   { id: 'jeyuk',     nm: '제육덮밥', price: 9000,  margin: 41, icon: 'donbap',     img: '/img/dish_jeyuk.webp',     badge: '방금 계산' },
   { id: 'kimchi',    nm: '김치찌개', price: 8000,  margin: 41, icon: 'pot',        img: '/img/dish_kimchi.webp' },
   { id: 'donkkaseu', nm: '돈까스',   price: 9500,  margin: 35, icon: 'plate',      img: '/img/dish_donkkaseu.webp' },
-  { id: 'sundubu',   nm: '순두부찌개', price: 8000, margin: 43, icon: 'pot' },
-  { id: 'bokkeumbap',nm: '김치볶음밥', price: 7500, margin: 46, icon: 'donbap' },
+  { id: 'sundubu',   nm: '순두부찌개', price: 8000, margin: 43, icon: 'pot',        img: '/img/dish_sundubu.webp' },
+  { id: 'bokkeumbap',nm: '김치볶음밥', price: 7500, margin: 46, icon: 'donbap',     img: '/img/dish_bokkeumbap.webp' },
   { id: 'bibimbap',  nm: '비빔밥',   price: 8500,  margin: 38, icon: 'bowl' },
   { id: 'mala',      nm: '마라탕',   price: 9000,  margin: 24, icon: 'malatang',   img: '/img/dish_mala.webp' },
-  { id: 'udon',      nm: '우동',     price: 7000,  margin: 28, icon: 'bowl' },
+  { id: 'udon',      nm: '우동',     price: 7000,  margin: 28, icon: 'bowl',        img: '/img/dish_udon.webp' },
   { id: 'naengmyeon',nm: '물냉면',   price: 10000, margin: 12, icon: 'naengmyeon', img: '/img/dish_naengmyeon.webp' },
 ]
 
