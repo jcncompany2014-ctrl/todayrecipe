@@ -3,19 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
-import { won, round10, sig, breakeven } from '../lib/calc'
-
-const PRESETS = [150000, 200000, 250000, 300000]
+import { won, round10, sig, goalPlan } from '../lib/calc'
 
 export default function Menu() {
   const nav = useNavigate()
-  const { menus, dailyFixed, setDailyFixed, loadMenu } = useStore()
-  const [editFixed, setEditFixed] = useState(false)
+  const { menus, dailyFixed, setDailyFixed, goal, setGoal, loadMenu } = useStore()
+  const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
 
   const profitOf = (m) => (m.price * m.margin) / 100
   const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length)
-  const bowls = breakeven(avgProfit, dailyFixed)
+  const gp = goalPlan(avgProfit, goal, dailyFixed)   // 목표 역산(가게 평균 기준)
   const best = menus.reduce((a, b) => (b.margin > a.margin ? b : a))
   const healthy = menus.filter((m) => m.margin >= 30).length
   const sorted = [...menus].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
@@ -36,30 +34,44 @@ export default function Menu() {
         </div>
       </div>
 
-      {/* 본전 카드 — 계산식을 그대로 보여주고, 고정비를 직접 조절 */}
+      {/* 목표 역산 카드 — 하루 목표를 벌려면 가게 전체로 몇 그릇, 고정비·목표 직접 조절 */}
       <div className="hero fade" style={{ animationDelay: '.05s' }}>
-        <div className="hero-label">오늘 본전을 맞추려면 · 가게 평균 기준</div>
+        <div className="hero-label">
+          {goal > 0 ? <>하루 <b>{won(goal)}원</b> 벌려면 · 가게 평균 기준</> : <>오늘 본전을 맞추려면 · 가게 평균 기준</>}
+        </div>
         <div className="hero-num">
-          <b className="num">{bowls === Infinity ? '—' : bowls}</b><span className="unit">그릇</span><span className="tail">정도 팔면 돼요</span>
+          <b className="num">{gp.total === Infinity ? '—' : gp.total}</b><span className="unit">그릇</span><span className="tail">정도 팔면 돼요</span>
         </div>
         <hr className="hero-rule" />
         <div className="hero-calc">
-          <span>하루 고정비 <b className="num">{won(dailyFixed)}원</b> ÷ 메뉴 평균 <b className="num">{won(avgProfit)}원</b></span>
-          <button className="hero-edit" onClick={() => setEditFixed((v) => !v)}>{editFixed ? '닫기' : '고정비 수정'}</button>
+          <span>
+            {gp.total === Infinity
+              ? <>그릇당 남는 돈이 0 이하예요</>
+              : goal > 0
+                ? <>본전 <b className="num">{gp.be}그릇</b> + 목표분 <b className="num">{gp.extra}그릇</b> · 그릇당 평균 {won(avgProfit)}원</>
+                : <>하루 고정비 <b className="num">{won(dailyFixed)}원</b> ÷ 그릇당 평균 <b className="num">{won(avgProfit)}원</b></>}
+          </span>
+          <button className="hero-edit" onClick={() => setEditOpen((v) => !v)}>{editOpen ? '닫기' : '조정'}</button>
         </div>
-        {editFixed && (
+        {editOpen && (
           <div className="hero-editor">
-            <div className="fx-stepper">
-              <button onClick={() => setDailyFixed(Math.max(50000, dailyFixed - 10000))} aria-label="감소"><Icon name="minus" size={16} stroke={2.4} /></button>
-              <span className="num">{won(dailyFixed)}원</span>
-              <button onClick={() => setDailyFixed(dailyFixed + 10000)} aria-label="증가"><Icon name="plus" size={16} stroke={2.4} /></button>
+            <div className="he-field">
+              <span className="he-lab">하루 목표 벌이</span>
+              <div className="he-step">
+                <button onClick={() => setGoal((g) => g - 10000)} aria-label="목표 감소"><Icon name="minus" size={15} stroke={2.4} /></button>
+                <span className="num">{won(goal)}원</span>
+                <button onClick={() => setGoal((g) => g + 10000)} aria-label="목표 증가"><Icon name="plus" size={15} stroke={2.4} /></button>
+              </div>
             </div>
-            <div className="fx-presets">
-              {PRESETS.map((p) => (
-                <button key={p} className={`fx-preset${dailyFixed === p ? ' on' : ''}`} onClick={() => setDailyFixed(p)}>{won(p / 10000)}만</button>
-              ))}
+            <div className="he-field">
+              <span className="he-lab">하루 고정비</span>
+              <div className="he-step">
+                <button onClick={() => setDailyFixed(Math.max(50000, dailyFixed - 10000))} aria-label="고정비 감소"><Icon name="minus" size={15} stroke={2.4} /></button>
+                <span className="num">{won(dailyFixed)}원</span>
+                <button onClick={() => setDailyFixed(dailyFixed + 10000)} aria-label="고정비 증가"><Icon name="plus" size={15} stroke={2.4} /></button>
+              </div>
             </div>
-            <p className="fx-hint">월세·인건비·공과금 등 하루 나가는 돈을 넣어요. 본전 그릇 수가 바로 바뀝니다.</p>
+            <p className="fx-hint">목표는 하루에 벌고 싶은 순이익, 고정비는 월세·인건비 등 매일 나가는 돈이에요.</p>
           </div>
         )}
       </div>
