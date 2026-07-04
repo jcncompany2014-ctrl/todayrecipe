@@ -6,6 +6,9 @@ import Market from './screens/Market'
 import Cart from './screens/Cart'
 import Result from './screens/Result'
 import Dashboard from './screens/Dashboard'
+import SalesToday from './screens/SalesToday'
+import Combo from './screens/Combo'
+import Monthly from './screens/Monthly'
 import Vision from './screens/Vision'
 import Settings from './screens/Settings'
 
@@ -19,6 +22,9 @@ export default function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="result" element={<Result />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="sales" element={<SalesToday />} />
+        <Route path="combo" element={<Combo />} />
+        <Route path="monthly" element={<Monthly />} />
         <Route path="vision" element={<Vision />} />
         <Route path="settings" element={<Settings />} />
       </Route>

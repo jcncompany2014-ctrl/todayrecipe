@@ -132,6 +132,12 @@ export default function Menu() {
           )
         })}
       </div>
+
+      <button className="combo-cta fade" onClick={() => nav('/app/combo')}>
+        <span className="cc-ic"><Icon name="cart" size={18} stroke={1.9} /></span>
+        <span className="cc-txt"><b>세트·콤보 메뉴 만들기</b><em>메뉴를 묶어 세트가 · 마진 계산</em></span>
+        <Icon name="chevR" size={17} stroke={2} />
+      </button>
     </div>
     {editMenu && <MenuEditSheet menu={editMenu} onClose={() => setEditMenu(null)} />}
     </>

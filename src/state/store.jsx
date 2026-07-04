@@ -86,8 +86,12 @@ export function StoreProvider({ children }) {
     setBuild({ id: 'm' + Date.now(), nm: '새 메뉴', price: 9000, icon: 'donbap', items: [] })
   }, [])
 
-  // 저장된 메뉴 열기 — 기본 빌드(제육덮밥)는 실제 재료로, 나머지는 저장값에서 원가 역산
+  // 저장된 메뉴 열기 — 저장된 레시피(items)가 있으면 그대로 복원, 없으면 원가 역산
   const loadMenu = useCallback((menu) => {
+    if (menu.items && menu.items.length) {
+      setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: clone(menu.items) })
+      return
+    }
     if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
     const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
     setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price)) })
@@ -98,16 +102,38 @@ export function StoreProvider({ children }) {
     setMenus((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)))
   }, [])
 
-  // 결과 저장 → 메뉴판에 누적(upsert)
+  // 메뉴 복제 — 원본 바로 아래에 '(복사)'로
+  const duplicateMenu = useCallback((id) => {
+    setMenus((list) => {
+      const idx = list.findIndex((m) => m.id === id)
+      if (idx < 0) return list
+      const copy = { ...clone(list[idx]), id: 'm' + Date.now(), nm: `${list[idx].nm} (복사)`.slice(0, 24), badge: undefined }
+      const next = [...list]; next.splice(idx + 1, 0, copy); return next
+    })
+  }, [])
+
+  // 메뉴 삭제
+  const deleteMenu = useCallback((id) => setMenus((list) => list.filter((m) => m.id !== id)), [])
+
+  // 결과 저장 → 메뉴판에 누적(upsert). 레시피(items)도 함께 기억.
   const saveBuild = useCallback((margin) => {
     setMenus((list) => {
       const cleared = list.map((m) => ({ ...m, badge: undefined }))
       const idx = cleared.findIndex((m) => m.id === build.id)
-      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', img: build.img, badge: '방금 계산' }
+      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', img: build.img, items: clone(build.items), badge: '방금 계산' }
       if (idx >= 0) { cleared[idx] = entry; return cleared }
       return [entry, ...cleared]
     })
   }, [build])
+
+  // 오늘 장사 마감 — 메뉴별 판매 개수(인메모리). 연타 시 값이 밀리지 않게 함수형 업데이터 허용.
+  const [soldToday, setSoldToday] = useState({})
+  const setSold = useCallback((id, count) => setSoldToday((s) => {
+    const cur = s[id] || 0
+    const next = typeof count === 'function' ? count(cur) : count
+    return { ...s, [id]: Math.max(0, Math.round(next)) }
+  }), [])
+  const resetSold = useCallback(() => setSoldToday({}), [])
 
   const value = {
     onboarded, setOnboarded,
@@ -115,7 +141,9 @@ export function StoreProvider({ children }) {
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
-    newBuild, loadMenu, saveBuild, updateMenu, toast, toastMsg,
+    newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
+    soldToday, setSold, resetSold,
+    toast, toastMsg,
   }
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
 }

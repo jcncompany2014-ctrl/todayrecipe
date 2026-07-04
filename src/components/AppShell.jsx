@@ -11,6 +11,9 @@ const ROUTE = {
   '/app/cart':      { cls: 'scr-cart',                  tab: false },
   '/app/result':    { cls: 'scr-result',               tab: false },
   '/app/dashboard': { cls: 'scr-dash scr-tabpage',      tab: true },
+  '/app/sales':     { cls: 'scr-sales',                 tab: false },
+  '/app/combo':     { cls: 'scr-combo',                 tab: false },
+  '/app/monthly':   { cls: 'scr-monthly',               tab: false },
   '/app/vision':    { cls: 'scr-vision scr-tabpage',    tab: true },
   '/app/settings':  { cls: 'scr-settings scr-tabpage',  tab: true },
 }

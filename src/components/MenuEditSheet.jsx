@@ -5,9 +5,10 @@ import { useStore } from '../state/store'
 
 /* 메뉴 편집 바텀시트 — 이름 수정 + 사진 기입(기기에서 업로드, 인메모리). */
 export default function MenuEditSheet({ menu, onClose }) {
-  const { updateMenu, toast } = useStore()
+  const { updateMenu, duplicateMenu, deleteMenu, toast } = useStore()
   const [nm, setNm] = useState(menu.nm)
   const [img, setImg] = useState(menu.img || null)
+  const [confirmDel, setConfirmDel] = useState(false)
   const fileRef = useRef(null)
 
   const pickPhoto = (e) => {
@@ -52,6 +53,19 @@ export default function MenuEditSheet({ menu, onClose }) {
         </label>
 
         <button className="ms-save" onClick={save}>저장</button>
+
+        <div className="ms-actions">
+          <button className="ms-act" onClick={() => { duplicateMenu(menu.id); toast(`<b>${menu.nm}</b> 복제했어요`); onClose() }}>
+            <Icon name="copy" size={15} stroke={1.9} />복제
+          </button>
+          {confirmDel ? (
+            <button className="ms-act danger on" onClick={() => { deleteMenu(menu.id); toast('메뉴를 삭제했어요'); onClose() }}>정말 삭제할까요?</button>
+          ) : (
+            <button className="ms-act danger" onClick={() => setConfirmDel(true)}>
+              <Icon name="trash" size={15} stroke={1.9} />삭제
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
