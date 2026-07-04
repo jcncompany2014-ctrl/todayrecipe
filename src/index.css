@@ -1217,9 +1217,9 @@ a{color:inherit;text-decoration:none}
 .gg-n.muted{color:var(--muted)} .gg-n.muted b{color:var(--ink-soft)}
 .gg-n.good{color:var(--good-2)} .gg-n.good b{color:var(--good-1)}
 .gg-bar{position:relative;display:flex;height:16px;border-radius:99px;overflow:hidden;background:var(--track)}
-.gg-fix{height:100%;background:#D8D0C4}
+.gg-fix{height:100%;background:#AEDCC8}
 .gg-goal{height:100%;background:var(--good-1)}
-.gg-div{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);border-radius:2px;transform:translateX(-1px);z-index:1}
+.gg-div{position:absolute;top:0;bottom:0;width:3px;background:#fff;transform:translateX(-1.5px);z-index:1}
 .gg-zones{display:flex;justify-content:space-between;font-size:11px;font-weight:600;margin-top:7px}
 .gg-zones .muted{color:var(--muted)} .gg-zones .good{color:var(--good-2)}
 .gg-inf{font-size:12.5px;font-weight:600;color:var(--bad-1);background:rgba(208,75,63,.08);padding:11px 13px;border-radius:12px;margin:12px 0 2px;line-height:1.45}
