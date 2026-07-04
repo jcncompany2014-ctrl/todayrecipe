@@ -20,7 +20,10 @@ export function StoreProvider({ children }) {
   const [dailyFixed, setDailyFixed] = useState(243000)
   // 하루 목표 순이익 — 목표 역산(결과·대시보드 공유). 이만큼 벌려면 몇 그릇?
   const [goal, setGoalState] = useState(100000)
-  const setGoal = useCallback((g) => setGoalState(Math.max(0, Math.min(1000000, Math.round(g / 10000) * 10000))), [])
+  const setGoal = useCallback((g) => setGoalState((prev) => {
+    const v = typeof g === 'function' ? g(prev) : g
+    return Math.max(0, Math.min(1000000, Math.round(v / 10000) * 10000))
+  }), [])
   // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
   const [costOpts, setCostOpts] = useState({ rate: 0.12, packaging: 300 })
   const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])

@@ -184,9 +184,9 @@ export default function Result() {
           <div className="gc-head">
             <span className="lab">하루에 이만큼 벌고 싶어요</span>
             <div className="oe-stepper gc-step">
-              <button aria-label="목표 감소" onClick={() => setGoal(goal - 10000)}><Icon name="minus" size={14} stroke={2.4} /></button>
+              <button aria-label="목표 감소" onClick={() => setGoal((g) => g - 10000)}><Icon name="minus" size={14} stroke={2.4} /></button>
               <span className="v num">{won(goal)}<i>원</i></span>
-              <button aria-label="목표 증가" onClick={() => setGoal(goal + 10000)}><Icon name="plus" size={14} stroke={2.4} /></button>
+              <button aria-label="목표 증가" onClick={() => setGoal((g) => g + 10000)}><Icon name="plus" size={14} stroke={2.4} /></button>
             </div>
           </div>
           <div className="gc-hero">
