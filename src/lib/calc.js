@@ -18,6 +18,8 @@ export const DAILY_FIXED = 243000
 
 export const won = (n) => Math.round(n).toLocaleString('ko-KR')
 export const round10 = (n) => Math.round(n / 10) * 10
+// 큰 금액은 '만원' 단위로 (한 달 고정비·목표 등)
+export const manwon = (n) => `${won(Math.round(n / 10000))}만원`
 
 // 신호등: ≥30 초록 / 20~29 앰버 / <20 빨강
 export const sig = (m) => (m >= 30 ? 'g' : m >= 20 ? 'w' : 'b')

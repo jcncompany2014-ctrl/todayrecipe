@@ -32,8 +32,8 @@ function SceneYield() {
 function SceneBreakeven() {
   return (
     <div className="onb-card dark">
-      <span className="ob-lab">하루 본전</span>
-      <div className="ob-big"><b className="num">66</b><span>그릇</span></div>
+      <span className="ob-lab">하루 목표</span>
+      <div className="ob-big"><b className="num">126</b><span>그릇</span></div>
       <div className="ob-diag"><span className="ob-dot" />AI 진단 · 개선책까지</div>
     </div>
   )
@@ -42,7 +42,7 @@ function SceneBreakeven() {
 const SLIDES = [
   { k: 'STEP 1', t: ['담기만 하면', '계산이 끝나요'], d: '마켓처럼 재료를 담으면, 담는 순간 1인분 원가와 마진이 바로 움직여요.', S: SceneCart },
   { k: 'STEP 2', t: ['조리 수율까지', '반영한 진짜 원가'], d: '볶고 삶으면 줄어드는 양(수율)까지 계산해요. 원물 단가만 볼 때와 원가가 달라요.', S: SceneYield },
-  { k: 'STEP 3', t: ['하루 몇 그릇이', '본전인지까지'], d: '매일 팔아야 할 그릇 수, 그리고 마진을 높이는 AI 진단·개선책까지 알려드려요.', S: SceneBreakeven },
+  { k: 'STEP 3', t: ['하루 몇 그릇 팔면', '목표를 채우는지'], d: '한 달 목표만 정하면 하루 몇 그릇 팔면 되는지 계산하고, 마진 높이는 AI 진단까지 알려드려요.', S: SceneBreakeven },
 ]
 
 export default function Onboarding() {

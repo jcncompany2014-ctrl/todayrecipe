@@ -6,7 +6,7 @@ import { PRODUCTS } from '../data/catalog'
 import {
   costOf, yieldOf, summarize, breakeven, won, round10, sig,
   overheadFor, deliveryFeeFor, fixedOverheadFor, marginWithFoodShift, orderPlan, fmtGrams,
-  costSegments, bestSubstitutions, diagnose, goalPlan,
+  costSegments, bestSubstitutions, diagnose, goalPlan, manwon,
 } from '../lib/calc'
 import { exportReceipt } from '../lib/receipt'
 import GoalGauge from '../components/GoalGauge'
@@ -56,7 +56,7 @@ function CostDonut({ data }) {
 
 export default function Result() {
   const nav = useNavigate()
-  const { build, dailyFixed, goal, setGoal, costOpts, setPrice, saveBuild, toast } = useStore()
+  const { build, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast } = useStore()
   const hasItems = build.items.length > 0
 
   const foodFixed = useMemo(
@@ -74,7 +74,7 @@ export default function Result() {
   const margin = price > 0 ? Math.round((profit / price) * 100) : 0
   const s = sig(margin)
   const bowls = breakeven(profit, dailyFixed)
-  const gp = goalPlan(profit, goal, dailyFixed)   // 목표 역산: 본전·목표달성 그릇 수
+  const gp = goalPlan(profit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산: 본전·목표달성 그릇 수
   const COOK_VERB = { 볶기: '볶으면', 삶기: '삶으면', 튀김: '튀기면' }
 
   const minP = round10(fixedCost / (1 - rate))
@@ -182,21 +182,21 @@ export default function Result() {
 
         <div className="rcard goalcard fade" style={{ animationDelay: '.1s' }}>
           <div className="gc-head">
-            <span className="lab">하루에 이만큼 벌고 싶어요</span>
+            <span className="lab">한 달에 이만큼 벌고 싶어요</span>
             <div className="oe-stepper gc-step">
-              <button aria-label="목표 감소" onClick={() => setGoal((g) => g - 10000)}><Icon name="minus" size={14} stroke={2.4} /></button>
-              <span className="v num">{won(goal)}<i>원</i></span>
-              <button aria-label="목표 증가" onClick={() => setGoal((g) => g + 10000)}><Icon name="plus" size={14} stroke={2.4} /></button>
+              <button aria-label="목표 감소" onClick={() => setMonthlyGoal((g) => g - 100000)}><Icon name="minus" size={14} stroke={2.4} /></button>
+              <span className="v num">{manwon(monthlyGoal)}</span>
+              <button aria-label="목표 증가" onClick={() => setMonthlyGoal((g) => g + 100000)}><Icon name="plus" size={14} stroke={2.4} /></button>
             </div>
           </div>
           <div className="gc-hero">
             이 메뉴로 하루 <b className="num">{gp.total === Infinity ? '—' : gp.total}</b>그릇 팔면{' '}
-            {goal > 0 ? <><b className="num">{won(goal)}원</b> 남아요</> : <>본전이에요</>}
+            {monthlyGoal > 0 ? <>한 달 <b className="num">{manwon(monthlyGoal)}</b> 벌어요</> : <>본전이에요</>}
           </div>
           <GoalGauge be={gp.be} total={gp.total} />
           <div className="gc-split">
             <span>본전 <b className="num">{gp.be === Infinity ? '—' : `${gp.be}그릇`}</b></span>
-            {goal > 0 && gp.total !== Infinity && <span>목표까지 <b className="num g">+{gp.extra}그릇</b></span>}
+            {monthlyGoal > 0 && gp.total !== Infinity && <span>목표까지 <b className="num g">+{gp.extra}그릇</b></span>}
             <span className="gc-note">하루 고정비 {won(dailyFixed)}원 · 그릇당 {won(round10(Math.max(0, profit)))}원</span>
           </div>
         </div>

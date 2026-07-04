@@ -47,7 +47,7 @@ export default function Landing() {
           <div className="lhero-copy">
             <span className="eyebrow">외식 소상공인을 위한 AI 마진 도우미</span>
             <h1><span>담으면</span><span><em className="hl">마진이</em></span><span>살아나요</span></h1>
-            <p className="lead">식자재를 마켓컬리처럼 장바구니에 담기만 하세요. 조리 <b>수율</b>까지 반영한 진짜 원가·적정 판매가·하루 몇 그릇이 본전인지, 담는 순간 숫자가 바로 움직입니다.</p>
+            <p className="lead">식자재를 마켓컬리처럼 장바구니에 담기만 하세요. 조리 <b>수율</b>까지 반영한 진짜 원가·적정 판매가·하루 몇 그릇 팔면 되는지, 담는 순간 숫자가 바로 움직입니다.</p>
             <div className="lhero-ctas">
               <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
               <button className="btn-ghost" onClick={toStory}>1분 만에 어떻게 되는지 보기 ↓</button>

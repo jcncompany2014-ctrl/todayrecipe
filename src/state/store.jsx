@@ -16,14 +16,24 @@ export function StoreProvider({ children }) {
   // 온보딩 — 앱 첫 진입 시 1회(인메모리, 사양상 저장 없음). '건너뛰기'/'시작하기'로 해제.
   const [onboarded, setOnboardedState] = useState(false)
   const setOnboarded = useCallback((v = true) => setOnboardedState(v), [])
-  // 하루 고정비 — 홈·대시보드·결과가 공유. 사장님이 바꾸면 본전 그릇 수가 전부 재계산됨.
-  const [dailyFixed, setDailyFixed] = useState(243000)
-  // 하루 목표 순이익 — 목표 역산(결과·대시보드 공유). 이만큼 벌려면 몇 그릇?
-  const [goal, setGoalState] = useState(100000)
-  const setGoal = useCallback((g) => setGoalState((prev) => {
-    const v = typeof g === 'function' ? g(prev) : g
-    return Math.max(0, Math.min(1000000, Math.round(v / 10000) * 10000))
+  // 사장님은 '하루' 고정비를 모른다 — 아는 건 '한 달' 월세·인건비와 목표.
+  // 한 달 값 + 영업일수만 넣으면 앱이 하루치로 자동 환산한다.
+  const [monthlyFixed, setMF] = useState(6300000) // 한 달 고정비(월세·인건비·공과금)
+  const [monthlyGoal, setMG] = useState(2600000)  // 한 달 목표 순이익
+  const [workDays, setWD] = useState(26)           // 한 달 영업일수
+  const step10 = (v, prev, max) => {
+    const x = typeof v === 'function' ? v(prev) : v
+    return Math.max(0, Math.min(max, Math.round(x / 100000) * 100000))
+  }
+  const setMonthlyFixed = useCallback((v) => setMF((p) => step10(v, p, 100000000)), [])
+  const setMonthlyGoal = useCallback((v) => setMG((p) => step10(v, p, 100000000)), [])
+  const setWorkDays = useCallback((v) => setWD((p) => {
+    const x = typeof v === 'function' ? v(p) : v
+    return Math.max(1, Math.min(31, Math.round(x)))
   }), [])
+  // 하루치 파생값 — 기존 계산(본전·목표 역산)은 그대로 이 값을 쓴다.
+  const dailyFixed = Math.max(1, Math.round(monthlyFixed / workDays))
+  const dailyGoal = Math.round(monthlyGoal / workDays)
   // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
   const [costOpts, setCostOpts] = useState({ rate: 0.12, packaging: 300 })
   const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])
@@ -95,8 +105,10 @@ export function StoreProvider({ children }) {
   }, [build])
 
   const value = {
-    onboarded, setOnboarded, goal, setGoal,
-    menus, build, dailyFixed, setDailyFixed, costOpts, setRate, setPackaging,
+    onboarded, setOnboarded,
+    monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
+    dailyFixed, dailyGoal,
+    menus, build, costOpts, setRate, setPackaging,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, toast, toastMsg,
   }

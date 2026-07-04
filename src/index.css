@@ -117,6 +117,7 @@ a{color:inherit;text-decoration:none}
   padding:20px 22px 19px;position:relative;overflow:hidden;box-shadow:0 16px 30px -14px rgba(26,22,19,.5)}
 .scr-menu .hero-label{font-size:12.5px;font-weight:600;color:rgba(255,255,255,.62);letter-spacing:.1px}
 .scr-menu .hero-num{display:flex;align-items:baseline;gap:8px;margin-top:5px}
+.scr-menu .hero-num .pre{font-size:16px;font-weight:700;color:rgba(255,255,255,.72);margin-right:-2px}
 .scr-menu .hero-num b{font-size:54px;font-weight:800;line-height:.95;letter-spacing:-2px}
 .scr-menu .hero-num .unit{font-size:21px;font-weight:700;letter-spacing:-.5px}
 .scr-menu .hero-num .tail{font-size:14.5px;font-weight:500;color:rgba(255,255,255,.7);margin-left:1px}
@@ -459,6 +460,8 @@ a{color:inherit;text-decoration:none}
 .scr-dash .be .field .stepper2 button{width:30px;height:30px;border-radius:9px;border:none;cursor:pointer;
   background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center}
 .scr-dash .be .field .stepper2 .v{font-size:14.5px;font-weight:800;min-width:78px;text-align:center}
+.scr-dash .be .big .be-tail{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);margin-left:3px}
+.scr-dash .be-note{margin-top:13px;font-size:11.5px;font-weight:500;color:rgba(255,255,255,.5)}
 .scr-dash .donut-wrap{display:flex;align-items:center;gap:20px;margin-top:6px}
 .scr-dash .legend{display:flex;flex-direction:column;gap:9px}
 .scr-dash .legend .lg{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}

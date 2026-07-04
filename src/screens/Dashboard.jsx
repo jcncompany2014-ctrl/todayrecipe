@@ -1,15 +1,15 @@
 import Icon from '../components/Icon'
 import GoalGauge from '../components/GoalGauge'
 import { useStore } from '../state/store'
-import { won, round10, breakeven, goalPlan } from '../lib/calc'
+import { won, round10, breakeven, goalPlan, manwon } from '../lib/calc'
 
 export default function Dashboard() {
-  const { menus, dailyFixed, setDailyFixed, goal, setGoal } = useStore()
+  const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal } = useStore()
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
   const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
   const shopBowls = breakeven(avgProfit, dailyFixed)
-  const gp = goalPlan(avgProfit, goal, dailyFixed)   // 가게 전체 목표 역산
+  const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 가게 전체: 한 달 목표 → 하루치 역산
 
   const counts = { g: 0, w: 0, b: 0 }
   menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
@@ -27,34 +27,43 @@ export default function Dashboard() {
       </div>
 
       <div className="be fade">
-        <div className="lab">하루 고정비 ÷ 메뉴 평균 {won(avgProfit)}원 · 가게 전체 기준</div>
-        <div className="big"><b className="num">{shopBowls === Infinity ? '—' : shopBowls}</b><span className="unit">그릇</span></div>
+        <div className="lab">가게 전체 하루 본전 · 영업 {workDays}일 기준</div>
+        <div className="big"><b className="num">{shopBowls === Infinity ? '—' : shopBowls}</b><span className="unit">그릇</span><span className="be-tail">팔면 본전</span></div>
         <div className="field">
-          <span className="k">하루 고정비</span>
+          <span className="k">한 달 고정비</span>
           <div className="stepper2">
-            <button aria-label="감소" onClick={() => setDailyFixed(Math.max(50000, dailyFixed - 10000))}><Icon name="minus" size={16} stroke={2.4} /></button>
-            <span className="v num">{won(dailyFixed)}원</span>
-            <button aria-label="증가" onClick={() => setDailyFixed(dailyFixed + 10000)}><Icon name="plus" size={16} stroke={2.4} /></button>
+            <button aria-label="고정비 감소" onClick={() => setMonthlyFixed((v) => v - 100000)}><Icon name="minus" size={16} stroke={2.4} /></button>
+            <span className="v num">{manwon(monthlyFixed)}</span>
+            <button aria-label="고정비 증가" onClick={() => setMonthlyFixed((v) => v + 100000)}><Icon name="plus" size={16} stroke={2.4} /></button>
           </div>
         </div>
+        <div className="field">
+          <span className="k">한 달 영업일</span>
+          <div className="stepper2">
+            <button aria-label="영업일 감소" onClick={() => setWorkDays((d) => d - 1)}><Icon name="minus" size={16} stroke={2.4} /></button>
+            <span className="v num">{workDays}일</span>
+            <button aria-label="영업일 증가" onClick={() => setWorkDays((d) => d + 1)}><Icon name="plus" size={16} stroke={2.4} /></button>
+          </div>
+        </div>
+        <div className="be-note">하루 고정비 {won(dailyFixed)}원 · 그릇당 평균 {won(avgProfit)}원</div>
       </div>
 
-      {/* 하루 목표 역산 (가게 전체) */}
+      {/* 목표 역산 (가게 전체) — 한 달 목표를 하루치로 */}
       <div className="panel fade" style={{ animationDelay: '.03s' }}>
-        <h2>하루 목표 벌이</h2>
-        <div className="ph">이만큼 벌려면 가게 전체로 몇 그릇 팔면 될까요?</div>
+        <h2>한 달 목표 벌이</h2>
+        <div className="ph">이만큼 벌려면 가게 전체로 하루 몇 그릇 팔면 될까요?</div>
         <div className="goal-top">
-          <span className="gt-lab">하루에 벌고 싶은 돈</span>
-          <span className="gt-val num">{won(goal)}원</span>
+          <span className="gt-lab">한 달에 벌고 싶은 돈</span>
+          <span className="gt-val num">{manwon(monthlyGoal)}</span>
         </div>
-        <input type="range" className="sim-range" min="0" max="300000" step="10000" value={Math.min(goal, 300000)}
-          onChange={(e) => setGoal(Number(e.target.value))} aria-label="하루 목표 순이익" />
+        <input type="range" className="sim-range" min="0" max="6000000" step="100000" value={Math.min(monthlyGoal, 6000000)}
+          onChange={(e) => setMonthlyGoal(Number(e.target.value))} aria-label="한 달 목표 순이익" />
         <div className="goal-hero">
           가게 전체로 하루 <b className="num">{gp.total === Infinity ? '—' : gp.total}</b>그릇 팔면{' '}
-          {goal > 0 ? <><b className="num">{won(goal)}원</b> 남아요</> : <>본전이에요</>}
+          {monthlyGoal > 0 ? <>한 달 <b className="num">{manwon(monthlyGoal)}</b> 벌어요</> : <>본전이에요</>}
         </div>
         <GoalGauge be={gp.be} total={gp.total} />
-        <p className="sim-msg">본전 <b>{gp.be === Infinity ? '—' : `${gp.be}그릇`}</b>{goal > 0 && gp.total !== Infinity && <> + 목표분 <b className="g">{gp.extra}그릇</b></>} · 그릇당 평균 {won(avgProfit)}원 기준</p>
+        <p className="sim-msg">본전 <b>{gp.be === Infinity ? '—' : `${gp.be}그릇`}</b>{monthlyGoal > 0 && gp.total !== Infinity && <> + 목표분 <b className="g">{gp.extra}그릇</b></>} · 하루로 치면 목표 {won(dailyGoal)}원</p>
       </div>
 
       <div className="panel fade" style={{ animationDelay: '.05s' }}>
