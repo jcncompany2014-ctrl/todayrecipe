@@ -133,7 +133,7 @@ export default function Cart() {
                   <button aria-label="증가" onClick={() => setPackaging(costOpts.packaging + 100)}><Icon name="plus" size={14} stroke={2.4} /></button>
                 </div>
               </div>
-              <p className="oe-hint">배민·쿠팡이츠 요금제, 용기값이 가게마다 달라요. 바꾸면 마진이 바로 다시 계산돼요.</p>
+              <p className="oe-hint">배달앱 요금제, 용기값이 가게마다 달라요. 바꾸면 마진이 바로 다시 계산돼요.</p>
             </div>
           </div>
         </div>

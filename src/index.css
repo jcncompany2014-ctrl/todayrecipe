@@ -1425,3 +1425,98 @@ a{color:inherit;text-decoration:none}
 .scr-monthly .rankrow .track span{display:block;height:100%;border-radius:99px}
 .scr-monthly .rankrow .pc{flex:0 0 auto;width:40px;text-align:right;font-size:13.5px;font-weight:800}
 .scr-monthly .mo-top{margin-bottom:26px}
+
+/* ============================================================
+   랜딩·온보딩·비전 업그레이드 (2026-07-04)
+   ============================================================ */
+
+/* 랜딩 — "계산 다음" 신규 4기능 섹션 */
+.landing .lfeat .featgrid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:28px}
+.landing .featcard{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 1px 2px rgba(60,40,25,.03),0 10px 22px -16px rgba(60,40,25,.1)}
+.landing .fc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.landing .fc-ic{flex:0 0 auto;width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.landing .fc-ic.amber{background:rgba(214,148,18,.12);color:var(--warn-1)}
+.landing .fc-ic.green{background:rgba(22,160,106,.12);color:var(--good-1)}
+.landing .featcard h3{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.landing .featcard>p{font-size:13px;font-weight:500;color:var(--ink-soft);line-height:1.5;margin-bottom:13px}
+.landing .fc-mock{background:#FBFAF8;border:1px solid var(--line);border-radius:13px;padding:13px 14px}
+.landing .fm-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.landing .fm-row+.fm-row{margin-top:5px}
+.landing .fm-row.sub{color:var(--muted);font-weight:500;font-size:11.5px}
+.landing .fm-row.net{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink)}
+.landing .fm-row b{font-weight:800}
+.landing .fm-gauge{position:relative;height:7px;background:var(--track);border-radius:99px;overflow:hidden;margin-top:10px}
+.landing .fm-gauge span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2FB479,#5FD6A0)}
+.landing .fm-cap{margin-top:8px;font-size:11px;font-weight:600;color:var(--muted)}
+.landing .fm-cap b{font-weight:800}
+.landing .fm-combo-nm{font-size:13px;font-weight:800;letter-spacing:-.3px;margin-bottom:9px}
+.landing .fm-combo-row{display:flex;align-items:center;gap:7px;font-size:13px}
+.landing .fm-combo-row .fm-lab{font-size:11px;font-weight:600;color:var(--muted)}
+.landing .fm-combo-row s{color:var(--muted);font-weight:600;text-decoration-thickness:1px}
+.landing .fm-combo-row svg{color:var(--muted);flex:0 0 auto}
+.landing .fm-combo-row b{font-weight:800;color:var(--ink)}
+.landing .fm-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.landing .fm-tag{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;color:var(--ink-soft);background:var(--tile);padding:5px 9px;border-radius:8px}
+.landing .fm-tag.g{color:var(--good-2);background:rgba(22,160,106,.1)}
+.landing .fm-tag.g svg{color:var(--good-1)}
+.landing .fm-goal-top{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:10px}
+.landing .fm-goal-top b{font-size:13px;font-weight:800;color:var(--ink)}
+.landing .fm-chips{display:flex;flex-wrap:wrap;gap:6px}
+.landing .fm-chips span{font-size:11.5px;font-weight:700;color:var(--sand-ink);background:var(--sand);padding:5px 9px;border-radius:8px}
+.landing .fm-menu-row{display:flex;align-items:center;justify-content:space-between;margin-top:11px}
+.landing .fm-saved{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--good-2)}
+.landing .fm-saved svg{color:var(--good-1)}
+.landing .fm-dup{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--ink);background:var(--tile);padding:5px 10px;border-radius:8px}
+.landing .fm-combo-nm,.landing .featcard h3,.landing .featcard p,.landing .fm-cap{word-break:keep-all}
+
+/* 랜딩 — 비전 로드맵 미니 타임라인 */
+.landing .lsoon .lsectlede b{color:var(--ink);font-weight:700}
+.landing .soon-road{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:22px}
+.landing .sr-step{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--paper);border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+.landing .sr-step.on{color:var(--good-2);border-color:rgba(22,160,106,.35);background:rgba(22,160,106,.07)}
+.landing .soon-road i{width:16px;height:1px;background:var(--muted);opacity:.4;flex:0 0 auto}
+
+/* 비전 프리뷰 강화 — 공통(랜딩 sooncard + 비전 탭 vcard 안에서 사용) */
+.vp-sup-delta{font-size:10px;font-weight:700;margin-right:4px}
+.vp-sup-delta.g{color:var(--good-1)}
+.vp-sup-tag{font-size:9.5px;font-weight:700;color:var(--muted);background:var(--tile);padding:2px 6px;border-radius:6px;margin-right:6px}
+.vp-impact{display:flex;align-items:center;gap:5px;margin-top:10px;font-size:11px;font-weight:600;color:var(--good-2)}
+.vp-impact svg{flex:0 0 auto;color:var(--good-1)}
+.vp-impact b{font-weight:800}
+.vp-predict{display:flex;align-items:flex-start;gap:5px;margin-top:11px;padding-top:10px;border-top:1px dashed var(--line);font-size:10.5px;font-weight:600;color:var(--ink-soft);line-height:1.45}
+.vp-predict svg{flex:0 0 auto;color:var(--good-1);margin-top:1px}
+.vp-predict b{font-weight:800;color:var(--ink)}
+.vp-rule{display:inline-flex;align-items:center;gap:5px;margin-bottom:11px;font-size:10px;font-weight:700;color:var(--muted);background:var(--tile);padding:5px 9px;border-radius:8px}
+.vp-rule svg{color:var(--ink-soft)}
+.vp-noti.calm{opacity:1}
+.vp-noti-ic.ok{background:rgba(22,160,106,.12);color:var(--good-1)}
+
+/* 온보딩 — STEP1 before/after 마진 */
+.oc-margin{gap:6px}
+.oc-was{margin-left:auto;font-size:14px;font-weight:700;color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+.oc-arrow{display:flex;color:var(--muted)}
+.oc-margin b{margin-left:0}
+/* 온보딩 — STEP2 배지 + 숫자 노트 */
+.oy-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+.oy-head .oy-tag{margin-bottom:0}
+.oy-badge{font-size:10.5px;font-weight:800;color:var(--sand-ink);background:var(--sand);padding:4px 9px;border-radius:8px}
+.oy-note b{font-weight:800;color:var(--ink)}
+/* 온보딩 — STEP4 오늘 마감 씬 */
+.ocl-head{display:flex;align-items:center;justify-content:space-between}
+.ocl-lab{font-size:12px;font-weight:700;color:var(--muted)}
+.ocl-ok{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:800;color:var(--good-2)}
+.ocl-ok svg{color:var(--good-1)}
+.ocl-net{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px}
+.ocl-net>span{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.ocl-net b{font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--good-1)}
+.ocl-net b i{font-size:14px;font-weight:700;font-style:normal;margin-left:1px}
+.ocl-bar{position:relative;height:8px;background:var(--track);border-radius:99px;margin-top:14px}
+.ocl-bar>span{position:absolute;left:0;top:0;display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2FB479,#5FD6A0)}
+.ocl-bar .ocl-be{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink);opacity:.45;border-radius:1px}
+.ocl-sub{display:flex;align-items:center;justify-content:space-between;margin-top:12px;font-size:11.5px;font-weight:700}
+.ocl-sub .ocl-month{color:var(--muted);font-weight:600}
+.ocl-sub .ocl-month b{color:var(--ink);font-weight:800}
+
+@media (min-width:620px){
+  .landing .lfeat .featgrid{grid-template-columns:repeat(2,1fr)}
+}

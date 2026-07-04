@@ -13,8 +13,9 @@ function SceneCart() {
       <div className="oc-chips"><span>삼겹살</span><span>양파</span><span>고추장</span><span className="more">+2</span></div>
       <div className="oc-margin">
         <span>예상 마진</span>
+        <em className="oc-was num">52%</em>
+        <i className="oc-arrow"><Icon name="chevR" size={12} stroke={2.8} /></i>
         <b className="num">41%</b>
-        <i className="up"><Icon name="chevR" size={13} stroke={2.8} /></i>
       </div>
     </div>
   )
@@ -22,10 +23,10 @@ function SceneCart() {
 function SceneYield() {
   return (
     <div className="onb-card">
-      <div className="oy-tag">수율 80%</div>
+      <div className="oy-head"><span className="oy-tag">수율 80%</span><span className="oy-badge">진짜 원가 +25%</span></div>
       <div className="oy-row"><span>원물</span><i className="oy-bar"><b className="ghost" style={{ width: '100%' }} /></i><em className="num">150g</em></div>
       <div className="oy-row"><span>실제</span><i className="oy-bar"><b style={{ width: '80%' }} /></i><em className="num">120g</em></div>
-      <p className="oy-note">볶으면 줄어드는 양까지 원가에 반영해요</p>
+      <p className="oy-note">표기 <b className="num">1,350원</b> → 볶으면 <b className="num">1,688원</b></p>
     </div>
   )
 }
@@ -34,7 +35,17 @@ function SceneBreakeven() {
     <div className="onb-card dark">
       <span className="ob-lab">하루 목표</span>
       <div className="ob-big"><b className="num">126</b><span>그릇</span></div>
-      <div className="ob-diag"><span className="ob-dot" />AI 진단 · 개선책까지</div>
+      <div className="ob-diag"><span className="ob-dot" />AI: 마라탕 마진 24% → 당면 대체 시 31%</div>
+    </div>
+  )
+}
+function SceneClose() {
+  return (
+    <div className="onb-card">
+      <div className="ocl-head"><span className="ocl-lab">오늘 마감</span><span className="ocl-ok"><Icon name="check" size={11} stroke={2.8} />정산 완료</span></div>
+      <div className="ocl-net"><span>오늘 순이익</span><b className="num">+214,000<i>원</i></b></div>
+      <div className="ocl-bar"><span style={{ width: '78%' }} /><i className="ocl-be" style={{ left: '62%' }} /></div>
+      <div className="ocl-sub"><span className="g">본전 넘음</span><span className="ocl-month">이번 달 목표 <b className="num">84%</b></span></div>
     </div>
   )
 }
@@ -42,7 +53,8 @@ function SceneBreakeven() {
 const SLIDES = [
   { k: 'STEP 1', t: ['담기만 하면', '계산이 끝나요'], d: '마켓처럼 재료를 담으면, 담는 순간 1인분 원가와 마진이 바로 움직여요.', S: SceneCart },
   { k: 'STEP 2', t: ['조리 수율까지', '반영한 진짜 원가'], d: '볶고 삶으면 줄어드는 양(수율)까지 계산해요. 원물 단가만 볼 때와 원가가 달라요.', S: SceneYield },
-  { k: 'STEP 3', t: ['하루 몇 그릇 팔면', '목표를 채우는지'], d: '한 달 목표만 정하면 하루 몇 그릇 팔면 되는지 계산하고, 마진 높이는 AI 진단까지 알려드려요.', S: SceneBreakeven },
+  { k: 'STEP 3', t: ['하루 몇 그릇 팔면', '목표를 채우는지'], d: '한 달 목표만 정하면 하루 몇 그릇 팔면 되는지 역산하고, 마진 높이는 AI 진단까지 알려드려요.', S: SceneBreakeven },
+  { k: 'STEP 4', t: ['장사 끝나면', '오늘 정산까지'], d: '메뉴별 판매 개수만 넣으면 오늘 순이익이 딱. 이번 달 손익도 매일 자동으로 쌓여요.', S: SceneClose },
 ]
 
 export default function Onboarding() {

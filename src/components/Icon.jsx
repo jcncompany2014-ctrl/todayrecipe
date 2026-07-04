@@ -58,6 +58,8 @@ const P = {
   copy: '<rect x="8.5" y="8.5" width="11" height="11" rx="2.5"/><path d="M15.5 8.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7.5a2 2 0 0 0 2 2h2.5"/>',
   trash: '<path d="M5 7h14M10 7V5.2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1V7M6.5 7l.8 11.2a1.6 1.6 0 0 0 1.6 1.5h6.2a1.6 1.6 0 0 0 1.6-1.5L18.5 7"/><path d="M10.5 11v5M13.5 11v5"/>',
   receipt2: '<path d="M6 3h12v18l-2.5-1.5L13 21l-2.5-1.5L8 21l-2-1.5V3z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  layers: '<path d="M12 3.5 20.5 8 12 12.5 3.5 8z"/><path d="M3.5 12 12 16.5 20.5 12M3.5 16 12 20.5 20.5 16"/>',
+  trendup: '<path d="M4 15.5 9.5 10l3.5 3.5L20 6"/><path d="M15 6h5v5"/>',
   pie: '<path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z"/><path d="M12 3.5V12"/>',
   download: '<path d="M12 4v10M8 10.5l4 4 4-4"/><path d="M5 19h14"/>',
   share: '<circle cx="6" cy="12" r="2.4"/><circle cx="17.5" cy="6" r="2.4"/><circle cx="17.5" cy="18" r="2.4"/><path d="M8.1 10.9l7.3-3.8M8.1 13.1l7.3 3.8"/>',
