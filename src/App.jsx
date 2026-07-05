@@ -9,6 +9,7 @@ import Dashboard from './screens/Dashboard'
 import SalesToday from './screens/SalesToday'
 import Combo from './screens/Combo'
 import Monthly from './screens/Monthly'
+import MenuMatrix from './screens/MenuMatrix'
 import Vision from './screens/Vision'
 import Settings from './screens/Settings'
 
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="sales" element={<SalesToday />} />
         <Route path="combo" element={<Combo />} />
         <Route path="monthly" element={<Monthly />} />
+        <Route path="matrix" element={<MenuMatrix />} />
         <Route path="vision" element={<Vision />} />
         <Route path="settings" element={<Settings />} />
       </Route>

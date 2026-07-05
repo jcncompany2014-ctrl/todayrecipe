@@ -1520,3 +1520,71 @@ a{color:inherit;text-decoration:none}
 @media (min-width:620px){
   .landing .lfeat .featgrid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* ============================================================
+   메뉴 엔지니어링 — 사분면 차트 + 화면 + 대시보드 패널 (2026-07-05)
+   ============================================================ */
+
+/* 사분면 차트 (공용 — 대시보드·매트릭스·랜딩) */
+.qchart{display:block}
+.qchart .qdiv{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;opacity:.5}
+.qchart .qaxis{stroke:var(--line);stroke-width:1.4}
+.qchart .qz-lab{font-size:8.5px;font-weight:800;opacity:.9;letter-spacing:-.2px}
+.qchart .qdot-n{font-size:8.5px;font-weight:800}
+.qchart .qcap{font-size:8px;font-weight:700;fill:var(--muted)}
+
+/* 메뉴 엔지니어링 화면 */
+.scr-matrix .hd{background:var(--paper);padding:2px 22px 16px}
+.scr-matrix .hd-top{display:flex;align-items:center;gap:6px}
+.scr-matrix .hd h1{font-size:21px;font-weight:800;letter-spacing:-.6px}
+.scr-matrix .hd .sub{font-size:13px;font-weight:500;color:var(--muted);margin:3px 0 0 1px;line-height:1.5}
+.scr-matrix .mx-chartcard{margin:16px 18px 0;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:16px 14px 14px}
+.mx-src{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--muted);padding:0 4px 8px}
+.mx-src b{color:var(--ink-soft);font-weight:800}
+.mx-srcdot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:0 0 auto}
+.mx-srcdot.live{background:var(--good-1)}
+.mx-axisnote{margin-top:8px;font-size:10.5px;font-weight:500;color:var(--muted);text-align:center;line-height:1.45}
+.scr-matrix .mx-headline{margin:14px 18px 0;font-size:13.5px;font-weight:600;color:var(--ink-soft);line-height:1.55;padding:0 4px;word-break:keep-all}
+.scr-matrix .mx-headline b{font-weight:800}
+.scr-matrix .mx-quad{margin:14px 18px 0;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px}
+.mx-qhead{display:flex;align-items:center;gap:8px}
+.mx-qbadge{font-size:12px;font-weight:800;color:#fff;padding:3px 10px;border-radius:8px}
+.mx-qshort{font-size:12px;font-weight:700}
+.mx-qcount{margin-left:auto;font-size:13px;font-weight:800;color:var(--muted)}
+.mx-qtip{font-size:12.5px;font-weight:500;color:var(--ink-soft);line-height:1.5;margin:9px 0 12px;word-break:keep-all}
+.mx-mlist{display:flex;flex-direction:column;gap:8px}
+.mx-mrow{display:flex;align-items:center;gap:10px}
+.mx-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.mx-photo{flex:0 0 auto;width:38px;height:38px;border-radius:11px;overflow:hidden;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.mx-mid{flex:1;min-width:0}
+.mx-mid b{font-size:14px;font-weight:700;letter-spacing:-.3px;display:block}
+.mx-mid span{font-size:11.5px;font-weight:500;color:var(--muted);display:block;margin-top:1px}
+.mx-contrib{flex:0 0 auto;font-size:13px;font-weight:800;color:var(--ink)}
+.mx-contrib i{font-size:10.5px;font-weight:600;font-style:normal;color:var(--muted);margin-left:1px}
+.scr-matrix .mx-foot{margin:16px 18px 28px;font-size:12px;font-weight:500;color:var(--muted);line-height:1.6;padding:0 4px;word-break:keep-all}
+.scr-matrix .mx-foot b{color:var(--ink-soft);font-weight:700}
+
+/* 대시보드 — 메뉴 포지션 패널(클릭 시 매트릭스) */
+.scr-dash .mx-panel{display:block;text-align:left;cursor:pointer;font:inherit;color:inherit;transition:transform .14s}
+.scr-dash .mx-panel:active{transform:scale(.99)}
+.scr-dash .mx-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.scr-dash .mx-panel-head h2{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.scr-dash .mx-panel-head .ph{font-size:12px;font-weight:500;color:var(--muted);margin-top:3px}
+.scr-dash .mx-more{display:inline-flex;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--good-2);flex:0 0 auto;white-space:nowrap}
+.scr-dash .mx-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px}
+.mx-lg{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-soft)}
+.mx-lg i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.mx-lg b{font-weight:800}
+
+/* 랜딩 — 메뉴 엔지니어링 카드 */
+.landing .lmatrix{max-width:360px;margin:26px auto 0;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 1px 2px rgba(60,40,25,.03),0 12px 26px -16px rgba(60,40,25,.12)}
+.landing .lmatrix-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.landing .lmatrix-head b{font-size:15px;font-weight:800;letter-spacing:-.3px;display:block}
+.landing .lmatrix-head span{font-size:12px;font-weight:600;color:var(--muted)}
+.landing .lmatrix-tag{flex:0 0 auto;font-size:10.5px;font-weight:800;color:#fff;background:var(--good-1);padding:4px 9px;border-radius:8px}
+.landing .lmatrix-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:12px;justify-content:center}
+.landing .lmx-lg{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-soft)}
+.landing .lmx-lg i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.landing .lmx-lg b{font-weight:800}
+.landing .lmatrix-note{margin-top:13px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;font-weight:500;color:var(--ink-soft);line-height:1.6;word-break:keep-all}
+.landing .lmatrix-note b{font-weight:800;color:var(--ink)}

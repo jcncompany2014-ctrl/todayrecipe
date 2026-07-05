@@ -1,13 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import GoalGauge from '../components/GoalGauge'
+import QuadrantChart, { QCOL } from '../components/QuadrantChart'
 import { useStore } from '../state/store'
-import { won, round10, breakeven, goalPlan, manwon } from '../lib/calc'
+import { won, round10, breakeven, goalPlan, manwon, menuMatrix, QUADRANTS, QUAD_ORDER } from '../lib/calc'
 
 export default function Dashboard() {
   const nav = useNavigate()
   const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, soldToday } = useStore()
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
+  const useReal = soldCount > 0
+  const matrix = menuMatrix(menus, (m) => (useReal ? (soldToday[m.id] || 0) : (m.pop || 0)))
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
   const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
@@ -98,7 +101,23 @@ export default function Dashboard() {
         })}
       </div>
 
-      <div className="panel fade" style={{ animationDelay: '.1s' }}>
+      <button className="panel mx-panel fade" style={{ animationDelay: '.08s' }} onClick={() => nav('/app/matrix')}>
+        <div className="mx-panel-head">
+          <div>
+            <h2>메뉴 포지션</h2>
+            <div className="ph">잘 팔리는 메뉴가 꼭 잘 남는 건 아니에요</div>
+          </div>
+          <span className="mx-more">메뉴 엔지니어링<Icon name="chevR" size={15} stroke={2.2} /></span>
+        </div>
+        <QuadrantChart data={matrix} height={210} />
+        <div className="mx-legend">
+          {QUAD_ORDER.map((q) => (
+            <span className="mx-lg" key={q}><i style={{ background: QCOL[q] }} />{QUADRANTS[q].nm} <b className="num">{matrix.counts[q] || 0}</b></span>
+          ))}
+        </div>
+      </button>
+
+      <div className="panel fade" style={{ animationDelay: '.12s' }}>
         <h2>마진 건강도</h2>
         <div className="ph">메뉴 {total}개 분포</div>
         <div className="donut-wrap">

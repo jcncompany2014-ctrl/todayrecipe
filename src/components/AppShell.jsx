@@ -14,6 +14,7 @@ const ROUTE = {
   '/app/sales':     { cls: 'scr-sales',                 tab: false },
   '/app/combo':     { cls: 'scr-combo',                 tab: false },
   '/app/monthly':   { cls: 'scr-monthly',               tab: false },
+  '/app/matrix':    { cls: 'scr-matrix',                tab: false },
   '/app/vision':    { cls: 'scr-vision scr-tabpage',    tab: true },
   '/app/settings':  { cls: 'scr-settings scr-tabpage',  tab: true },
 }

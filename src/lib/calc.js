@@ -211,3 +211,34 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
   const ranked = actions.sort((a, b) => b.delta - a.delta).slice(0, 3)
   return { level, title: V.title, line: V.line, actionsLabel: V.label, margin, actions: ranked }
 }
+
+/* ────────────────────────────────────────────────────────────
+   메뉴 엔지니어링 — 인기(판매량) × 마진 사분면 (Kasavana–Smith 응용)
+   가게 평균을 경계선으로 네 칸에 분류하고, 칸마다 코칭을 준다.
+   ──────────────────────────────────────────────────────────── */
+export const QUADRANTS = {
+  star:   { key: 'star',   nm: '스타',       s: 'g', short: '밀어주세요', tip: '많이 팔리고 잘 남아요. 가게를 먹여살리는 대표 메뉴 — 계속 밀어주세요. 품절·품질만 조심.' },
+  puzzle: { key: 'puzzle', nm: '숨은 보석',   s: 'w', short: '더 팔아요', tip: '마진은 좋은데 덜 팔려요. 대표 사진·세트 구성·추천 배치로 노출을 늘려보세요.' },
+  plow:   { key: 'plow',   nm: '일꾼',        s: 'w', short: '마진 올려요', tip: '많이 팔리는데 안 남아요. 재료 대체·사용량·판매가 조정으로 마진을 끌어올리세요.' },
+  dog:    { key: 'dog',    nm: '아픈 손가락', s: 'b', short: '손봐야 해요', tip: '적게 팔리고 안 남아요. 레시피를 리뉴얼하거나 메뉴에서 빼는 걸 고민할 때예요.' },
+}
+export const QUAD_ORDER = ['star', 'plow', 'puzzle', 'dog']
+
+// popOf(menu) = 판매량(그릇). 실판매(오늘 마감)가 있으면 그 값, 없으면 시드 pop.
+export function menuMatrix(menus, popOf) {
+  if (!menus || !menus.length) return { rows: [], avgMargin: 0, avgPop: 0, counts: {}, maxPop: 1, maxMargin: 1 }
+  const withPop = menus.map((m) => ({ m, margin: m.margin, pop: Math.max(0, popOf(m)) }))
+  const avgMargin = withPop.reduce((a, r) => a + r.margin, 0) / withPop.length
+  const avgPop = withPop.reduce((a, r) => a + r.pop, 0) / withPop.length
+  const maxPop = Math.max(1, ...withPop.map((r) => r.pop))
+  const maxMargin = Math.max(1, ...withPop.map((r) => r.margin))
+  const rows = withPop.map((r) => {
+    const hiM = r.margin >= avgMargin, hiP = r.pop >= avgPop
+    const q = hiM ? (hiP ? 'star' : 'puzzle') : (hiP ? 'plow' : 'dog')
+    const profitEach = Math.round((r.m.price * r.margin) / 100)
+    return { m: r.m, margin: r.margin, pop: r.pop, q, profitEach, contrib: profitEach * r.pop }
+  }).sort((a, b) => b.contrib - a.contrib)
+  const counts = rows.reduce((a, r) => { a[r.q] = (a[r.q] || 0) + 1; return a }, {})
+  const totalContrib = rows.reduce((a, r) => a + r.contrib, 0)
+  return { rows, avgMargin: Math.round(avgMargin * 10) / 10, avgPop: Math.round(avgPop * 10) / 10, maxPop, maxMargin, counts, totalContrib }
+}

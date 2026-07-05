@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { HeroPhone, StorySection, DashDemo } from '../components/landing/Demos'
 import { WholesalePreview, PosPreview, AlertPreview } from '../components/VisionPreviews'
+import QuadrantChart, { QCOL } from '../components/QuadrantChart'
+import { SEED_MENUS } from '../data/menus'
+import { menuMatrix, QUADRANTS, QUAD_ORDER } from '../lib/calc'
+
+const SEED_MATRIX = menuMatrix(SEED_MENUS, (m) => m.pop || 0)
 
 // 시세 티커 — 카탈로그 시드와 동일한 참고 시세
 const TICKS = [
@@ -37,7 +42,7 @@ export default function Landing() {
       <div className={`lnav${scrolled ? ' scrolled' : ''}`}>
         <div className="lnav-in">
           <div className="brand"><span className="logo"><img src="/img/logo.webp" alt="" /></span>오늘 몇 그릇?</div>
-          <button className="nav-cta" onClick={enter}>체험해보기</button>
+          <button className="nav-cta" onClick={enter}>내 마진 확인</button>
         </div>
       </div>
 
@@ -45,14 +50,14 @@ export default function Landing() {
       <header className="lhero">
         <div className="lhero-in">
           <div className="lhero-copy">
-            <span className="eyebrow">외식 소상공인을 위한 AI 마진 도우미</span>
-            <h1><span>담으면</span><span><em className="hl">마진이</em></span><span>살아나요</span></h1>
-            <p className="lead">식자재를 장바구니에 담기만 하세요. 조리 <b>수율</b>까지 반영한 진짜 원가·적정 판매가·하루 몇 그릇 팔면 되는지, 담는 순간 숫자가 바로 움직입니다.</p>
+            <span className="eyebrow">조리 수율까지 계산하는 AI 마진 도우미</span>
+            <h1><span>팔아도</span><span><em className="hl">안 남는 이유,</em></span><span>여기 있어요</span></h1>
+            <p className="lead">매출은 느는데 통장은 그대로. 원가를 <b>감</b>으로 잡으니까요. 식자재만 담으면 조리 후 진짜 원가·받아야 할 판매가·하루 몇 그릇 팔면 되는지 <b>30초</b> 만에 나옵니다.</p>
             <div className="lhero-ctas">
-              <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
-              <button className="btn-ghost" onClick={toStory}>1분 만에 어떻게 되는지 보기 ↓</button>
+              <button className="btn-primary" onClick={enter}>내 마진 지금 확인 <Icon name="chevR" size={18} stroke={2.4} /></button>
+              <button className="btn-ghost" onClick={toStory}>제육덮밥으로 먼저 구경하기 ↓</button>
             </div>
-            <div className="lhero-micro">회원가입 없이 30초, 바로 계산돼요</div>
+            <div className="lhero-micro">가입 0 · 30초 · 무료 — 안 남는 이유부터 보세요</div>
           </div>
           <div className="lhero-phone">
             <HeroPhone />
@@ -80,8 +85,9 @@ export default function Landing() {
 
       {/* 문제 공감 */}
       <section className="lsection" id="how">
-        <div className="kicker">01 · 왜 필요한가요</div>
-        <h2 className="lh2">가격을 감으로 정하면<br />마진이 새요</h2>
+        <div className="kicker">01 · 왜 안 남을까</div>
+        <h2 className="lh2">열심히 파는데 안 남는 건,<br />가격이 틀려서예요</h2>
+        <p className="lsectlede">원물 단가로 계산하면 마진이 <b>25% 뻥튀기</b>됩니다. 앞다리살 150g도 볶으면 120g이니까요.</p>
         <div className="probcards">
           <div className="probcard"><div className="q">원물 단가, 일일이 찾기 힘들어요</div><p>마트·도매처마다 다른 가격을 매번 비교하는 건 시간 싸움이에요.</p></div>
           <div className="probcard contrast">
@@ -104,17 +110,17 @@ export default function Landing() {
       {/* 신뢰 지표 */}
       <section className="lsection tight">
         <div className="stats">
-          <div className="stat"><b>3단계</b><span>담기 → 계산 → 결과<br />떠먹여주는 흐름</span></div>
+          <div className="stat"><b className="num">₩5,310</b><span>GPT 추정 말고<br />확정 원가</span></div>
           <div className="stat"><b>4가지</b><span>생·볶기·삶기·튀김<br />조리 수율 반영</span></div>
-          <div className="stat"><b>실시간</b><span>담을 때마다<br />마진이 바로</span></div>
+          <div className="stat"><b className="num">52→41%</b><span>담는 순간<br />실시간 마진</span></div>
         </div>
       </section>
 
       {/* 계산 다음 — 이미 구현·배포된 신규 기능들 (예시 아님, 실사용 화면) */}
       <section className="lsection lfeat">
         <div className="kicker">02 · 계산 다음이 진짜</div>
-        <h2 className="lh2">담는 걸로 끝이 아니에요.<br />팔고 나서가 진짜죠.</h2>
-        <p className="lsectlede">오늘 마감부터 한 달 손익까지, 장사의 뒷정리를 앱이 대신 계산해요. 전부 지금 바로 쓸 수 있어요.</p>
+        <h2 className="lh2">담는 건 시작이에요.<br />팔고 나서가 진짜 승부죠.</h2>
+        <p className="lsectlede">오늘 장사 마감·세트 마진·이번 달 손익까지. 잘 파는 것보다, <b>남기고 파는 게</b> 중요하니까요.</p>
         <div className="featgrid">
           <div className="featcard">
             <div className="fc-head"><span className="fc-ic amber"><Icon name="receipt2" size={18} stroke={1.8} /></span><h3>오늘 장사 마감</h3></div>
@@ -157,12 +163,25 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 대시보드 */}
+      {/* 대시보드 + 메뉴 엔지니어링 */}
       <section className="lsection ldash">
-        <div className="kicker">03 · 한눈에</div>
-        <h2 className="lh2">어느 메뉴에서 새는지,<br />한눈에</h2>
-        <p className="lsectlede">메뉴별 마진 순위와 건강도를 매일 확인하세요.</p>
+        <div className="kicker">03 · 숨은 진실</div>
+        <h2 className="lh2">잘 팔리는 메뉴가,<br />제일 안 남을 수도 있어요</h2>
+        <p className="lsectlede">메뉴별 마진 순위·건강도에 <b>인기 × 마진 사분면</b>까지. 어디서 새는지 한 화면에 보이고, 손볼 메뉴가 바로 갈립니다.</p>
         <div className="ldash-phone"><DashDemo /></div>
+        <div className="lmatrix">
+          <div className="lmatrix-head">
+            <div><b>메뉴 엔지니어링</b><span>인기 × 마진 사분면</span></div>
+            <span className="lmatrix-tag">신규</span>
+          </div>
+          <QuadrantChart data={SEED_MATRIX} height={228} numbered />
+          <div className="lmatrix-legend">
+            {QUAD_ORDER.map((q) => (
+              <span className="lmx-lg" key={q}><i style={{ background: QCOL[q] }} />{QUADRANTS[q].nm} <b className="num">{SEED_MATRIX.counts[q] || 0}</b></span>
+            ))}
+          </div>
+          <p className="lmatrix-note">마라탕은 많이 팔려도 마진이 낮은 <b>일꾼</b>, 김치볶음밥은 안 팔려도 마진 좋은 <b>숨은 보석</b>. 밀 메뉴와 손볼 메뉴가 갈립니다.</p>
+        </div>
       </section>
 
       {/* Coming Soon */}
@@ -180,8 +199,8 @@ export default function Landing() {
 
       {/* 최종 CTA — 잉크 밴드 */}
       <section className="lfinal inkband">
-        <h2>방금 본 제육덮밥,<br />이번엔 사장님 메뉴로.</h2>
-        <button className="btn-primary" onClick={enter}>체험해보기 <Icon name="chevR" size={18} stroke={2.4} /></button>
+        <h2>남의 메뉴 말고,<br />사장님 메뉴는 얼마 남을까요?</h2>
+        <button className="btn-primary" onClick={enter}>내 마진 지금 확인 <Icon name="chevR" size={18} stroke={2.4} /></button>
         <div className="lhero-micro">30초면 첫 계산이 나와요</div>
       </section>
 
