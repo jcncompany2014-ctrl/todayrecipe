@@ -313,9 +313,9 @@ function ResultClone({ active, playId }) {
 }
 
 const STORES_DEMO = [
-  { nm: '행복분식', type: '분식·한식 · 서울 마포', n: 9, m: 34, s: 'g', primary: true },
-  { nm: '행복분식 2호점', type: '분식·한식 · 서대문', n: 5, m: 41, s: 'g' },
-  { nm: '초원 한식당', type: '백반·찌개 · 성남', n: 4, m: 36, s: 'g' },
+  { nm: '행복분식', type: '분식·한식 · 마포', n: 9, m: 34, s: 'g', img: '/img/dish_jeyuk.webp', primary: true },
+  { nm: '행복분식 2호점', type: '분식·한식 · 서대문', n: 5, m: 41, s: 'g', img: '/img/dish_donkkaseu.webp' },
+  { nm: '초원 한식당', type: '백반·찌개 · 성남', n: 4, m: 36, s: 'g', img: '/img/dish_sundubu.webp' },
 ]
 function StoresClone({ active, playId }) {
   const [pick, setPick] = useState(0)
@@ -330,21 +330,21 @@ function StoresClone({ active, playId }) {
   return (
     <div className="app-clone scr-stores">
       <StatusBar />
-      <div className="hd">
+      <div className="st-top">
         <div className="hd-brand"><div className="logo-img"><img src="/img/logo.webp" alt="" /></div><span className="hd-wordmark">오늘 몇 그릇?</span></div>
-        <div className="hd-row"><h1 className="hd-title">내 사업장</h1><span className="hd-count num">3곳 관리 중</span></div>
+        <h1 className="st-hi">어느 가게부터<br />볼까요?</h1>
+        <div className="st-summary"><span>가게 <b className="num">3</b></span><i /><span>메뉴 <b className="num">18</b></span><i /><span>평균 마진 <b className="num g">36%</b></span></div>
       </div>
-      <p className="st-intro">관리할 가게를 골라주세요. 매장마다 따로 관리돼요.</p>
       <div className="st-list">
         {STORES_DEMO.map((s, i) => (
           <div className={`st-card${i === pick ? ' pick' : ''}`} key={s.nm}>
-            <span className="st-ic"><Icon name="store" size={20} stroke={1.7} /></span>
+            <div className="st-photo"><img src={s.img} alt="" /></div>
             <div className="st-body">
               <div className="st-nm">{s.nm}{s.primary && <span className="st-badge">대표</span>}</div>
-              <div className="st-metar">{s.type}</div>
-              <div className="st-stats"><span>메뉴 <b className="num">{s.n}</b></span><span className="st-dot">·</span><span>평균 마진 <b className={`num ${s.s}`}>{s.m}%</b></span></div>
+              <div className="st-metar">{s.type} · 메뉴 {s.n}</div>
+              <div className="st-bar-row"><span className="st-bar"><span className={`${s.s}-bg`} style={{ width: `${s.m}%` }} /></span><span className={`st-mg num ${s.s}`}>마진 {s.m}%</span></div>
             </div>
-            <Icon name="chevR" size={17} stroke={2} className="st-chev" />
+            <span className="st-go"><Icon name="chevR" size={16} stroke={2.4} /></span>
           </div>
         ))}
       </div>

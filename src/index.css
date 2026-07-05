@@ -1592,29 +1592,39 @@ a{color:inherit;text-decoration:none}
 .scr-stores .hd-title{font-size:25px;font-weight:800;letter-spacing:-.7px}
 .scr-stores .hd-count{font-size:13px;font-weight:600;color:var(--muted);padding-bottom:3px;white-space:nowrap}
 
-/* 사업장 카드 리스트 (실화면 + 랜딩 클론 공용) */
-.st-intro{padding:0 22px;font-size:13.5px;font-weight:500;color:var(--ink-soft);line-height:1.6;margin-top:2px}
-.st-intro b{color:var(--ink);font-weight:700}
-.st-list{padding:14px 18px 26px;display:flex;flex-direction:column;gap:10px}
-.st-card{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:15px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,25,.035),0 10px 22px -15px rgba(60,40,25,.1);transition:transform .14s,border-color .15s,box-shadow .2s}
-.st-card:active{transform:scale(.99)}
-.st-ic{flex:0 0 auto;width:44px;height:44px;border-radius:13px;background:var(--sand);color:var(--sand-ink);display:flex;align-items:center;justify-content:center}
+/* 사업장 선택 홈 — 인사 헤더 + 요약 */
+.scr-stores .st-top{padding:8px 22px 4px}
+.scr-stores .st-top .hd-brand{margin-bottom:15px}
+.st-hi{font-size:27px;font-weight:800;letter-spacing:-.9px;line-height:1.22}
+.st-summary{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.st-summary b{color:var(--ink);font-weight:800;margin-left:3px}
+.st-summary i{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.5;flex:0 0 auto}
+
+/* 사업장 카드 (실화면 + 랜딩 클론 공용) */
+.st-list{padding:18px 18px 26px;display:flex;flex-direction:column;gap:11px}
+.st-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,25,.035),0 14px 28px -18px rgba(60,40,25,.16);transition:transform .14s,border-color .15s,box-shadow .2s}
+.st-card:active{transform:scale(.985)}
+.st-card.active{border-color:rgba(22,160,106,.4);box-shadow:0 1px 2px rgba(60,40,25,.035),0 14px 28px -16px rgba(22,160,106,.3)}
+.st-photo{flex:0 0 auto;width:62px;height:62px;border-radius:16px;overflow:hidden;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.st-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .st-body{flex:1;min-width:0}
-.st-nm{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:800;letter-spacing:-.4px}
+.st-nm{display:flex;align-items:center;gap:7px;font-size:16.5px;font-weight:800;letter-spacing:-.4px}
 .st-badge{flex:0 0 auto;font-size:10px;font-weight:800;color:var(--sand-ink);background:var(--sand);padding:2px 7px;border-radius:6px}
-.st-badge.on{color:#fff;background:var(--good-1)}
-.st-metar{font-size:12px;font-weight:500;color:var(--muted);margin:3px 0 6px}
-.st-stats{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--ink-soft);flex-wrap:wrap}
-.st-stats b{font-weight:800}
-.st-dot{color:var(--muted)}
-.st-chev{color:var(--muted);flex:0 0 auto}
-.st-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:1.5px dashed var(--line);border-radius:16px;padding:15px;cursor:pointer;transition:transform .14s,border-color .15s}
+.st-metar{font-size:11.5px;font-weight:500;color:var(--muted);margin:3px 0 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-bar-row{display:flex;align-items:center;gap:8px}
+.st-bar{flex:1;min-width:34px;max-width:120px;height:7px;background:var(--track);border-radius:99px;overflow:hidden}
+.st-bar span{display:block;height:100%;border-radius:99px}
+.st-mg{flex:0 0 auto;font-size:12.5px;font-weight:800}
+.st-bowls{flex:0 0 auto;font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;margin-left:-3px}
+.st-go{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.st-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:1.5px dashed var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:transform .14s,border-color .15s,color .15s;margin-top:2px}
 .st-add:active{transform:scale(.99)}
-.st-add:hover{border-color:var(--muted)}
-/* 랜딩 클론 — 선택 하이라이트(자동 순회) */
+.st-add:hover{border-color:var(--muted);color:var(--ink-soft)}
+/* 랜딩 클론 — 자동 순회 하이라이트, 그림자 톤 다운 */
 .landing .app-clone.scr-stores{background:var(--paper)}
-.app-clone .st-card{cursor:default;box-shadow:none}
+.app-clone .st-card{cursor:default;box-shadow:none;transition:border-color .3s,box-shadow .3s}
 .app-clone .st-card.pick{border-color:var(--good-1);box-shadow:0 0 0 2px rgba(22,160,106,.22)}
+.app-clone .st-bowls{display:none}
 
 /* 메뉴판 상단 — 사업장 전환 버튼 */
 .scr-menu .store-switch{display:inline-flex;align-items:center;gap:6px;background:var(--tile);border:none;border-radius:11px;padding:7px 11px 7px 9px;margin-bottom:11px;cursor:pointer;transition:transform .15s,background .15s}
