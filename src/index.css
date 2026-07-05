@@ -1583,25 +1583,26 @@ a{color:inherit;text-decoration:none}
 /* ============================================================
    사업장 선택(홈) + 매장 전환 (2026-07-05)
    ============================================================ */
-/* 사업장 화면 헤더 (scr-menu 헤더와 동일 톤 — scr-stores 스코프) */
-.scr-stores .hd{padding:6px 22px 14px}
-.scr-stores .hd-brand{display:flex;align-items:center;gap:8px;margin-bottom:11px}
-.scr-stores .hd-wordmark{font-size:13px;font-weight:700;color:var(--ink-soft);letter-spacing:-.1px}
-.scr-stores .logo-img{width:28px;height:28px;border-radius:9px;overflow:hidden;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);flex:0 0 auto}
-.scr-stores .hd-row{display:flex;align-items:flex-end;justify-content:space-between}
-.scr-stores .hd-title{font-size:25px;font-weight:800;letter-spacing:-.7px}
-.scr-stores .hd-count{font-size:13px;font-weight:600;color:var(--muted);padding-bottom:3px;white-space:nowrap}
+/* 사업장 선택 홈 — 딥그린 헤더 밴드(브랜드·인사·전체 현황) */
+.scr-stores .st-hero{padding:22px 24px 24px;color:#fff;border-radius:0 0 28px 28px;
+  background:radial-gradient(125% 130% at 88% -12%,rgba(65,211,146,.30) 0%,rgba(65,211,146,0) 55%),linear-gradient(158deg,#123A29 0%,#0C2B1E 74%),#0C2B1E}
+.st-hero-brand{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.82);letter-spacing:-.1px}
+.shb-logo{width:24px;height:24px;border-radius:8px;overflow:hidden;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;color:#fff;flex:0 0 auto}
+.shb-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.st-hero-hi{font-size:24px;font-weight:800;letter-spacing:-.8px;line-height:1.32;margin-top:15px}
+.st-hero-stats{display:flex;align-items:center;margin-top:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px 6px}
+.shs{flex:1;text-align:center;display:flex;flex-direction:column;gap:3px}
+.shs b{font-size:21px;font-weight:800;letter-spacing:-.7px;line-height:1}
+.shs span{font-size:11px;font-weight:600;color:rgba(255,255,255,.6)}
+.shs-div{width:1px;height:28px;background:rgba(255,255,255,.14);flex:0 0 auto}
 
-/* 사업장 선택 홈 — 인사 헤더 + 요약 */
-.scr-stores .st-top{padding:8px 22px 4px}
-.scr-stores .st-top .hd-brand{margin-bottom:15px}
-.st-hi{font-size:27px;font-weight:800;letter-spacing:-.9px;line-height:1.22}
-.st-summary{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--muted)}
-.st-summary b{color:var(--ink);font-weight:800;margin-left:3px}
-.st-summary i{width:3px;height:3px;border-radius:50%;background:var(--muted);opacity:.5;flex:0 0 auto}
+/* '내 가게' 섹션 헤더 */
+.st-sec-head{display:flex;align-items:baseline;justify-content:space-between;padding:22px 22px 0}
+.st-sec-head h2{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.st-sec-head>span{font-size:13px;font-weight:700;color:var(--muted)}
 
 /* 사업장 카드 (실화면 + 랜딩 클론 공용) */
-.st-list{padding:18px 18px 26px;display:flex;flex-direction:column;gap:11px}
+.st-list{padding:14px 18px 26px;display:flex;flex-direction:column;gap:11px}
 .st-card{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,25,.035),0 14px 28px -18px rgba(60,40,25,.16);transition:transform .14s,border-color .15s,box-shadow .2s}
 .st-card:active{transform:scale(.985)}
 .st-card.active{border-color:rgba(22,160,106,.4);box-shadow:0 1px 2px rgba(60,40,25,.035),0 14px 28px -16px rgba(22,160,106,.3)}
@@ -1617,25 +1618,21 @@ a{color:inherit;text-decoration:none}
 .st-mg{flex:0 0 auto;font-size:12.5px;font-weight:800}
 .st-bowls{flex:0 0 auto;font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;margin-left:-3px}
 .st-go{flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--tile);display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
-.st-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;font-size:13.5px;font-weight:700;color:var(--muted);background:none;border:1.5px dashed var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:transform .14s,border-color .15s,color .15s;margin-top:2px}
+/* 사업장 추가 카드 */
+.st-add{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:1.5px dashed var(--line);border-radius:18px;padding:13px 15px;cursor:pointer;transition:transform .14s,border-color .15s;margin-top:3px}
 .st-add:active{transform:scale(.99)}
-.st-add:hover{border-color:var(--muted);color:var(--ink-soft)}
+.st-add:hover{border-color:var(--muted)}
+.st-add-ic{flex:0 0 auto;width:44px;height:44px;border-radius:13px;background:var(--tile);color:var(--muted);display:flex;align-items:center;justify-content:center}
+.st-add-tx{display:flex;flex-direction:column;gap:2px}
+.st-add-tx b{font-size:14.5px;font-weight:800;color:var(--ink-soft)}
+.st-add-tx em{font-size:11.5px;font-weight:500;font-style:normal;color:var(--muted)}
+
 /* 랜딩 클론 — 자동 순회 하이라이트, 그림자 톤 다운 */
 .landing .app-clone.scr-stores{background:var(--paper)}
+.landing .app-clone .st-hero{border-radius:0 0 24px 24px}
 .app-clone .st-card{cursor:default;box-shadow:none;transition:border-color .3s,box-shadow .3s}
 .app-clone .st-card.pick{border-color:var(--good-1);box-shadow:0 0 0 2px rgba(22,160,106,.22)}
 .app-clone .st-bowls{display:none}
-
-/* 사업장 홈 — 상단 쏠림 완화(실화면만, 랜딩 클론 제외):
-   내용이 짧으면 세로 가운데, 길어지면 위부터 스크롤(safe) */
-.screen.scr-stores .scroll{display:flex;flex-direction:column;justify-content:safe center;padding-bottom:24px}
-.screen.scr-stores .st-top{padding-top:18px}
-.screen.scr-stores .st-top .hd-brand{margin-bottom:20px}
-.screen.scr-stores .st-hi{font-size:29px}
-.screen.scr-stores .st-summary{margin-top:16px}
-.screen.scr-stores .st-list{padding-top:26px;gap:13px}
-.screen.scr-stores .st-card{padding:16px 15px}
-.screen.scr-stores .st-add{margin-top:5px;padding:18px}
 
 /* 메뉴판 상단 — 사업장 전환 버튼 */
 .scr-menu .store-switch{display:inline-flex;align-items:center;gap:6px;background:var(--tile);border:none;border-radius:11px;padding:7px 11px 7px 9px;margin-bottom:11px;cursor:pointer;transition:transform .15s,background .15s}

@@ -4,7 +4,8 @@ import Photo from '../components/Photo'
 import { useStore } from '../state/store'
 import { sig } from '../lib/calc'
 
-/* 사업장 선택 — 앱의 홈(매번 들어오는 첫 화면). 가게를 고르면 그 매장 메뉴판으로. */
+/* 사업장 선택 — 앱의 홈(매번 들어오는 첫 화면).
+   딥그린 헤더(브랜드·인사·전체 현황) + '내 가게' 카드 리스트. */
 export default function Stores() {
   const nav = useNavigate()
   const { stores, enterStore, currentStoreId, toast } = useStore()
@@ -23,44 +24,48 @@ export default function Stores() {
 
   return (
     <div className="scroll">
-      <div className="st-top fade">
-        <div className="hd-brand">
-          <div className="logo-img"><Photo src="/img/logo.webp" icon="bowl" iconSize={17} /></div>
-          <span className="hd-wordmark">오늘 몇 그릇?</span>
+      <header className="st-hero fade">
+        <div className="st-hero-brand"><span className="shb-logo"><Photo src="/img/logo.webp" icon="bowl" iconSize={15} /></span>오늘 몇 그릇?</div>
+        <h1 className="st-hero-hi">사장님,<br />어느 가게부터 볼까요?</h1>
+        <div className="st-hero-stats">
+          <div className="shs"><b className="num">{stores.length}</b><span>사업장</span></div>
+          <span className="shs-div" />
+          <div className="shs"><b className="num">{totalMenus}</b><span>메뉴</span></div>
+          <span className="shs-div" />
+          <div className="shs"><b className="num">{avgAll}%</b><span>평균 마진</span></div>
         </div>
-        <h1 className="st-hi">어느 가게부터<br />볼까요?</h1>
-        <div className="st-summary">
-          <span>가게 <b className="num">{stores.length}</b></span>
-          <i />
-          <span>메뉴 <b className="num">{totalMenus}</b></span>
-          <i />
-          <span>평균 마진 <b className={`num ${sig(avgAll)}`}>{avgAll}%</b></span>
-        </div>
-      </div>
+      </header>
 
-      <div className="st-list">
-        {stores.map((s, i) => {
-          const t = info(s)
-          const active = s.id === currentStoreId
-          return (
-            <button className={`st-card fade${active ? ' active' : ''}`} key={s.id} style={{ animationDelay: `${0.06 + i * 0.05}s` }} onClick={() => open(s.id)}>
-              <div className="st-photo"><Photo src={t.photo} icon="store" iconSize={24} alt={s.nm} /></div>
-              <div className="st-body">
-                <div className="st-nm">{s.nm}{s.primary && <span className="st-badge">대표</span>}</div>
-                <div className="st-metar">{s.type} · {s.loc} · 메뉴 {t.n}</div>
-                <div className="st-bar-row">
-                  <span className="st-bar"><span className={`${t.s}-bg`} style={{ width: `${Math.max(6, Math.min(100, t.avg))}%` }} /></span>
-                  <span className={`st-mg num ${t.s}`}>마진 {t.avg}%</span>
-                  <span className="st-bowls num">· 하루 {t.bowls}그릇</span>
+      <div className="st-sec">
+        <div className="st-sec-head fade">
+          <h2>내 가게</h2>
+          <span className="num">{stores.length}곳</span>
+        </div>
+        <div className="st-list">
+          {stores.map((s, i) => {
+            const t = info(s)
+            const active = s.id === currentStoreId
+            return (
+              <button className={`st-card fade${active ? ' active' : ''}`} key={s.id} style={{ animationDelay: `${0.05 + i * 0.05}s` }} onClick={() => open(s.id)}>
+                <div className="st-photo"><Photo src={t.photo} icon="store" iconSize={24} alt={s.nm} /></div>
+                <div className="st-body">
+                  <div className="st-nm">{s.nm}{s.primary && <span className="st-badge">대표</span>}</div>
+                  <div className="st-metar">{s.type} · {s.loc} · 메뉴 {t.n}</div>
+                  <div className="st-bar-row">
+                    <span className="st-bar"><span className={`${t.s}-bg`} style={{ width: `${Math.max(6, Math.min(100, t.avg))}%` }} /></span>
+                    <span className={`st-mg num ${t.s}`}>마진 {t.avg}%</span>
+                    <span className="st-bowls num">· 하루 {t.bowls}그릇</span>
+                  </div>
                 </div>
-              </div>
-              <span className="st-go"><Icon name="chevR" size={17} stroke={2.4} /></span>
-            </button>
-          )
-        })}
-        <button className="st-add" onClick={() => toast('사업장 추가는 곧 지원돼요')}>
-          <Icon name="plus" size={17} stroke={2.2} />사업장 추가
-        </button>
+                <span className="st-go"><Icon name="chevR" size={17} stroke={2.4} /></span>
+              </button>
+            )
+          })}
+          <button className="st-add" onClick={() => toast('사업장 추가는 곧 지원돼요')}>
+            <span className="st-add-ic"><Icon name="plus" size={18} stroke={2.3} /></span>
+            <span className="st-add-tx"><b>사업장 추가</b><em>새 가게를 등록해 함께 관리</em></span>
+          </button>
+        </div>
       </div>
     </div>
   )

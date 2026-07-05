@@ -330,23 +330,30 @@ function StoresClone({ active, playId }) {
   return (
     <div className="app-clone scr-stores">
       <StatusBar />
-      <div className="st-top">
-        <div className="hd-brand"><div className="logo-img"><img src="/img/logo.webp" alt="" /></div><span className="hd-wordmark">오늘 몇 그릇?</span></div>
-        <h1 className="st-hi">어느 가게부터<br />볼까요?</h1>
-        <div className="st-summary"><span>가게 <b className="num">3</b></span><i /><span>메뉴 <b className="num">18</b></span><i /><span>평균 마진 <b className="num g">36%</b></span></div>
-      </div>
-      <div className="st-list">
-        {STORES_DEMO.map((s, i) => (
-          <div className={`st-card${i === pick ? ' pick' : ''}`} key={s.nm}>
-            <div className="st-photo"><img src={s.img} alt="" /></div>
-            <div className="st-body">
-              <div className="st-nm">{s.nm}{s.primary && <span className="st-badge">대표</span>}</div>
-              <div className="st-metar">{s.type} · 메뉴 {s.n}</div>
-              <div className="st-bar-row"><span className="st-bar"><span className={`${s.s}-bg`} style={{ width: `${s.m}%` }} /></span><span className={`st-mg num ${s.s}`}>마진 {s.m}%</span></div>
+      <header className="st-hero">
+        <div className="st-hero-brand"><span className="shb-logo"><img src="/img/logo.webp" alt="" /></span>오늘 몇 그릇?</div>
+        <h1 className="st-hero-hi">사장님,<br />어느 가게부터 볼까요?</h1>
+        <div className="st-hero-stats">
+          <div className="shs"><b className="num">3</b><span>사업장</span></div><span className="shs-div" />
+          <div className="shs"><b className="num">18</b><span>메뉴</span></div><span className="shs-div" />
+          <div className="shs"><b className="num">36%</b><span>평균 마진</span></div>
+        </div>
+      </header>
+      <div className="st-sec">
+        <div className="st-sec-head"><h2>내 가게</h2><span className="num">3곳</span></div>
+        <div className="st-list">
+          {STORES_DEMO.map((s, i) => (
+            <div className={`st-card${i === pick ? ' pick' : ''}`} key={s.nm}>
+              <div className="st-photo"><img src={s.img} alt="" /></div>
+              <div className="st-body">
+                <div className="st-nm">{s.nm}{s.primary && <span className="st-badge">대표</span>}</div>
+                <div className="st-metar">{s.type} · 메뉴 {s.n}</div>
+                <div className="st-bar-row"><span className="st-bar"><span className={`${s.s}-bg`} style={{ width: `${s.m}%` }} /></span><span className={`st-mg num ${s.s}`}>마진 {s.m}%</span></div>
+              </div>
+              <span className="st-go"><Icon name="chevR" size={16} stroke={2.4} /></span>
             </div>
-            <span className="st-go"><Icon name="chevR" size={16} stroke={2.4} /></span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
