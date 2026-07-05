@@ -1626,6 +1626,17 @@ a{color:inherit;text-decoration:none}
 .app-clone .st-card.pick{border-color:var(--good-1);box-shadow:0 0 0 2px rgba(22,160,106,.22)}
 .app-clone .st-bowls{display:none}
 
+/* 사업장 홈 — 상단 쏠림 완화(실화면만, 랜딩 클론 제외):
+   내용이 짧으면 세로 가운데, 길어지면 위부터 스크롤(safe) */
+.screen.scr-stores .scroll{display:flex;flex-direction:column;justify-content:safe center;padding-bottom:24px}
+.screen.scr-stores .st-top{padding-top:18px}
+.screen.scr-stores .st-top .hd-brand{margin-bottom:20px}
+.screen.scr-stores .st-hi{font-size:29px}
+.screen.scr-stores .st-summary{margin-top:16px}
+.screen.scr-stores .st-list{padding-top:26px;gap:13px}
+.screen.scr-stores .st-card{padding:16px 15px}
+.screen.scr-stores .st-add{margin-top:5px;padding:18px}
+
 /* 메뉴판 상단 — 사업장 전환 버튼 */
 .scr-menu .store-switch{display:inline-flex;align-items:center;gap:6px;background:var(--tile);border:none;border-radius:11px;padding:7px 11px 7px 9px;margin-bottom:11px;cursor:pointer;transition:transform .15s,background .15s}
 .scr-menu .store-switch:active{transform:scale(.97)}
