@@ -111,9 +111,10 @@ export default function Landing() {
       <section className="lsection tight">
         <div className="stats">
           <div className="stat"><b className="num">₩5,310</b><span>GPT 추정 말고<br />확정 원가</span></div>
-          <div className="stat"><b>4가지</b><span>생·볶기·삶기·튀김<br />조리 수율 반영</span></div>
+          <div className="stat"><b>4가지</b><span>생·볶기·삶기·튀김<br />수율 반영</span></div>
           <div className="stat"><b className="num">52→41%</b><span>담는 순간<br />실시간 마진</span></div>
         </div>
+        <p className="stats-src">원가는 전국 <b>농수산물 도매시장 시세</b>와 주요 식자재 <b>유통가</b>를 분석한 기준 단가로 계산해요. 가게에서 실제로 사 오는 값을 넣으면 더 정확해집니다.</p>
       </section>
 
       {/* 계산 다음 — 이미 구현·배포된 신규 기능들 (예시 아님, 실사용 화면) */}
