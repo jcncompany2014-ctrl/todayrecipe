@@ -6,7 +6,8 @@ import { useStore } from '../state/store'
 
 // 라우트 → 화면 스코프 클래스 + 하단 탭 노출 여부
 const ROUTE = {
-  '/app':           { cls: 'scr-menu',                  tab: true },
+  '/app':           { cls: 'scr-stores',                tab: false },
+  '/app/menu':      { cls: 'scr-menu',                  tab: true },
   '/app/market':    { cls: 'scr-market',                tab: false },
   '/app/cart':      { cls: 'scr-cart',                  tab: false },
   '/app/result':    { cls: 'scr-result',               tab: false },

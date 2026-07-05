@@ -9,7 +9,7 @@ import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
 
 export default function Menu() {
   const nav = useNavigate()
-  const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu } = useStore()
+  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu } = useStore()
   const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
   const [editMenu, setEditMenu] = useState(null)
@@ -26,12 +26,13 @@ export default function Menu() {
   return (
     <>
     <div className="scroll">
-      {/* 브랜드 헤더 */}
+      {/* 사업장 전환 + 메뉴판 헤더 */}
       <div className="hd fade">
-        <div className="hd-brand">
-          <div className="logo-img"><Photo src="/img/logo.webp" icon="bowl" iconSize={17} /></div>
-          <span className="hd-wordmark">오늘 몇 그릇?</span>
-        </div>
+        <button className="store-switch" onClick={() => nav('/app')}>
+          <span className="ss-ic"><Icon name="store" size={15} stroke={1.9} /></span>
+          <span className="ss-nm">{currentStore.nm}</span>
+          <Icon name="chevD" size={15} stroke={2.2} className="ss-chev" />
+        </button>
         <div className="hd-row">
           <h1 className="hd-title">내 메뉴판</h1>
           <span className="hd-count num">메뉴 {menus.length} · 효자 {best.nm}</span>

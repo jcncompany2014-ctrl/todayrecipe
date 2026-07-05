@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AppShell from './components/AppShell'
 import Landing from './screens/Landing'
+import Stores from './screens/Stores'
 import Menu from './screens/Menu'
 import Market from './screens/Market'
 import Cart from './screens/Cart'
@@ -18,7 +19,8 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/app" element={<AppShell />}>
-        <Route index element={<Menu />} />
+        <Route index element={<Stores />} />
+        <Route path="menu" element={<Menu />} />
         <Route path="market" element={<Market />} />
         <Route path="cart" element={<Cart />} />
         <Route path="result" element={<Result />} />

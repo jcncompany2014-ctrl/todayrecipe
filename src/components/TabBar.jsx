@@ -12,7 +12,7 @@ export default function TabBar() {
 
   return (
     <nav className="tabbar">
-      <button className={on('/app')} onClick={() => nav('/app')}>
+      <button className={on('/app/menu')} onClick={() => nav('/app/menu')}>
         <Icon name="list" size={23} stroke={1.8} />
         <span>메뉴판</span>
       </button>

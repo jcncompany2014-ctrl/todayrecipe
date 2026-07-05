@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react'
-import { SEED_MENUS, DEFAULT_BUILD } from '../data/menus'
+import { DEFAULT_BUILD } from '../data/menus'
+import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
 import { overheadFor } from '../lib/calc'
 
@@ -9,8 +10,19 @@ export const useStore = () => useContext(StoreCtx)
 const clone = (o) => JSON.parse(JSON.stringify(o))
 
 export function StoreProvider({ children }) {
-  // 등록 메뉴 (누적 — GPT 채팅과 달리 데이터가 쌓임)
-  const [menus, setMenus] = useState(() => clone(SEED_MENUS))
+  // 사업장(가게) 목록 — 한 사장님이 여러 매장을 관리. 매장마다 자기 메뉴판.
+  const [stores, setStores] = useState(() => clone(SEED_STORES))
+  const [currentStoreId, setCurrentStoreId] = useState(SEED_STORES[0].id) // 기본 = 첫 매장(견고성)
+  const currentStore = stores.find((s) => s.id === currentStoreId) || stores[0]
+  // 현재 매장의 메뉴판 (기존 코드가 쓰던 mens 그대로 — 파생값)
+  const menus = currentStore.menus
+  // 현재 매장의 메뉴판만 갱신 (setMenus 시그니처 유지)
+  const setMenus = useCallback((updater) => {
+    setStores((all) => all.map((s) => (s.id === currentStoreId
+      ? { ...s, menus: typeof updater === 'function' ? updater(s.menus) : updater }
+      : s)))
+  }, [currentStoreId])
+  const enterStore = useCallback((id) => setCurrentStoreId(id), [])
   // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
   const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
   // 온보딩 — 앱 첫 진입 시 1회(인메모리, 사양상 저장 없음). '건너뛰기'/'시작하기'로 해제.
@@ -100,7 +112,7 @@ export function StoreProvider({ children }) {
   // 메뉴 편집(이름·사진 등) — 메뉴판에서 바로 수정
   const updateMenu = useCallback((id, patch) => {
     setMenus((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)))
-  }, [])
+  }, [setMenus])
 
   // 메뉴 복제 — 원본 바로 아래에 '(복사)'로
   const duplicateMenu = useCallback((id) => {
@@ -110,10 +122,10 @@ export function StoreProvider({ children }) {
       const copy = { ...clone(list[idx]), id: 'm' + Date.now(), nm: `${list[idx].nm} (복사)`.slice(0, 24), badge: undefined }
       const next = [...list]; next.splice(idx + 1, 0, copy); return next
     })
-  }, [])
+  }, [setMenus])
 
   // 메뉴 삭제
-  const deleteMenu = useCallback((id) => setMenus((list) => list.filter((m) => m.id !== id)), [])
+  const deleteMenu = useCallback((id) => setMenus((list) => list.filter((m) => m.id !== id)), [setMenus])
 
   // 결과 저장 → 메뉴판에 누적(upsert). 레시피(items)도 함께 기억.
   const saveBuild = useCallback((margin) => {
@@ -124,7 +136,7 @@ export function StoreProvider({ children }) {
       if (idx >= 0) { cleared[idx] = entry; return cleared }
       return [entry, ...cleared]
     })
-  }, [build])
+  }, [build, setMenus])
 
   // 오늘 장사 마감 — 메뉴별 판매 개수(인메모리). 연타 시 값이 밀리지 않게 함수형 업데이터 허용.
   const [soldToday, setSoldToday] = useState({})
@@ -137,6 +149,7 @@ export function StoreProvider({ children }) {
 
   const value = {
     onboarded, setOnboarded,
+    stores, currentStore, currentStoreId, enterStore,
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging,
