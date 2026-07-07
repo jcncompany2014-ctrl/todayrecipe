@@ -645,6 +645,10 @@ a{color:inherit;text-decoration:none}
 .landing .app-clone .statusbar{height:52px;padding-top:6px}
 .landing .app-clone .cartbar{transition:transform .45s cubic-bezier(.2,.8,.3,1),opacity .3s}
 .landing .app-clone .hscroll{overflow:hidden}
+/* iOS Safari 버그 대응: transform(폰 스케일)이 걸린 조상 안에서 position:sticky가
+   튀어 마트 화면 목업 가운데가 크게 비어 보임. 클론은 스크롤이 없어 sticky 불필요 → 정적으로. */
+.landing .app-clone .catbar{position:static}
+.landing .app-clone .cartbar{bottom:18px}
 .landing .app-clone .toast{max-width:none;white-space:nowrap;padding:10px 15px;font-size:12.5px;bottom:112px}
 .landing .hscroll-row{display:flex;gap:12px;width:max-content}
 .landing .hscroll-row.run{animation:hscrollmove 4s cubic-bezier(.3,.1,.3,1) forwards}
