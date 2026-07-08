@@ -333,6 +333,18 @@ a{color:inherit;text-decoration:none}
 .scr-cart .ing-name{flex:1;min-width:0}
 .scr-cart .ing-name b{font-size:15.5px;font-weight:700;letter-spacing:-.3px}
 .scr-cart .ing-name span{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-top:2px}
+/* 내 매입가 편집 */
+.scr-cart .ing-price{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;padding:2px 0;cursor:pointer}
+.scr-cart .ing-price svg{opacity:.5}
+.scr-cart .ing-price.on{color:var(--sand-ink);font-weight:800}
+.scr-cart .ing-price.on svg{opacity:.8}
+.scr-cart .ing-mine{font-size:9px;font-weight:800;color:#fff;background:var(--sand-ink);padding:1px 5px;border-radius:5px;letter-spacing:-.2px}
+.scr-cart .ing-price-edit{display:inline-flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap}
+.scr-cart .ing-price-edit input{width:58px;font-family:inherit;font-size:13px;font-weight:800;color:var(--ink);border:1.5px solid var(--ink);border-radius:8px;padding:4px 8px;outline:none;background:#fff}
+.scr-cart .ing-price-edit input::-webkit-outer-spin-button,.scr-cart .ing-price-edit input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.scr-cart .ing-price-edit input[type=number]{-moz-appearance:textfield}
+.scr-cart .ing-price-edit em{font-size:11.5px;font-weight:600;font-style:normal;color:var(--muted)}
+.scr-cart .ing-reset{font-size:10.5px;font-weight:700;color:var(--ink-soft);background:var(--tile);border:none;border-radius:7px;padding:4px 8px;cursor:pointer}
 .scr-cart .ing-cost{text-align:right;flex:0 0 auto}
 .scr-cart .ing-cost .yld{font-size:10.5px;font-weight:600;color:var(--sand-ink);background:var(--sand);
   padding:2px 6px;border-radius:6px;display:inline-block;margin-bottom:4px}

@@ -89,6 +89,17 @@ export function StoreProvider({ children }) {
     }))
   }, [])
 
+  // '내 매입가' — 재료 단가(원/g)를 사장님 값으로. 0/무효면 무시.
+  const setItemPerG = useCallback((id, perG) => {
+    const v = Math.max(0, Math.round(Number(perG)))
+    if (!v) return
+    setBuild((b) => ({ ...b, items: b.items.map((it) => (it.id === id ? { ...it, perG: v } : it)) }))
+  }, [])
+  // 기준가로 되돌리기 — override 제거
+  const resetItemPerG = useCallback((id) => {
+    setBuild((b) => ({ ...b, items: b.items.map((it) => { if (it.id !== id) return it; const { perG, ...rest } = it; return rest }) }))
+  }, [])
+
   const setPrice = useCallback((price) => setBuild((b) => ({ ...b, price })), [])
 
   const setBuildMeta = useCallback((meta) => setBuild((b) => ({ ...b, ...meta })), [])
@@ -153,7 +164,7 @@ export function StoreProvider({ children }) {
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging,
-    inBuild, toggleItem, removeItem, setGrams, setMethod, setPrice, setBuildMeta,
+    inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
     soldToday, setSold, resetSold,
     toast, toastMsg,

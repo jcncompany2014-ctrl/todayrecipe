@@ -8,13 +8,17 @@ import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadB
 
 export default function Cart() {
   const nav = useNavigate()
-  const { build, setGrams, setMethod, removeItem, toast, costOpts, setRate, setPackaging } = useStore()
+  const { build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
+  const [editId, setEditId] = useState(null)
+  const [editVal, setEditVal] = useState('')
 
   const empty = build.items.length === 0
   const { cost, profit, margin, sig } = summarize(build.items, build.price, costOpts)
   const doBump = (id) => { setBumped(id); setTimeout(() => setBumped((b) => (b === id ? null : b)), 150) }
+  // 입력 즉시 원가에 반영(라이브). 값이 유효할 때만 반영, 편집창은 blur/Enter로 닫음.
+  const onPriceInput = (id, v) => { setEditVal(v); const n = Number(v); if (n > 0) { setItemPerG(id, n); doBump(id) } }
 
   return (
     <>
@@ -70,7 +74,27 @@ export default function Cart() {
                     </button>
                     <div className="ing-top">
                       <div className="vthumb" style={{ background: CATS[p.cat].g }}><Thumb product={p} iconSize={30} /></div>
-                      <div className="ing-name"><b>{p.nm}</b><span>{p.perG}원/g</span></div>
+                      <div className="ing-name">
+                        <b>{p.nm}</b>
+                        {editId === it.id ? (
+                          <span className="ing-price-edit">
+                            <input type="number" inputMode="numeric" autoFocus value={editVal}
+                              onChange={(e) => onPriceInput(it.id, e.target.value)}
+                              onBlur={() => setEditId(null)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }} />
+                            <em>원/g</em>
+                            <button className="ing-reset" onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => { resetItemPerG(it.id); setEditId(null); doBump(it.id) }}>기준가 {p.perG}원</button>
+                          </span>
+                        ) : (
+                          <button className={`ing-price${it.perG != null ? ' on' : ''}`}
+                            onClick={() => { setEditId(it.id); setEditVal(String(it.perG != null ? it.perG : p.perG)) }}>
+                            {it.perG != null && <i className="ing-mine">내 매입가</i>}
+                            {won(it.perG != null ? it.perG : p.perG)}원/g
+                            <Icon name="edit" size={10} stroke={2} />
+                          </button>
+                        )}
+                      </div>
                       <div className="ing-cost">
                         <span className="yld">수율 {yieldOf(it)}%</span>
                         <div className={`val num${bumped === it.id ? ' bump' : ''}`}>₩{won(costOf(it))}</div>

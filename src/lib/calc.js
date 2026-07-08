@@ -41,11 +41,18 @@ export function yieldOf(item) {
   return p && p.cookable ? YIELD[item.method] : 100
 }
 
+// 재료 단가(원/g) — 사장님이 '내 매입가'를 넣었으면 그 값, 아니면 기준가
+export function perGOf(item) {
+  const p = PRODUCTS[item.id]
+  if (!p) return 0
+  return item.perG != null ? item.perG : p.perG
+}
+
 // 재료별 실투입원가 = round( perG × 사용량g ÷ (수율/100) )
 export function costOf(item) {
   const p = PRODUCTS[item.id]
   if (!p) return 0
-  return Math.round((p.perG * item.grams) / (yieldOf(item) / 100))
+  return Math.round((perGOf(item) * item.grams) / (yieldOf(item) / 100))
 }
 
 // 장바구니 → 마진 요약 (부대비용은 판매가·가게 설정 연동)
@@ -89,7 +96,7 @@ export function orderPlan(items, bowls) {
   const rows = items.map((it) => {
     const p = PRODUCTS[it.id]
     const grams = it.grams * bowls
-    return { id: it.id, nm: p.nm, grams, buy: Math.round(p.perG * it.grams * bowls) }
+    return { id: it.id, nm: p.nm, grams, buy: Math.round(perGOf(it) * it.grams * bowls) }
   })
   const total = rows.reduce((a, r) => a + r.buy, 0)
   return { rows, total }
