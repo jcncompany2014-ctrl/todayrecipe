@@ -645,10 +645,17 @@ a{color:inherit;text-decoration:none}
 .landing .app-clone .statusbar{height:52px;padding-top:6px}
 .landing .app-clone .cartbar{transition:transform .45s cubic-bezier(.2,.8,.3,1),opacity .3s}
 .landing .app-clone .hscroll{overflow:hidden}
-/* iOS Safari 버그 대응: transform(폰 스케일)이 걸린 조상 안에서 position:sticky가
-   튀어 마트 화면 목업 가운데가 크게 비어 보임. 클론은 스크롤이 없어 sticky 불필요 → 정적으로. */
+/* iOS(WebKit) 폰 목업 렌더 안정화 — Blink(데스크톱) 레이아웃은 불변, WebKit 전용 버그만 방지.
+   ① transform(폰 스케일) 조상 안 position:sticky가 튀는 버그 → 클론 catbar를 정적으로
+   ② WebKit flex 자식 재분배/축소 방지 → 직계 자식 flex 고정(내용 높이 그대로)
+   ③ transform 레이어 안정화 ④ safe-area 대신 고정 하단값 */
+.landing .ios-screen{transform:translateZ(0);-webkit-transform:translateZ(0)}
+.landing .ios-scaler{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.landing .app-clone{justify-content:flex-start}
+.landing .app-clone > *{flex:0 0 auto}
 .landing .app-clone .catbar{position:static}
 .landing .app-clone .cartbar{bottom:18px}
+.scr-market .chip-ic img{width:100%;height:100%;object-fit:cover;display:block}
 .landing .app-clone .toast{max-width:none;white-space:nowrap;padding:10px 15px;font-size:12.5px;bottom:112px}
 .landing .hscroll-row{display:flex;gap:12px;width:max-content}
 .landing .hscroll-row.run{animation:hscrollmove 4s cubic-bezier(.3,.1,.3,1) forwards}
