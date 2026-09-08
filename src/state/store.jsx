@@ -3,6 +3,17 @@ import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
 import { overheadFor } from '../lib/calc'
+import { usePersistentState } from './persist'
+
+/* 복원값 검증 — 손상되거나 옛 구조면 조용히 시드로 되돌린다.
+   저장된 값을 그대로 믿으면, 한 번 깨진 값이 앱을 영구히 죽인다. */
+const okStores = (v) => Array.isArray(v) && v.length > 0
+  && v.every((s) => s && typeof s.id === 'string' && Array.isArray(s.menus))
+const okBuild = (v) => v && typeof v === 'object' && Array.isArray(v.items) && typeof v.price === 'number'
+const okNum = (v) => typeof v === 'number' && isFinite(v) && v >= 0
+const okOpts = (v) => v && typeof v === 'object' && typeof v.rate === 'number' && typeof v.packaging === 'number'
+const okMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
+const okBool = (v) => typeof v === 'boolean'
 
 const StoreCtx = createContext(null)
 export const useStore = () => useContext(StoreCtx)
@@ -11,9 +22,9 @@ const clone = (o) => JSON.parse(JSON.stringify(o))
 
 export function StoreProvider({ children }) {
   // 사업장(가게) 목록 — 한 사장님이 여러 매장을 관리. 매장마다 자기 메뉴판.
-  const [stores, setStores] = useState(() => clone(SEED_STORES))
-  const [currentStoreId, setCurrentStoreId] = useState(SEED_STORES[0].id) // 기본 = 첫 매장(견고성)
-  const currentStore = stores.find((s) => s.id === currentStoreId) || stores[0]
+  const [stores, setStores] = usePersistentState('stores', () => clone(SEED_STORES), okStores)
+  const [currentStoreId, setCurrentStoreId] = usePersistentState('currentStoreId', SEED_STORES[0].id, (v) => typeof v === 'string')
+  const currentStore = stores.find((s) => s.id === currentStoreId) || stores[0] || SEED_STORES[0]
   // 현재 매장의 메뉴판 (기존 코드가 쓰던 mens 그대로 — 파생값)
   const menus = currentStore.menus
   // 현재 매장의 메뉴판만 갱신 (setMenus 시그니처 유지)
@@ -24,15 +35,15 @@ export function StoreProvider({ children }) {
   }, [currentStoreId])
   const enterStore = useCallback((id) => setCurrentStoreId(id), [])
   // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
-  const [build, setBuild] = useState(() => clone(DEFAULT_BUILD))
+  const [build, setBuild] = usePersistentState('build', () => clone(DEFAULT_BUILD), okBuild)
   // 온보딩 — 앱 첫 진입 시 1회(인메모리, 사양상 저장 없음). '건너뛰기'/'시작하기'로 해제.
-  const [onboarded, setOnboardedState] = useState(false)
+  const [onboarded, setOnboardedState] = usePersistentState('onboarded', false, okBool)
   const setOnboarded = useCallback((v = true) => setOnboardedState(v), [])
   // 사장님은 '하루' 고정비를 모른다 — 아는 건 '한 달' 월세·인건비와 목표.
   // 한 달 값 + 영업일수만 넣으면 앱이 하루치로 자동 환산한다.
-  const [monthlyFixed, setMF] = useState(6300000) // 한 달 고정비(월세·인건비·공과금)
-  const [monthlyGoal, setMG] = useState(2600000)  // 한 달 목표 순이익
-  const [workDays, setWD] = useState(26)           // 한 달 영업일수
+  const [monthlyFixed, setMF] = usePersistentState('monthlyFixed', 6300000, okNum) // 한 달 고정비(월세·인건비·공과금)
+  const [monthlyGoal, setMG] = usePersistentState('monthlyGoal', 2600000, okNum)  // 한 달 목표 순이익
+  const [workDays, setWD] = usePersistentState('workDays', 26, okNum)           // 한 달 영업일수
   const step10 = (v, prev, max) => {
     const x = typeof v === 'function' ? v(prev) : v
     return Math.max(0, Math.min(max, Math.round(x / 100000) * 100000))
@@ -47,7 +58,7 @@ export function StoreProvider({ children }) {
   const dailyFixed = Math.max(1, Math.round(monthlyFixed / workDays))
   const dailyGoal = Math.round(monthlyGoal / workDays)
   // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
-  const [costOpts, setCostOpts] = useState({ rate: 0.12, packaging: 300 })
+  const [costOpts, setCostOpts] = usePersistentState('costOpts', { rate: 0.12, packaging: 300 }, okOpts)
   const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])
   const setPackaging = useCallback((p) => setCostOpts((o) => ({ ...o, packaging: Math.max(0, p) })), [])
 
@@ -91,7 +102,9 @@ export function StoreProvider({ children }) {
 
   // '내 매입가' — 재료 단가(원/g)를 사장님 값으로. 0/무효면 무시.
   const setItemPerG = useCallback((id, perG) => {
-    const v = Math.max(0, Math.round(Number(perG)))
+    // 소수점 유지 — 양파 2원/g 같은 저가 재료는 정수로 반올림하면 입력 자체가 무의미해진다
+    const n = Number(perG)
+    const v = isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : 0
     if (!v) return
     setBuild((b) => ({ ...b, items: b.items.map((it) => (it.id === id ? { ...it, perG: v } : it)) }))
   }, [])
@@ -150,7 +163,7 @@ export function StoreProvider({ children }) {
   }, [build, setMenus])
 
   // 오늘 장사 마감 — 메뉴별 판매 개수(인메모리). 연타 시 값이 밀리지 않게 함수형 업데이터 허용.
-  const [soldToday, setSoldToday] = useState({})
+  const [soldToday, setSoldToday] = usePersistentState('soldToday', {}, okMap)
   const setSold = useCallback((id, count) => setSoldToday((s) => {
     const cur = s[id] || 0
     const next = typeof count === 'function' ? count(cur) : count

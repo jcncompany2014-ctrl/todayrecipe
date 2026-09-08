@@ -9,15 +9,17 @@ import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
 
 export default function Menu() {
   const nav = useNavigate()
-  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu } = useStore()
+  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu, newBuild } = useStore()
   const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
   const [editMenu, setEditMenu] = useState(null)
 
+  // 메뉴판이 빌 수 있다(전부 삭제·첫 사용). 빈 상태에서도 화면은 살아 있어야 한다.
+  const hasMenus = menus.length > 0
   const profitOf = (m) => (m.price * m.margin) / 100
-  const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length)
+  const avgProfit = hasMenus ? round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length) : 0
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
-  const best = menus.reduce((a, b) => (b.margin > a.margin ? b : a))
+  const best = hasMenus ? menus.reduce((a, b) => (b.margin > a.margin ? b : a)) : null
   const healthy = menus.filter((m) => m.margin >= 30).length
   const sorted = [...menus].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
 
@@ -35,7 +37,7 @@ export default function Menu() {
         </button>
         <div className="hd-row">
           <h1 className="hd-title">내 메뉴판</h1>
-          <span className="hd-count num">메뉴 {menus.length} · 효자 {best.nm}</span>
+          <span className="hd-count num">{hasMenus ? `메뉴 ${menus.length} · 효자 ${best.nm}` : '메뉴를 추가해 보세요'}</span>
         </div>
       </div>
 
@@ -50,9 +52,11 @@ export default function Menu() {
           <span className="pre">하루</span><b className="num">{gp.total === Infinity ? '—' : gp.total}</b><span className="unit">그릇</span><span className="tail">팔면 돼요</span>
         </div>
 
-        {gp.total === Infinity
-          ? <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요</div>
-          : <GoalGauge be={gp.be} total={gp.total} />}
+        {!hasMenus
+          ? <div className="hero-warn">메뉴를 하나 추가하면 하루 몇 그릇 팔아야 하는지 나와요</div>
+          : gp.total === Infinity
+            ? <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요</div>
+            : <GoalGauge be={gp.be} total={gp.total} />}
 
         <div className="hero-foot">
           <span>그릇당 평균 <b className="num">{won(avgProfit)}원</b></span>
@@ -106,6 +110,13 @@ export default function Menu() {
       </div>
 
       <div className="list">
+        {!hasMenus && (
+          <div className="menu-empty fade">
+            <span className="me-ic"><Icon name="cart" size={26} stroke={1.7} /></span>
+            <p>아직 등록한 메뉴가 없어요<br />재료를 담으면 첫 메뉴의 진짜 원가가 나와요</p>
+            <button className="me-btn" onClick={() => { newBuild(); nav('/app/market') }}>첫 메뉴 만들기</button>
+          </div>
+        )}
         {sorted.map((m, i) => {
           const s = sig(m.margin)
           const profit = round10(profitOf(m))

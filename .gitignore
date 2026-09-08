@@ -5,3 +5,6 @@ dist
 .DS_Store
 
 .vercel
+
+# 제출·백업용 압축본 — 저장소에 넣지 않는다
+*.zip

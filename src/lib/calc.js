@@ -3,7 +3,13 @@
    수수료율·포장비는 사장님이 직접 조절 가능(opts) — 가게 맞춤 계산. */
 import { PRODUCTS } from '../data/catalog'
 
-// 조리법별 수율(%)
+/* ── 수율의 정의 (이 앱의 심장. 여기가 흔들리면 전부 흔들린다) ──
+   레시피의 사용량(item.grams) = '조리 후' 접시에 올라가는 양 (EP, Edible Portion)
+   원물 투입량(사야 하는 양)    = 사용량 ÷ (수율/100)          (AP, As Purchased)
+   원가                        = 원물 단가 × 원물 투입량
+   발주량                      = 원물 투입량 × 그릇 수
+   → 원가와 발주가 '같은 투입량'에서 나오므로 서로 어긋날 수 없다.
+   수율 100 초과 = 삶으면 불어나는 재료(밥·면·당면). 이때 투입량은 사용량보다 적다. */
 export const YIELD = { 생: 100, 볶기: 80, 삶기: 90, 튀김: 75 }
 export const COOKS = ['생', '볶기', '삶기', '튀김']
 
@@ -38,7 +44,16 @@ export const overheadBreakdown = (price, opts = {}) => [
 // 항목 수율(조리 안 하는 재료는 100% 고정)
 export function yieldOf(item) {
   const p = PRODUCTS[item.id]
-  return p && p.cookable ? YIELD[item.method] : 100
+  if (!p || !p.cookable) return 100
+  // 재료마다 조리법별 실제 수율이 다르다(당면은 삶으면 불어난다). 있으면 그 값이 우선.
+  const own = p.yieldBy && p.yieldBy[item.method]
+  const y = own != null ? own : YIELD[item.method]
+  return y > 0 ? y : 100
+}
+
+/* 원물 투입량(g) — 실제로 사야 하는 양. 원가·발주 둘 다 이 값에서 나온다. */
+export function rawGramsOf(item) {
+  return item.grams / (yieldOf(item) / 100)
 }
 
 // 재료 단가(원/g) — 사장님이 '내 매입가'를 넣었으면 그 값, 아니면 기준가
@@ -48,11 +63,11 @@ export function perGOf(item) {
   return item.perG != null ? item.perG : p.perG
 }
 
-// 재료별 실투입원가 = round( perG × 사용량g ÷ (수율/100) )
+// 재료별 실투입원가 = round( 원물단가 × 원물투입량 )
 export function costOf(item) {
   const p = PRODUCTS[item.id]
   if (!p) return 0
-  return Math.round((perGOf(item) * item.grams) / (yieldOf(item) / 100))
+  return Math.round(perGOf(item) * rawGramsOf(item))
 }
 
 // 장바구니 → 마진 요약 (부대비용은 판매가·가게 설정 연동)
@@ -91,13 +106,21 @@ export function marginWithFoodShift(food, price, pct, opts = {}) {
   return price > 0 ? Math.round((profit / price) * 100) : 0
 }
 
-// 발주 계산: N그릇 팔 때 재료별 필요량(g)·구매비(원물가 기준, 수율 무관)
+/* 발주 계산: N그릇 팔 때 실제로 '사야 하는' 양과 돈.
+   반드시 원가와 같은 투입량(rawGramsOf)에서 나와야 한다 —
+   예전엔 여기만 수율을 무시해서, 발주서대로 사면 재료가 모자랐다. */
 export function orderPlan(items, bowls) {
   const rows = items.map((it) => {
     const p = PRODUCTS[it.id]
-    const grams = it.grams * bowls
-    return { id: it.id, nm: p.nm, grams, buy: Math.round(perGOf(it) * it.grams * bowls) }
-  })
+    if (!p) return null
+    const raw = rawGramsOf(it)
+    return {
+      id: it.id, nm: p.nm,
+      grams: Math.round(raw * bowls),      // 사야 하는 원물량
+      servedGrams: Math.round(it.grams * bowls), // 접시에 올라가는 양
+      buy: Math.round(perGOf(it) * raw * bowls),
+    }
+  }).filter(Boolean)
   const total = rows.reduce((a, r) => a + r.buy, 0)
   return { rows, total }
 }
