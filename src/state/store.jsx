@@ -16,6 +16,15 @@ const DEFAULT_COST_OPTS = { rate: 0.12, packaging: 300, flatFee: 0, deliveryShar
 const okMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
 const okBool = (v) => typeof v === 'boolean'
 
+const EMPTY = {}   // 참조가 매 렌더 바뀌지 않게 고정
+/* 날짜 키 — 로컬 기준 YYYY-MM-DD. UTC를 쓰면 새벽 장사가 어제로 밀린다. */
+const pad2 = (n) => String(n).padStart(2, '0')
+export const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`
+export const shiftDay = (key, delta) => {
+  const [y, m, d] = key.split('-').map(Number)
+  return dayKey(new Date(y, m - 1, d + delta))
+}
+
 const StoreCtx = createContext(null)
 export const useStore = () => {
   const ctx = useContext(StoreCtx)
@@ -213,14 +222,40 @@ export function StoreProvider({ children }) {
     })
   }, [build, setMenus])
 
-  // 오늘 장사 마감 — 메뉴별 판매 개수(인메모리). 연타 시 값이 밀리지 않게 함수형 업데이터 허용.
-  const [soldToday, setSoldToday] = usePersistentState('soldToday', {}, okMap)
-  const setSold = useCallback((id, count) => setSoldToday((s) => {
-    const cur = s[id] || 0
+  /* 판매 기록 — { 가게id: { 날짜: { 메뉴id: 개수 } } }
+     전에는 날짜도 가게 구분도 없었다. 그래서 (1) 어제 판 것이 오늘 것으로 남았고,
+     (2) 2호점 판매량이 본점 대시보드에 합산됐다. 둘 다 여기서 해결된다. */
+  const [salesLog, setSalesLog] = usePersistentState('salesLog', {}, okMap)
+  const todayKey = dayKey()
+  const soldToday = (salesLog[currentStoreId] && salesLog[currentStoreId][todayKey]) || EMPTY
+
+  const setSold = useCallback((id, count) => setSalesLog((L) => {
+    const store = L[currentStoreId] || {}
+    const day = store[todayKey] || {}
+    const cur = day[id] || 0
     const next = typeof count === 'function' ? count(cur) : count
-    return { ...s, [id]: Math.max(0, Math.round(next)) }
-  }), [])
-  const resetSold = useCallback(() => setSoldToday({}), [])
+    return { ...L, [currentStoreId]: { ...store, [todayKey]: { ...day, [id]: Math.max(0, Math.round(next)) } } }
+  }), [currentStoreId, todayKey, setSalesLog])
+
+  const resetSold = useCallback(() => setSalesLog((L) => {
+    const store = { ...(L[currentStoreId] || {}) }
+    delete store[todayKey]
+    return { ...L, [currentStoreId]: store }
+  }), [currentStoreId, todayKey, setSalesLog])
+
+  // 특정 날짜의 판매 기록 — '어제보다'를 말할 수 있게 하는 최소 장치
+  const soldOn = useCallback((key) => (salesLog[currentStoreId] && salesLog[currentStoreId][key]) || EMPTY, [salesLog, currentStoreId])
+  const yesterdaySold = soldOn(shiftDay(todayKey, -1))
+  // 최근 n일 (오늘 포함) — 추이 표시용
+  const recentDays = useCallback((n = 7) => {
+    const out = []
+    for (let i = n - 1; i >= 0; i--) {
+      const k = shiftDay(todayKey, -i)
+      const day = (salesLog[currentStoreId] && salesLog[currentStoreId][k]) || EMPTY
+      out.push({ key: k, sold: day, count: Object.values(day).reduce((a, v) => a + v, 0) })
+    }
+    return out
+  }, [salesLog, currentStoreId, todayKey])
 
   const value = {
     onboarded, setOnboarded,
@@ -231,7 +266,7 @@ export function StoreProvider({ children }) {
     ingredientPrices,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
-    soldToday, setSold, resetSold,
+    soldToday, setSold, resetSold, soldOn, yesterdaySold, recentDays, todayKey,
     toast, toastMsg,
   }
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
