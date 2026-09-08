@@ -1727,3 +1727,21 @@ a{color:inherit;text-decoration:none}
   .screen-loading .sl-dot{animation:none}
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* ---------- 결과 화면: 레시피로 돌아가는 길 ---------- */
+.viz-edit{
+  margin-top:16px;width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;cursor:pointer;
+  background:var(--tile);color:var(--ink-soft);font-family:inherit;font-size:14px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;
+}
+.viz-edit:active{transform:scale(.99)}
+.norecipe{
+  margin-top:14px;background:var(--sand);border:1px solid rgba(154,107,60,.18);border-radius:20px;padding:22px 20px;
+}
+.norecipe .nr-tx b{display:block;font-size:16px;font-weight:800;color:var(--sand-ink);letter-spacing:-.4px}
+.norecipe .nr-tx span{display:block;margin-top:8px;font-size:13.5px;font-weight:500;color:var(--ink-soft);line-height:1.6;word-break:keep-all}
+.norecipe .nr-btn{
+  margin-top:16px;width:100%;min-height:44px;padding:13px;border:0;border-radius:14px;cursor:pointer;
+  background:var(--pine);color:#fff;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:-.3px;
+}
+.norecipe .nr-btn:active{transform:scale(.99)}

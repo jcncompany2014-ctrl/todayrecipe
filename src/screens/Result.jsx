@@ -208,6 +208,22 @@ export default function Result() {
           <div className="advice-head"><span className="tag"><Icon name="pie" size={13} stroke={0} fill /></span> 원가는 어디에 쓰이나요</div>
           <CostDonut data={segData} />
           <p className="viz-hint">재료 <b className="num">{won(segData.ingTotal)}원</b> · 부대비용 <b className="num">{won(segData.ovhTotal)}원</b> — 배달·포장·인건비가 생각보다 커요</p>
+          {hasItems && (
+            <button className="viz-edit" onClick={() => nav('/app/cart')}>
+              <Icon name="edit" size={14} stroke={2} /> 재료 고치기
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* 레시피 없이 원가만 아는 메뉴 — 진짜 원가로 가는 길을 연다 */}
+      {!hasItems && (
+        <div className="norecipe fade">
+          <div className="nr-tx">
+            <b>이 메뉴는 아직 레시피가 없어요</b>
+            <span>지금 원가는 저장된 마진에서 되짚은 값이에요. 재료를 담으면 조리 수율까지 반영한 진짜 원가가 나와요.</span>
+          </div>
+          <button className="nr-btn" onClick={() => nav('/app/market')}>재료 담으러 가기</button>
         </div>
       )}
 
