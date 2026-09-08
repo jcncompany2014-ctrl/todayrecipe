@@ -15,6 +15,11 @@ export const COOKS = ['생', '볶기', '삶기', '튀김']
 
 // 부대비용 기본값
 export const DELIVERY_RATE = 0.12          // 배달앱 수수료 (판매가 정률)
+/* 배달비는 정률만이 아니다 — 실제 배달앱은 '중개수수료(정률) + 배달비(정액)' 구조다.
+   그리고 홀 손님에게는 아예 붙지 않는다. 그래서 채널 비중을 곱한다.
+   기본값은 종전 동작과 동일(전부 배달·정액 0)로 두고, 사장님이 우리 가게 실제 비중을 넣게 한다. */
+export const DELIVERY_FLAT = 0             // 건당 정액 배달비(원)
+export const DELIVERY_SHARE = 1            // 매출 중 배달 주문 비중 (0~1)
 export const PACKAGING = 300
 export const LABOR = 880
 export const GAS = 490
@@ -38,14 +43,28 @@ export const sig = (m) => (m >= 30 ? 'g' : m >= 20 ? 'w' : 'b')
 
 // 부대비용 (판매가·가게 설정 연동)
 export const fixedOverheadFor = (opts = {}) => (opts.packaging ?? PACKAGING) + LABOR + GAS
-export const deliveryFeeFor = (price, opts = {}) => Math.round(price * (opts.rate ?? DELIVERY_RATE))
+export const deliveryFeeFor = (price, opts = {}) => {
+  const rate = opts.rate ?? DELIVERY_RATE
+  const flat = opts.flatFee ?? DELIVERY_FLAT
+  const share = Math.min(1, Math.max(0, opts.deliveryShare ?? DELIVERY_SHARE))
+  // 그릇당 평균 배달비용 = (정률 + 정액) × 배달 비중
+  return Math.round((price * rate + flat) * share)
+}
 export const overheadFor = (price, opts = {}) => fixedOverheadFor(opts) + deliveryFeeFor(price, opts)
-export const overheadBreakdown = (price, opts = {}) => [
-  { k: `배달앱 수수료 (${Math.round((opts.rate ?? DELIVERY_RATE) * 100)}%)`, v: deliveryFeeFor(price, opts) },
+export const overheadBreakdown = (price, opts = {}) => {
+  const share = Math.min(1, Math.max(0, opts.deliveryShare ?? DELIVERY_SHARE))
+  const flat = opts.flatFee ?? DELIVERY_FLAT
+  const ratePct = Math.round((opts.rate ?? DELIVERY_RATE) * 100)
+  const label = share >= 1
+    ? `배달앱 수수료 (${ratePct}%${flat ? ` + ${won(flat)}원` : ''})`
+    : `배달 비용 (${ratePct}%${flat ? ` + ${won(flat)}원` : ''} × 배달 ${Math.round(share * 100)}%)`
+  return [
+  { k: label, v: deliveryFeeFor(price, opts) },
   { k: '포장비', v: opts.packaging ?? PACKAGING },
   { k: '조리 인건비', v: LABOR },
   { k: '가스·부자재', v: GAS },
-]
+  ]
+}
 
 // 항목 수율(조리 안 하는 재료는 100% 고정)
 export function yieldOf(item) {

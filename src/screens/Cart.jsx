@@ -8,12 +8,13 @@ import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadB
 
 export default function Cart() {
   const nav = useNavigate()
-  const { build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging } = useStore()
+  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
   const [editId, setEditId] = useState(null)
   const [editVal, setEditVal] = useState('')
 
+  const currentStoreNm = currentStore ? currentStore.nm : '이 가게'
   const empty = build.items.length === 0
   const { cost, profit, margin, sig } = summarize(build.items, build.price, costOpts)
   const doBump = (id) => { setBumped(id); setTimeout(() => setBumped((b) => (b === id ? null : b)), 150) }
@@ -150,6 +151,20 @@ export default function Cart() {
                 <b className="num oe-val">{Math.round(costOpts.rate * 100)}%</b>
               </div>
               <div className="oe-row">
+                <span className="oe-lab">배달 주문 비중</span>
+                <input type="range" min="0" max="100" step="5" value={Math.round((costOpts.deliveryShare ?? 1) * 100)}
+                  onChange={(e) => setDeliveryShare(Number(e.target.value) / 100)} aria-label="배달 주문 비중" />
+                <b className="num oe-val">{Math.round((costOpts.deliveryShare ?? 1) * 100)}%</b>
+              </div>
+              <div className="oe-row">
+                <span className="oe-lab">건당 배달비</span>
+                <div className="stepper oe-stepper">
+                  <button aria-label="배달비 감소" onClick={() => setFlatFee((costOpts.flatFee ?? 0) - 100)}><Icon name="minus" size={14} stroke={2.4} /></button>
+                  <span className="v num">{won(costOpts.flatFee ?? 0)}<i>원</i></span>
+                  <button aria-label="배달비 증가" onClick={() => setFlatFee((costOpts.flatFee ?? 0) + 100)}><Icon name="plus" size={14} stroke={2.4} /></button>
+                </div>
+              </div>
+              <div className="oe-row">
                 <span className="oe-lab">포장비</span>
                 <div className="stepper oe-stepper">
                   <button aria-label="감소" onClick={() => setPackaging(costOpts.packaging - 100)}><Icon name="minus" size={14} stroke={2.4} /></button>
@@ -157,7 +172,10 @@ export default function Cart() {
                   <button aria-label="증가" onClick={() => setPackaging(costOpts.packaging + 100)}><Icon name="plus" size={14} stroke={2.4} /></button>
                 </div>
               </div>
-              <p className="oe-hint">배달앱 요금제, 용기값이 가게마다 달라요. 바꾸면 마진이 바로 다시 계산돼요.</p>
+              <p className="oe-hint">
+                배달앱은 <b>수수료율 + 건당 배달비</b>가 같이 빠져요. 홀 손님에겐 안 붙으니,
+                우리 가게 <b>배달 비중</b>만큼만 계산해요. 홀 전용이면 0%로 두세요. 이 설정은 <b>{currentStoreNm}</b>에만 적용돼요.
+              </p>
             </div>
           </div>
         </div>

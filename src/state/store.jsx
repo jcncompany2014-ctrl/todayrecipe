@@ -11,7 +11,8 @@ const okStores = (v) => Array.isArray(v) && v.length > 0
   && v.every((s) => s && typeof s.id === 'string' && Array.isArray(s.menus))
 const okBuild = (v) => v && typeof v === 'object' && Array.isArray(v.items) && typeof v.price === 'number'
 const okNum = (v) => typeof v === 'number' && isFinite(v) && v >= 0
-const okOpts = (v) => v && typeof v === 'object' && typeof v.rate === 'number' && typeof v.packaging === 'number'
+/* 부대비용 기본값 — 종전 동작과 동일(전부 배달·정액 0). 사장님이 우리 가게 실제 비중을 넣으면 그때부터 달라진다. */
+const DEFAULT_COST_OPTS = { rate: 0.12, packaging: 300, flatFee: 0, deliveryShare: 1 }
 const okMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
 const okBool = (v) => typeof v === 'boolean'
 
@@ -78,10 +79,20 @@ export function StoreProvider({ children }) {
     })
   }, [ingredientPrices])
 
-  // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
-  const [costOpts, setCostOpts] = usePersistentState('costOpts', { rate: 0.12, packaging: 300 }, okOpts)
-  const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])
-  const setPackaging = useCallback((p) => setCostOpts((o) => ({ ...o, packaging: Math.max(0, p) })), [])
+  /* 부대비용은 '가게'의 속성이다 — 홀 전용 백반집과 배달 위주 가게가
+     같은 수수료를 물면 안 된다. 전에는 전역 1벌이라 매장을 바꿔도 그대로였다. */
+  const costOpts = { ...DEFAULT_COST_OPTS, ...(currentStore.costOpts || {}) }
+  const patchCostOpts = useCallback((patch) => {
+    setStores((all) => all.map((s) => (s.id === currentStoreId
+      ? { ...s, costOpts: { ...DEFAULT_COST_OPTS, ...(s.costOpts || {}), ...patch } }
+      : s)))
+  }, [currentStoreId, setStores])
+  const setRate = useCallback((rate) => patchCostOpts({ rate: Math.min(0.2, Math.max(0, rate)) }), [patchCostOpts])
+  const setPackaging = useCallback((p) => patchCostOpts({ packaging: Math.max(0, Math.round(p)) }), [patchCostOpts])
+  // 건당 정액 배달비(배달앱 요금제마다 다름)
+  const setFlatFee = useCallback((v) => patchCostOpts({ flatFee: Math.max(0, Math.round(v)) }), [patchCostOpts])
+  // 매출 중 배달 비중 0~1 — 홀 전용이면 0으로 두면 배달비가 아예 안 붙는다
+  const setDeliveryShare = useCallback((v) => patchCostOpts({ deliveryShare: Math.min(1, Math.max(0, v)) }), [patchCostOpts])
 
   // 토스트
   const [toastMsg, setToastMsg] = useState(null)
@@ -216,7 +227,7 @@ export function StoreProvider({ children }) {
     stores, currentStore, currentStoreId, enterStore,
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
-    menus, build, costOpts, setRate, setPackaging,
+    menus, build, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare,
     ingredientPrices,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
