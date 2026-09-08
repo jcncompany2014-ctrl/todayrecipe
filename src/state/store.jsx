@@ -16,7 +16,13 @@ const okMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
 const okBool = (v) => typeof v === 'boolean'
 
 const StoreCtx = createContext(null)
-export const useStore = () => useContext(StoreCtx)
+export const useStore = () => {
+  const ctx = useContext(StoreCtx)
+  // Provider 밖에서 부르거나, 개발 중 HMR로 컨텍스트가 끊긴 순간을 알아보기 쉽게.
+  // 알 수 없는 구조분해 오류 대신 분명한 메시지를 남긴다(ErrorBoundary가 받아준다).
+  if (!ctx) throw new Error('useStore()는 StoreProvider 안에서만 쓸 수 있어요')
+  return ctx
+}
 
 const clone = (o) => JSON.parse(JSON.stringify(o))
 
@@ -57,6 +63,21 @@ export function StoreProvider({ children }) {
   // 하루치 파생값 — 기존 계산(본전·목표 역산)은 그대로 이 값을 쓴다.
   const dailyFixed = Math.max(1, Math.round(monthlyFixed / workDays))
   const dailyGoal = Math.round(monthlyGoal / workDays)
+  /* 내 매입가 원장 — 재료 단가는 메뉴가 아니라 '가게'에 속한다.
+     예전엔 build 안에만 붙어서, 같은 앞다리살을 12개 메뉴에 12번 입력해야 했다.
+     { 재료id: { perG, at } } — at은 언제 넣은 값인지(나중에 시세 이력의 시작점). */
+  const [ingredientPrices, setIngredientPrices] = usePersistentState('ingredientPrices', {}, okMap)
+  // 원장 값을 레시피 항목에 입힌다 — 메뉴를 열 때마다 '내 가게 가격'으로 맞춰준다
+  const applyLedger = useCallback((items, ledger) => {
+    const L = ledger || ingredientPrices
+    return (items || []).map((it) => {
+      const rec = L[it.id]
+      if (rec && rec.perG > 0) return { ...it, perG: rec.perG }
+      const { perG, ...rest } = it
+      return rest
+    })
+  }, [ingredientPrices])
+
   // 가게 부대비용 설정 — 배달수수료율·포장비. 장바구니에서 조절하면 모든 계산에 반영.
   const [costOpts, setCostOpts] = usePersistentState('costOpts', { rate: 0.12, packaging: 300 }, okOpts)
   const setRate = useCallback((rate) => setCostOpts((o) => ({ ...o, rate: Math.min(0.2, Math.max(0, rate)) })), [])
@@ -78,9 +99,12 @@ export function StoreProvider({ children }) {
       const exists = b.items.some((it) => it.id === id)
       if (exists) return { ...b, items: b.items.filter((it) => it.id !== id) }
       const p = PRODUCTS[id]
-      return { ...b, items: [...b.items, { id, grams: p.defG, method: p.method }] }
+      const rec = ingredientPrices[id]
+      const fresh = { id, grams: p.defG, method: p.method }
+      if (rec && rec.perG > 0) fresh.perG = rec.perG   // 전에 넣어둔 내 매입가가 있으면 바로 적용
+      return { ...b, items: [...b.items, fresh] }
     })
-  }, [])
+  }, [ingredientPrices])
 
   const removeItem = useCallback((id) => {
     setBuild((b) => ({ ...b, items: b.items.filter((it) => it.id !== id) }))
@@ -106,12 +130,14 @@ export function StoreProvider({ children }) {
     const n = Number(perG)
     const v = isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : 0
     if (!v) return
+    setIngredientPrices((L) => ({ ...L, [id]: { perG: v, at: new Date().toISOString() } })) // 원장에 기록 → 모든 메뉴에 적용
     setBuild((b) => ({ ...b, items: b.items.map((it) => (it.id === id ? { ...it, perG: v } : it)) }))
-  }, [])
-  // 기준가로 되돌리기 — override 제거
+  }, [setIngredientPrices])
+  // 기준가로 되돌리기 — 원장에서도 지운다
   const resetItemPerG = useCallback((id) => {
+    setIngredientPrices((L) => { const { [id]: _, ...rest } = L; return rest })
     setBuild((b) => ({ ...b, items: b.items.map((it) => { if (it.id !== id) return it; const { perG, ...rest } = it; return rest }) }))
-  }, [])
+  }, [setIngredientPrices])
 
   const setPrice = useCallback((price) => setBuild((b) => ({ ...b, price })), [])
 
@@ -125,13 +151,19 @@ export function StoreProvider({ children }) {
   // 저장된 메뉴 열기 — 저장된 레시피(items)가 있으면 그대로 복원, 없으면 원가 역산
   const loadMenu = useCallback((menu) => {
     if (menu.items && menu.items.length) {
-      setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: clone(menu.items) })
+      // 저장된 레시피에 '내 가게 매입가'를 다시 입힌다 — 원장이 단일 진실이다
+      setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: applyLedger(clone(menu.items)) })
+      return
+    }
+    if (menu.fixedFood != null) { // 레시피 없이 원가만 아는 메뉴 — 그 값을 그대로 쓴다
+      setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: menu.fixedFood })
       return
     }
     if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
     const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
-    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price)) })
-  }, [])
+    // 부대비용은 가게 설정(costOpts) 기준으로 역산해야 한다 — 기본값으로 풀면 마진이 되돌아간다
+    setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price, costOpts)) })
+  }, [costOpts, applyLedger])
 
   // 메뉴 편집(이름·사진 등) — 메뉴판에서 바로 수정
   const updateMenu = useCallback((id, patch) => {
@@ -151,14 +183,22 @@ export function StoreProvider({ children }) {
   // 메뉴 삭제
   const deleteMenu = useCallback((id) => setMenus((list) => list.filter((m) => m.id !== id)), [setMenus])
 
-  // 결과 저장 → 메뉴판에 누적(upsert). 레시피(items)도 함께 기억.
-  const saveBuild = useCallback((margin) => {
+  /* 결과 저장 → 메뉴판에 누적(upsert). 레시피(items)도 함께 기억.
+     price를 인자로 받는 이유: setPrice는 비동기다. 같은 틱에 build.price를 읽으면
+     아직 옛 값이라 '옛 가격 + 새 마진'이라는 있을 수 없는 조합이 저장된다. */
+  const saveBuild = useCallback((price, margin) => {
     setMenus((list) => {
       const cleared = list.map((m) => ({ ...m, badge: undefined }))
       const idx = cleared.findIndex((m) => m.id === build.id)
-      const entry = { id: build.id, nm: build.nm, price: build.price, margin, icon: build.icon || 'donbap', img: build.img, items: clone(build.items), badge: '방금 계산' }
-      if (idx >= 0) { cleared[idx] = entry; return cleared }
-      return [entry, ...cleared]
+      const patch = {
+        id: build.id, nm: build.nm, price, margin,
+        icon: build.icon || 'donbap', img: build.img,
+        items: clone(build.items), badge: '방금 계산',
+      }
+      if (build.fixedFood != null) patch.fixedFood = build.fixedFood // 레시피 없는 메뉴의 원가 근거 보존
+      // 기존 항목의 나머지 필드(판매량 pop 등)를 통째로 날리지 않는다
+      if (idx >= 0) { cleared[idx] = { ...cleared[idx], ...patch }; return cleared }
+      return [patch, ...cleared]
     })
   }, [build, setMenus])
 
@@ -177,6 +217,7 @@ export function StoreProvider({ children }) {
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging,
+    ingredientPrices,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
     soldToday, setSold, resetSold,

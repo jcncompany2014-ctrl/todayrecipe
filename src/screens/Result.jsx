@@ -130,7 +130,7 @@ export default function Result() {
 
   const onSave = () => {
     setPrice(price)
-    saveBuild(margin)
+    saveBuild(price, margin)   // 방금 조정한 가격을 그대로 넘긴다(setPrice는 아직 반영 전)
     toast(`<b>${build.nm}</b> 저장됨 · 마진 ${margin}%로 메뉴판에 올렸어요`)
     setTimeout(() => nav('/app'), 700)
   }

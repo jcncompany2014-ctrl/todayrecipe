@@ -4,7 +4,7 @@ import Icon from '../components/Icon'
 import Thumb from '../components/Thumb'
 import { useStore } from '../state/store'
 import { PRODUCTS, CATS } from '../data/catalog'
-import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadBreakdown } from '../lib/calc'
+import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadBreakdown, perGText } from '../lib/calc'
 
 export default function Cart() {
   const nav = useNavigate()
@@ -90,7 +90,7 @@ export default function Cart() {
                           <button className={`ing-price${it.perG != null ? ' on' : ''}`}
                             onClick={() => { setEditId(it.id); setEditVal(String(it.perG != null ? it.perG : p.perG)) }}>
                             {it.perG != null && <i className="ing-mine">내 매입가</i>}
-                            {won(it.perG != null ? it.perG : p.perG)}원/g
+                            {perGText(it.perG != null ? it.perG : p.perG)}원/g
                             <Icon name="edit" size={10} stroke={2} />
                           </button>
                         )}

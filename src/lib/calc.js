@@ -24,6 +24,12 @@ export const DAILY_FIXED = 243000
 
 export const won = (n) => Math.round(n).toLocaleString('ko-KR')
 export const round10 = (n) => Math.round(n / 10) * 10
+/* 원/g 표시 — 소수점을 살린다. 양파 2.4원/g을 2원으로 뭉개면
+   '내 매입가'를 넣는 의미 자체가 사라진다(그램 단가는 원래 잘다). */
+export const perGText = (v) => {
+  const n = Number(v) || 0
+  return Number.isInteger(n) ? won(n) : String(Math.round(n * 100) / 100)
+}
 // 큰 금액은 '만원' 단위로 (한 달 고정비·목표 등)
 export const manwon = (n) => `${won(Math.round(n / 10000))}만원`
 
