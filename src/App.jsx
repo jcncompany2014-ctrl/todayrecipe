@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AppShell from './components/AppShell'
 import Landing from './screens/Landing'
+import ChartTest from './screens/ChartTest'   // 시험용: lazy 없이 직접
 
 /* 앱 화면은 필요할 때 받는다.
    전에는 랜딩만 보러 온 사람도 13개 화면을 전부 내려받았다.
@@ -18,6 +19,7 @@ const Monthly = lazy(() => import('./screens/Monthly'))
 const MenuMatrix = lazy(() => import('./screens/MenuMatrix'))
 const Vision = lazy(() => import('./screens/Vision'))
 const Settings = lazy(() => import('./screens/Settings'))
+
 
 /* 화면이 도착하기 전 잠깐 — 흰 화면 대신 자리를 지킨다.
    깜빡임처럼 보이지 않게 최소한의 표시만 한다. */
@@ -48,6 +50,7 @@ export default function App() {
           <Route path="matrix" element={<MenuMatrix />} />
           <Route path="vision" element={<Vision />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="charttest" element={<ChartTest />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
