@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -44,7 +44,29 @@ export function runInvariants() {
   ok(`마진 ${s.margin}% ≤ 100`, s.margin <= 100)
   ok(`부대비용 ${overheadFor(DEFAULT_BUILD.price)}원 > 0`, overheadFor(DEFAULT_BUILD.price) > 0)
 
-  log.push('[5] 빈 장바구니에서도 죽지 않는다')
+  log.push('[5] 시세가 오르면 마진은 내려간다 (방향과 순서)')
+  const fakeMenus = [
+    { id: 'a', nm: '제육덮밥', price: 9000, items },
+    { id: 'b', nm: '비싼메뉴', price: 20000, items },
+    { id: 'c', nm: '무관메뉴', price: 8000, items: [] },
+  ]
+  const key = items[0].id
+  const up = impactOfIngredient(fakeMenus, key, 20)
+  ok(`이 재료를 쓰는 메뉴만 골라낸다 (${up.length}개, 무관메뉴 제외)`, up.length === 2 && !up.some((r) => r.id === 'c'))
+  ok('값이 오르면 마진은 내려간다', up.every((r) => r.delta < 0), JSON.stringify(up.map((r) => r.delta)))
+  ok('원가는 올라간다', up.every((r) => r.costUp > 0))
+  ok(`위험한 순으로 정렬 (${up.map((r) => r.marginAfter).join(' → ')})`, up[0].marginAfter <= up[1].marginAfter)
+  const down = impactOfIngredient(fakeMenus, key, -20)
+  ok('값이 내리면 마진은 올라간다', down.every((r) => r.delta > 0))
+  ok('변동 0%면 마진 그대로', impactOfIngredient(fakeMenus, key, 0).every((r) => r.delta === 0))
+  ok('안 쓰는 재료면 영향 없음', impactOfIngredient(fakeMenus, '없는재료id', 50).length === 0)
+  ok('menusUsing이 같은 집합을 준다', menusUsing(fakeMenus, key).length === 2)
+  const board = riskBoard(fakeMenus, { [key]: 30 })
+  ok(`riskBoard가 가장 위험한 메뉴를 앞에 둔다 (${board.map((r) => r.nm + ' ' + r.marginAfter + '%').join(', ')})`,
+     board.length === 2 && board[0].marginAfter <= board[1].marginAfter)
+  ok('riskBoard 빈 입력 안전', riskBoard(fakeMenus, {}).length === 0)
+
+  log.push('[6] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 

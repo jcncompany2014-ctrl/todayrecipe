@@ -268,6 +268,56 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
 }
 
 /* ────────────────────────────────────────────────────────────
+   시세 변동 영향 — "삼겹살이 20% 오르면 어느 메뉴가 위험한가"
+   지금까지 앱에는 이 경로가 아예 없었다. 재료값이 튀어도
+   어느 메뉴의 마진이 무너지는지 되짚을 방법이 없었다는 뜻이다.
+   ──────────────────────────────────────────────────────────── */
+
+// 어떤 메뉴들이 이 재료를 쓰는가
+export function menusUsing(menus, ingredientId) {
+  return (menus || []).filter((m) => (m.items || []).some((it) => it.id === ingredientId))
+}
+
+/* 재료 단가가 pct% 변할 때 메뉴별 마진 변화. 위험한 순으로 정렬.
+   risk: 'high'(마진 20% 미만) | 'mid'(30% 미만) | 'low' */
+export function impactOfIngredient(menus, ingredientId, pct, opts = {}) {
+  const factor = 1 + pct / 100
+  return menusUsing(menus, ingredientId)
+    .map((m) => {
+      const before = summarize(m.items, m.price, opts)
+      const shifted = m.items.map((it) => (it.id === ingredientId ? { ...it, perG: perGOf(it) * factor } : it))
+      const after = summarize(shifted, m.price, opts)
+      return {
+        id: m.id,
+        nm: m.nm,
+        price: m.price,
+        marginBefore: before.margin,
+        marginAfter: after.margin,
+        delta: after.margin - before.margin,
+        costUp: after.cost - before.cost,
+        risk: after.margin < 20 ? 'high' : after.margin < 30 ? 'mid' : 'low',
+      }
+    })
+    .sort((a, b) => a.marginAfter - b.marginAfter)
+}
+
+/* 여러 재료가 동시에 움직일 때 — 가게 전체에서 가장 먼저 손봐야 할 메뉴.
+   shifts: { 재료id: 변동률(%) } */
+export function riskBoard(menus, shifts, opts = {}) {
+  const ids = Object.keys(shifts || {})
+  if (!ids.length) return []
+  const seen = new Map()
+  ids.forEach((id) => {
+    impactOfIngredient(menus, id, shifts[id], opts).forEach((r) => {
+      const cur = seen.get(r.id)
+      // 같은 메뉴가 여러 재료 영향을 받으면 가장 나쁜 쪽을 남긴다
+      if (!cur || r.marginAfter < cur.marginAfter) seen.set(r.id, { ...r, cause: id })
+    })
+  })
+  return [...seen.values()].sort((a, b) => a.marginAfter - b.marginAfter)
+}
+
+/* ────────────────────────────────────────────────────────────
    메뉴 엔지니어링 — 인기(판매량) × 마진 사분면 (Kasavana–Smith 응용)
    가게 평균을 경계선으로 네 칸에 분류하고, 칸마다 코칭을 준다.
    ──────────────────────────────────────────────────────────── */

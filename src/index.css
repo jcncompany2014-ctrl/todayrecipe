@@ -17,6 +17,8 @@
   --bad-1:#D04B3F;
   /* 따뜻한 액센트 */
   --sand:#F3EBE2; --sand-ink:#9A6B3C;
+  /* 브랜드 딥그린 — 894줄 아래에 따로 떨어져 있던 것을 여기로 모았다 */
+  --pine:#0C2B1E; --pine-2:#123A29; --mint:#41D392; --mint-soft:#A9E8C9;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body,#root{height:100%}
@@ -896,7 +898,6 @@ a{color:inherit;text-decoration:none}
    마스터피스 v3 — "딥 그린 마켓" (컬러 모먼트 × 정돈된 타이포 × 살아있는 효과)
    폰트는 Pretendard 원복. 색으로 밋밋함을 깬다: 마진의 초록을 브랜드 컬러로 승격.
    ============================================================ */
-:root{ --pine:#0C2B1E; --pine-2:#123A29; --mint:#41D392; --mint-soft:#A9E8C9; }
 
 /* ---------- 히어로: 통 그린 풀블리드 (라운드 박스 아님) ---------- */
 .landing .lhero{
