@@ -2051,3 +2051,302 @@ a{color:inherit;text-decoration:none}
 .scr-cart .ing-trend.up{color:var(--bad-1)}
 .scr-cart .ing-trend.down{color:var(--good-2)}
 .scr-cart .ing-trend b{font-weight:800}
+
+
+/* ==========================================================================
+   【B】 파일 하단 — src/index.css 맨 끝에 추가
+   (index.css:42-43 의 .g/.w/.b 헬퍼를 덮어야 하므로 반드시 뒤에 온다)
+   ========================================================================== */
+
+/* ── B-1. 역할 클래스 — 크기 단독 지정을 끝낸다 ───────────────────────────
+   12.5px 하나가 weight 4종·자간 8종으로 53번 쓰여서
+   "이 크기면 이 역할"이라는 학습이 불가능했다.                            */
+.t-cap  {font-size:var(--t-cap);  font-weight:var(--w-body);   line-height:var(--lh-snug);  letter-spacing:var(--ls-none); color:var(--muted)}
+.t-lab  {font-size:var(--t-lab);  font-weight:var(--w-med);    line-height:var(--lh-snug);  letter-spacing:var(--ls-body); color:var(--muted)}
+.t-body {font-size:var(--t-body); font-weight:var(--w-body);   line-height:var(--lh-body);  letter-spacing:var(--ls-body); color:var(--ink-soft)}
+.t-item {font-size:var(--t-body); font-weight:var(--w-strong); line-height:var(--lh-snug);  letter-spacing:var(--ls-snug); color:var(--ink)}
+.t-sec  {font-size:var(--t-sec);  font-weight:var(--w-num);    line-height:var(--lh-tight); letter-spacing:var(--ls-snug); color:var(--ink)}
+
+.page-title   {font-size:var(--t-title); font-weight:var(--w-num); line-height:var(--lh-tight); letter-spacing:var(--ls-title); color:var(--ink)}
+.page-title-lg{font-size:var(--t-page);  font-weight:var(--w-num); line-height:var(--lh-tight); letter-spacing:var(--ls-title); color:var(--ink)}
+.page-sub     {font-size:var(--t-lab);   font-weight:var(--w-body);line-height:var(--lh-snug);  color:var(--muted); margin-top:var(--sp-1)}
+
+.n-s   {font-size:var(--n-s);    font-weight:var(--w-num); line-height:var(--lh-num); letter-spacing:var(--ls-snug)}
+.n-m   {font-size:var(--n-m);    font-weight:var(--w-num); line-height:var(--lh-num); letter-spacing:var(--ls-title)}
+.n-l   {font-size:var(--n-l);    font-weight:var(--w-num); line-height:var(--lh-num); letter-spacing:var(--ls-hero)}
+.n-hero{font-size:var(--n-hero); font-weight:var(--w-num); line-height:var(--lh-num); letter-spacing:var(--ls-hero)}
+
+/* '이 문장에서 어느 숫자가 답인가'를 셀렉터 요행이 아니라 마크업이 말하게 한다.
+   지금은 `b.num:first-of-type`(index.css:1263, :1272)이라 한 문장에 숫자가
+   둘이면 두 번째를 놓친다. className 추가만으로 끝난다. */
+.n-answer{font-size:var(--n-m); font-weight:var(--w-num); line-height:var(--lh-num);
+          letter-spacing:var(--ls-title); color:var(--ink)}
+
+/* 히어로 락업 — index.css:121-125 에 우연히 존재하던 52:20:14 조합을
+   프리미티브로 승격한다. 숫자와 한글 단위가 baseline 으로 묶여
+   '하루 32그릇 팔면 돼요'가 한 문장으로 읽히는 이 조합이
+   "장부 같은 따뜻함"의 실물이다. 6개 히어로가 같은 것을 쓰게 한다. */
+.stat-lockup{display:flex; align-items:baseline; gap:var(--sp-2); flex-wrap:wrap}
+.stat-lockup .pre {font-size:var(--t-body); font-weight:var(--w-med);   color:var(--ink-soft)}
+.stat-lockup .val {font-size:var(--n-hero); font-weight:var(--w-num);   line-height:var(--lh-num);
+                   letter-spacing:var(--ls-hero); color:var(--ink)}
+.stat-lockup .unit{font-size:var(--n-s);    font-weight:var(--w-strong);letter-spacing:var(--ls-snug); color:var(--ink)}
+.stat-lockup .tail{font-size:var(--t-body); font-weight:var(--w-body);  color:var(--muted)}
+.stat-lockup.sm .val {font-size:var(--n-l)}
+.stat-lockup.sm .unit{font-size:var(--t-sec)}
+
+
+/* ── B-2. 결산선 — 이 디자인의 시그니처 프리미티브 ─────────────────────────
+   장부 행: 이름 왼쪽 · 값 오른쪽 레일. 한 카드 안 모든 값이 같은 세로선에 선다.
+   .num 의 tabular-nums 덕분에 자릿수가 달라도 열이 흔들리지 않고,
+   카드가 여러 장 쌓이면 값들이 세로로 한 줄을 이룬다.                      */
+.lrow{
+  display:flex; align-items:baseline; gap:var(--sp-3);
+  padding:var(--sp-2) 0;
+  font-size:var(--t-body); font-weight:var(--w-body); color:var(--ink-soft);
+}
+.lrow > :first-child{ flex:1; min-width:0 }
+.lrow .rail{
+  flex:0 0 auto; min-width:var(--rail);
+  text-align:right; font-weight:var(--w-strong); color:var(--ink);
+  font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1,"case" 1;
+  letter-spacing:var(--ls-snug);
+}
+.lrow .rail.s{ min-width:var(--rail-s) }
+.lrow + .lrow{ border-top:1px solid var(--line) }
+
+/* 총계 행에만 점선 리더 — 모든 행에 넣으면 장식이 된다. 여기만 장부다.
+   ★ 리더는 별도 flex 아이템이다. 라벨을 flex:1 로 두면 리더가 그려질 폭이
+     남지 않으므로 라벨을 flex:0 1 auto 로 내린다(확정안 초안의 버그 수정). */
+.lrow.total{ border-top:1px solid var(--rule); padding-top:var(--sp-3); margin-top:var(--sp-1) }
+.lrow.total > :first-child{ flex:0 1 auto }
+.lrow.total .leader{
+  flex:1 1 var(--sp-5); min-width:var(--sp-5); align-self:flex-end;
+  height:3px; margin-bottom:.34em; background:var(--leader);
+}
+.lrow.total .rail{ font-weight:var(--w-num); font-size:var(--n-s) }
+
+/* 어두운 결산면 위의 같은 행 */
+.on-pine .lrow,
+.settle  .lrow{ color:var(--on-dark-2) }
+.on-pine .lrow .rail,
+.settle  .lrow .rail{ color:var(--on-dark-1) }
+.on-pine .lrow + .lrow,
+.settle  .lrow + .lrow{ border-top-color:var(--on-dark-rule) }
+.on-pine .lrow.total,
+.settle  .lrow.total{ border-top-color:var(--on-dark-rule) }
+.on-pine .lrow.total .leader,
+.settle  .lrow.total .leader{
+  background:radial-gradient(circle at 50% 50%, var(--on-dark-rule) 1px, transparent 1.2px)
+             0 100%/7px 3px repeat-x;
+}
+
+
+/* ── B-3. 결산 밴드 — 이 앱이 낸 '결론'의 면 ───────────────────────────────
+   :411(결과 원장) :466(손익분기) :1339(오늘 마감) :1422(이번 달 손익)
+   네 곳이 --ink 에서 여기로 옮겨온다.
+   src/lib/receipt.js:30-40 이 내보내는 PNG 명세서(pine2→pine 그라데이션 밴드)와
+   화면이 드디어 같은 문서가 된다.
+
+   ★ 색 규율: 이 면 위에서는 --good-* / --warn-* / --bad-* 를 절대 쓰지 않는다.
+     mint 계열 + --neg-on-dark 만. 그래야 '초록=결론 / 검정=조작'이
+     학습 가능한 규칙이 된다.                                              */
+.settle{
+  background:
+    radial-gradient(125% 130% at 88% -12%, rgba(65,211,146,.24) 0%, rgba(65,211,146,0) 55%),
+    linear-gradient(158deg, var(--pine-2) 0%, var(--pine) 62%, var(--pine-3) 100%);
+  color:var(--on-dark-1);
+  border:1px solid transparent;
+  border-radius:var(--r-card);
+  padding:var(--sp-5);
+  box-shadow:var(--sh-band);
+}
+.settle .lab{ font-size:var(--t-lab); font-weight:var(--w-med); color:var(--on-dark-3) }
+.settle .line{ border:none; border-top:1px solid var(--on-dark-rule); margin:var(--sp-4) 0 var(--sp-1) }
+.settle .n-l, .settle .n-hero, .settle .accent{ color:var(--mint-ink) }
+.settle .n-l.neg, .settle .n-hero.neg{ color:var(--neg-on-dark) }
+.settle .note{
+  margin-top:var(--sp-3);
+  font-size:var(--t-cap); font-weight:var(--w-body);
+  line-height:var(--lh-snug); letter-spacing:var(--ls-none);
+  color:var(--on-dark-3);
+}
+
+
+/* ── B-4. 신호 — 색만으로 말하지 않는다 ────────────────────────────────────
+   녹색약(deuteranopia)에서 --good-1 과 --bad-1 의 구분 대비비는 1.06:1 이다.
+   정반대 뜻의 두 신호가 물리적으로 같은 색이 된다.
+   src/components/GoalGauge.jsx:12-13, 20-23 은 이미 답을 알고 있다 —
+   양끝 숫자와 '가게 유지비'/'여기부터 내 이익' 텍스트 라벨로 색 없이 읽힌다.
+   그 원리를 신호등으로 옮긴다. 발명이 아니라 이식이다.                    */
+.sig-mark{
+  display:inline-block; flex:0 0 auto;
+  width:9px; height:9px; margin-right:var(--sp-1);
+}
+.sig-mark.g{ border-radius:50%; background:var(--good-1) }                          /* 채운 원 */
+.sig-mark.w{ border-radius:50%; background:none; border:2.5px solid var(--warn-1) } /* 빈 링   */
+.sig-mark.b{                                                                        /* 삼각형  */
+  width:0; height:0; margin-bottom:1px; background:none;
+  border-left:5px solid transparent; border-right:5px solid transparent;
+  border-bottom:9px solid var(--bad-1); border-radius:0;
+}
+
+/* 기존 7~9px 원형 점(.scr-menu .dot :146 :180 :206, .scr-result .tip .dot :429)을
+   JSX 수정 없이 도형으로 분화한다. `${s}-bg` 조합을 그대로 받는다. */
+.scr-menu .dot.g-bg,
+.scr-menu .mcard-pct .dot.g-bg,
+.scr-result .tip .dot.g-bg{ border-radius:50%; background:var(--good-1) }
+.scr-menu .dot.w-bg,
+.scr-menu .mcard-pct .dot.w-bg,
+.scr-result .tip .dot.w-bg{ border-radius:50%; background:none; border:2.5px solid var(--warn-1) }
+.scr-menu .dot.b-bg,
+.scr-menu .mcard-pct .dot.b-bg,
+.scr-result .tip .dot.b-bg{
+  width:0; height:0; background:none; border-radius:0;
+  border-left:5px solid transparent; border-right:5px solid transparent;
+  border-bottom:9px solid var(--bad-1);
+}
+
+/* 밝은 배경 위 신호 '글자'는 언제나 -2 계열.
+   ★ 어두운 면의 .g/.b 는 이미 (0,2,0) 규칙이 이겨서 영향받지 않는다:
+     .stl-msg .g(:1354) · .mo-goal-msg .g/.b(:1434) · .mo-goal-top b.g(:1430) */
+.g{color:var(--good-2)} .w{color:var(--warn-2)} .b{color:var(--bad-2)}
+
+/* 면(막대·점·채움)은 -1 계열 유지 */
+.gb,.g-bg{background:var(--good-1)} .wb,.w-bg{background:var(--warn-1)} .bb,.b-bg{background:var(--bad-1)}
+
+/* 적자 막대만 사선 — 흑백·색각이상에서도 '이건 다르다'가 남는다 */
+.b-bg.striped,
+.scr-menu .bar span.b-bg,
+.scr-cart .mbar span.bb,
+.scr-result .sr-track span.b-bg,
+.scr-dash .rankrow .track span.b-bg,
+.st-bar span.b-bg{
+  background-image:repeating-linear-gradient(115deg,
+    rgba(255,255,255,.34) 0 3px, transparent 3px 7px);
+}
+/* 앰버는 한 단 성기게 — 초록(민무늬) / 앰버(성긴 사선) / 빨강(촘촘한 사선) */
+.scr-menu .bar span.w-bg,
+.scr-cart .mbar span.wb,
+.scr-result .sr-track span.w-bg,
+.scr-dash .rankrow .track span.w-bg,
+.st-bar span.w-bg{
+  background-image:repeating-linear-gradient(115deg,
+    rgba(255,255,255,.30) 0 2px, transparent 2px 9px);
+}
+
+
+/* ── B-5. 기준선(tare) 눈금 — 판정을 색에서 위치로 ─────────────────────────
+   실측 확인: Menu.jsx:137 · Cart.jsx:59 · Stores.jsx:55 · Dashboard.jsx:99 ·
+   Monthly.jsx:99 의 막대가 전부 `부모 > span` 구조라 ::after 눈금이
+   JSX 수정 0으로 얹힌다. 부모의 overflow:hidden 안쪽에 그려지므로
+   높이를 넘기지 않는다.
+   ★ 마진 막대에만 붙인다. 수율(.ps-track)·목표 게이지(.gg-*)·
+     콤보 게이지(.cmb-gauge)에는 절대 붙이지 마라 — 뜻이 다르다.          */
+.scr-menu .bar,
+.scr-cart .mbar,
+.scr-dash .rankrow .track,
+.st-bar{ position:relative }
+
+.scr-menu .bar::after,
+.scr-cart .mbar::after,
+.scr-dash .rankrow .track::after,
+.st-bar::after{
+  content:""; position:absolute; z-index:2;
+  top:0; bottom:0; left:var(--tare); width:2px;
+  transform:translateX(-1px);
+  background:var(--paper); box-shadow:0 0 0 1px var(--rule);
+}
+
+
+/* ── B-6. 터치 — 주방에서 젖은 손으로 누른다 ───────────────────────────────
+   cursor:pointer 64개 중 36개가 44px 미만.
+   시각 크기를 키우지 않고 히트 영역만 넓히면 장부의 밀도가 그대로 남는다. */
+.hit{ position:relative }
+.hit::after{ content:""; position:absolute; inset:-9px }   /* 26px 아이콘 → 44px */
+
+/* 클래스 추가 없이 기존 셀렉터에 이식 (픽셀 이동 0) */
+.iconbtn,
+.scr-market .search-x, .scr-market .ps-x, .scr-market .add,
+.scr-cart .ing-x, .scr-cart .sum-top .edit, .scr-cart .ing-reset,
+.scr-menu .mcard-edit, .ms-x{ position:relative }
+
+.iconbtn::after,
+.scr-market .add::after      { content:""; position:absolute; inset:-5px }  /* 34 → 44 */
+.scr-market .ps-x::after,
+.ms-x::after                 { content:""; position:absolute; inset:-8px }  /* 28 → 44 */
+.scr-cart .ing-x::after,
+.scr-cart .sum-top .edit::after,
+.scr-cart .ing-reset::after,
+.scr-menu .mcard-edit::after { content:""; position:absolute; inset:-9px }  /* 26 → 44 */
+.scr-market .search-x::after { content:""; position:absolute; inset:-11px } /* 22 → 44 */
+
+
+/* ── B-7. 스테퍼 — 한 컴포넌트 한 크기 ─────────────────────────────────────
+   ★ 선행 조건(청소 커밋): 아래 두 규칙을 먼저 삭제해야 이 블록이 이긴다.
+        src/index.css:357-362  .scr-cart .stepper …   (0,2,0) 버튼 32px
+        src/index.css:785-790  .oe-stepper …          (0,1,0) 버튼 28px
+     Cart.jsx:106 는 "stepper", :161/:169 는 "stepper oe-stepper" 로 같은
+     컴포넌트인데 특이도 때문에 Cart 32px / Result·Combo·Monthly·SalesToday
+     28px 로 갈려 있다. 청소 없이 얹으면 갈린 상태가 그대로 재현된다.
+   ★ index.css:1366 `.scr-sales .stl-step .v, .scr-monthly .oe-stepper .v
+     {min-width:28px}` 는 (0,3,0)이라 그대로 이긴다 — 리스트 행 스테퍼의
+     숫자 폭은 지금 그대로 유지된다(= 세로 증가 억제).                     */
+.stepper{
+  display:flex; align-items:center;
+  background:var(--tile); border-radius:var(--r-ctl); padding:2px;
+}
+.stepper button{
+  width:44px; height:44px; border:none; cursor:pointer;
+  background:var(--paper); border-radius:var(--r-ctl); color:var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--sh-1); transition:transform var(--dur-1) var(--ease-out);
+}
+.stepper button:active{ transform:scale(.92) }
+.stepper .v{
+  min-width:var(--rail); text-align:center;
+  font-size:var(--t-body); font-weight:var(--w-strong);
+  letter-spacing:var(--ls-snug); color:var(--ink);
+}
+.stepper .v i{
+  font-size:var(--t-cap); font-weight:var(--w-body); font-style:normal;
+  color:var(--muted); margin-left:2px; letter-spacing:var(--ls-none);
+}
+/* 부대비용·발주 스테퍼도 같은 크기, 그릇 여백만 좁게 */
+.oe-stepper{ background:var(--tile); border-radius:var(--r-ctl); padding:2px }
+.oe-stepper .v{ min-width:var(--rail) }
+
+
+/* ── B-8. 모션 — 값이 바뀔 때 ──────────────────────────────────────────────
+   index.css:355 의 `.val.bump{transform:scale(1.09)}` 는 숫자를 튀게 만든다.
+   장부의 값은 튀지 않고 제자리에 안착한다.
+   (Cart.jsx:20 의 doBump 상태·클래스명은 그대로 쓴다 — 로직 무변경)      */
+@keyframes settle-in{ from{ opacity:0; transform:translateY(3px) } to{ opacity:1; transform:none } }
+.num.changed,
+.scr-cart .ing-cost .val.bump{
+  transform:none;
+  animation:settle-in var(--dur-3) var(--ease-num) both;
+}
+
+/* 모든 마진 막대가 같은 속도로 움직인다.
+   현재 .25/.3/.4/.5s 네 값 + 스냅(전환 없음) 4곳으로 갈려 있다. */
+.scr-menu .bar span,
+.scr-cart .mbar span,
+.scr-result .sr-track span,
+.scr-dash .rankrow .track span,
+.scr-monthly .rankrow .track span,
+.st-bar span{ transition:width var(--dur-4) var(--ease-num) }
+
+:focus-visible{ outline:2px solid var(--ink); outline-offset:3px; border-radius:var(--r-chip) }
+/* 딥그린 면 위에서는 --ink 아웃라인이 pine 대비 약 1.2:1 로 보이지 않는다.
+   mint 는 pine 위 7.94:1. 랜딩 CTA 3개와 결산 밴드 안 컨트롤이 여기 해당. */
+.settle :focus-visible,
+.on-pine :focus-visible,
+.landing .lhero :focus-visible,
+.landing .lfinal.inkband :focus-visible{
+  outline:2px solid var(--mint); outline-offset:3px; border-radius:var(--r-chip);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none!important; transition:none!important }
+}
