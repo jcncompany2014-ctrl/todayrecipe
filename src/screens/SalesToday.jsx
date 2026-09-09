@@ -7,7 +7,7 @@ import { won } from '../lib/calc'
 /* 오늘 장사 마감 — 메뉴별 판매 개수만 넣으면 오늘 매출·원가·순이익 자동 정산. */
 export default function SalesToday() {
   const nav = useNavigate()
-  const { menus, soldToday, setSold, resetSold, dailyFixed, dailyGoal } = useStore()
+  const { menus, soldToday, yesterdaySold, setSold, resetSold, dailyFixed, dailyGoal, toast } = useStore()
 
   const rows = menus.map((m) => {
     const count = soldToday[m.id] || 0
@@ -21,6 +21,23 @@ export default function SalesToday() {
   const varCost = revenue - grossProfit
   const beDone = grossProfit >= dailyFixed
   const goalDone = dailyGoal > 0 && net >= dailyGoal
+
+  /* 어제와 견주기 — 날짜별 장부가 생기면서 비로소 가능해진 것.
+     어제는 '하루 전체', 오늘은 '지금까지'다. 그 차이를 문구로 밝힌다. */
+  const yRows = menus.map((m) => ({ count: yesterdaySold[m.id] || 0, profit: Math.round((m.price * m.margin) / 100) }))
+  const yCount = yRows.reduce((a, r) => a + r.count, 0)
+  const yGross = yRows.reduce((a, r) => a + r.profit * r.count, 0)
+  const yNet = yGross - dailyFixed
+  const hasYesterday = yCount > 0
+  const netDelta = net - yNet
+
+  const onReset = () => {
+    // 하루치 기록이 통째로 사라진다. 되돌릴 수 없으니 한 번 묻는다.
+    if (window.confirm(`오늘 입력한 ${totalCount}그릇을 모두 지울까요?`)) {
+      resetSold()
+      toast('오늘 기록을 지웠어요')
+    }
+  }
 
   const target = dailyFixed + Math.max(0, dailyGoal)
   const prog = target > 0 ? Math.min(100, (grossProfit / target) * 100) : 0
@@ -49,6 +66,14 @@ export default function SalesToday() {
           <i className="stl-be" style={{ left: `${bePct}%` }} />
         </div>
         <div className="stl-scale"><span>0</span><span className="stl-be-lab" style={{ left: `${bePct}%` }}>본전</span><span>목표</span></div>
+        {hasYesterday && (
+          <div className={`stl-vs ${netDelta >= 0 ? 'up' : 'down'}`}>
+            <span className="vs-lab">어제 하루보다</span>
+            <b className="num">{netDelta >= 0 ? '+' : '−'}₩{won(Math.abs(netDelta))}</b>
+            <span className="vs-sub num">어제 {yCount}그릇 · 지금 {totalCount}그릇</span>
+          </div>
+        )}
+
         <div className="stl-msg">
           {totalCount === 0
             ? <>아래에서 오늘 판 개수를 넣어보세요</>
@@ -62,7 +87,7 @@ export default function SalesToday() {
 
       <div className="menu-sec-head stl-head">
         <h2>오늘 판 개수 <span className="stl-cnt num">{totalCount}그릇</span></h2>
-        {totalCount > 0 && <button className="stl-reset" onClick={resetSold}>초기화</button>}
+        {totalCount > 0 && <button className="stl-reset" onClick={onReset}>초기화</button>}
       </div>
 
       <div className="stl-list">

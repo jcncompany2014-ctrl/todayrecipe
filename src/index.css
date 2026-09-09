@@ -1758,3 +1758,14 @@ a{color:inherit;text-decoration:none}
 .order-note{
   margin-top:9px;text-align:center;font-size:12.5px;font-weight:500;color:var(--muted);word-break:keep-all;
 }
+
+/* ---------- 오늘 마감: 어제와 견주기 ---------- */
+.stl-vs{
+  margin-top:14px;padding:11px 14px;border-radius:14px;background:var(--tile);
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 9px;
+}
+.stl-vs .vs-lab{font-size:13px;font-weight:600;color:var(--muted)}
+.stl-vs b{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.stl-vs.up b{color:var(--good-1)}
+.stl-vs.down b{color:var(--bad-1)}
+.stl-vs .vs-sub{margin-left:auto;font-size:12px;font-weight:600;color:var(--muted)}
