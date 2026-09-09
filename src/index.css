@@ -123,9 +123,7 @@ a{color:inherit;text-decoration:none}
 .scr-menu .hero-num b{font-size:52px;font-weight:800;line-height:.95;letter-spacing:-2px;color:var(--ink)}
 .scr-menu .hero-num .unit{font-size:20px;font-weight:700;letter-spacing:-.5px;color:var(--ink)}
 .scr-menu .hero-num .tail{font-size:14px;font-weight:500;color:var(--muted);margin-left:1px}
-.scr-menu .hero-rule{border:none;border-top:1px dashed rgba(255,255,255,.2);margin:15px 0 11px}
-.scr-menu .hero-sub{font-size:12.5px;font-weight:500;color:rgba(255,255,255,.6);line-height:1.5}
-.scr-menu .hero-sub .accent{color:#5FD6A0;font-weight:600}
+.scr-menu .hero-rule{border:none;border-top:1px dashed var(--line);margin:15px 0 11px}
 .scr-menu .list{padding:18px 22px 4px;display:flex;flex-direction:column;gap:11px}
 .scr-menu .card{background:var(--paper);border:1px solid var(--line);border-radius:20px;
   padding:15px 16px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(60,40,25,.035),0 7px 16px -8px rgba(60,40,25,.07);
@@ -354,12 +352,6 @@ a{color:inherit;text-decoration:none}
 .scr-cart .ing-cost .val.bump{transform:scale(1.09)}
 .scr-cart .ctrl{display:flex;align-items:center;justify-content:space-between;margin-top:13px}
 .scr-cart .ctrl-lab{font-size:13px;font-weight:600;color:var(--ink-soft)}
-.scr-cart .stepper{display:flex;align-items:center;gap:0;background:var(--tile);border-radius:12px;padding:4px}
-.scr-cart .stepper button{width:32px;height:32px;border:none;background:var(--paper);border-radius:9px;cursor:pointer;
-  color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .12s}
-.scr-cart .stepper button:active{transform:scale(.9)}
-.scr-cart .stepper .v{min-width:62px;text-align:center;font-size:15px;font-weight:700}
-.scr-cart .stepper .v i{font-size:12px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
 .scr-cart .cooks{display:flex;gap:5px}
 .scr-cart .cook{border:none;cursor:pointer;font-size:12.5px;font-weight:600;letter-spacing:-.2px;
   padding:7px 11px;border-radius:10px;background:var(--tile);color:var(--ink-soft)}
@@ -378,7 +370,7 @@ a{color:inherit;text-decoration:none}
 .scr-cart .ovh-head .chev{color:var(--muted);transition:transform .25s}
 .scr-cart .ovh.open .chev{transform:rotate(180deg)}
 .scr-cart .ovh-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
-.scr-cart .ovh.open .ovh-body{max-height:420px}
+.scr-cart .ovh.open .ovh-body{max-height:820px}  /* 행 4개 + 44px 스테퍼 + 안내문 */
 .scr-cart .ovh-row{display:flex;justify-content:space-between;padding:9px 17px;font-size:13px;border-top:1px solid var(--line)}
 .scr-cart .ovh-row span{color:var(--ink-soft);font-weight:500}
 .scr-cart .ovh-row b{font-weight:700}
@@ -782,12 +774,14 @@ a{color:inherit;text-decoration:none}
    기능 확장: 부대비용 편집 · 목표 마진 칩 · 스트레스 테스트 · 발주 계산기 · 장사 시뮬레이터
    ============================================================ */
 /* 공용 소형 스테퍼 (scr-cart 스코프 밖에서도 동작) */
-.oe-stepper{display:flex;align-items:center;gap:0;background:var(--tile);border-radius:11px;padding:3px}
-.oe-stepper button{width:28px;height:28px;border:none;background:var(--paper);border-radius:8px;cursor:pointer;
+.stepper,.oe-stepper{display:flex;align-items:center;gap:0;background:var(--tile);border-radius:13px;padding:4px}
+/* 스테퍼가 화면마다 32px/28px로 갈라져 있었다. 하나로 합치고 44px로 올린다 —
+   주방에서 젖은 손으로 누른다. 터치 타깃은 타협 대상이 아니다. */
+.stepper button,.oe-stepper button{width:44px;height:44px;flex:0 0 auto;border:none;background:var(--paper);border-radius:10px;cursor:pointer;
   color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .12s}
-.oe-stepper button:active{transform:scale(.9)}
-.oe-stepper .v{min-width:64px;text-align:center;font-size:13.5px;font-weight:700}
-.oe-stepper .v i{font-size:11px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
+.stepper button:active,.oe-stepper button:active{transform:scale(.92)}
+.stepper .v,.oe-stepper .v{min-width:64px;text-align:center;font-size:15px;font-weight:700}
+.stepper .v i,.oe-stepper .v i{font-size:12px;font-weight:500;color:var(--muted);font-style:normal;margin-left:2px}
 
 /* 부대비용 편집 (장바구니 아코디언) */
 .ovh-edit{border-top:1px dashed var(--line);padding:13px 17px 15px;background:#FBFAF8}
@@ -815,7 +809,7 @@ a{color:inherit;text-decoration:none}
 .scr-result .sr-lab{flex:0 0 auto;font-size:12px;font-weight:500;color:var(--muted)}
 .scr-result .sr-track{flex:1;height:6px;background:var(--track);border-radius:99px;overflow:hidden}
 .scr-result .sr-track span{display:block;height:100%;border-radius:99px;transition:width .4s cubic-bezier(.2,.8,.3,1)}
-.scr-result .sr-m{flex:0 0 auto;width:36px;text-align:right;font-size:14px;font-weight:800}
+.scr-result .sr-m{flex:0 0 auto;min-width:36px;white-space:nowrap;text-align:right;font-size:14px;font-weight:800}
 .scr-result .sr-d{flex:0 0 auto;width:38px;text-align:right;font-size:11px;font-weight:700}
 .scr-result .stress-hint{margin-top:10px;font-size:11.5px;font-weight:500;color:var(--muted);line-height:1.5}
 
