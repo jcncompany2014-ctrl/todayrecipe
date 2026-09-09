@@ -6,6 +6,7 @@ import { PRODUCTS } from '../data/catalog'
 import {
   costOf, yieldOf, summarize, breakeven, won, round10, sig,
   overheadFor, deliveryFeeFor, fixedOverheadFor, marginWithFoodShift, orderPlan, fmtGrams,
+  explainCost, YIELD_SOURCE_LABEL, perGText,
   costSegments, bestSubstitutions, diagnose, goalPlan, manwon,
 } from '../lib/calc'
 import { exportReceipt, shareOrder } from '../lib/receipt'
@@ -65,6 +66,7 @@ export default function Result() {
   )
   const [price, setLocalPrice] = useState(build.price)
   const [orderBowls, setOrderBowls] = useState(50)
+  const [explainOpen, setExplainOpen] = useState(false)
   const [busy, setBusy] = useState(null)
 
   const rate = costOpts.rate
@@ -127,6 +129,8 @@ export default function Result() {
   }, [foodFixed, price, margin, costOpts])
 
   const plan = useMemo(() => (hasItems ? orderPlan(build.items, orderBowls) : null), [build, orderBowls, hasItems])
+  // 계산 과정 — 모든 숫자의 출처를 함께 낸다
+  const ex = useMemo(() => (hasItems ? explainCost(build.items, price, costOpts) : null), [build, price, costOpts, hasItems])
 
   const onSave = () => {
     setPrice(price)
@@ -243,6 +247,49 @@ export default function Result() {
             <span>지금 원가는 저장된 마진에서 되짚은 값이에요. 재료를 담으면 조리 수율까지 반영한 진짜 원가가 나와요.</span>
           </div>
           <button className="nr-btn" onClick={() => nav('/app/market')}>재료 담으러 가기</button>
+        </div>
+      )}
+
+      {/* 계산 과정 펼쳐보기 — 결과만 던지면 사장님은 못 믿는다 */}
+      {ex && (
+        <div className={`explain fade${explainOpen ? ' open' : ''}`}>
+          <button className="ex-head" onClick={() => setExplainOpen((v) => !v)} aria-expanded={explainOpen}>
+            <span>이 숫자, 어떻게 나왔어요?</span>
+            <Icon name="chevD" size={18} stroke={2} className="ex-chev" />
+          </button>
+          <div className="ex-body">
+            {ex.rows.map((r) => (
+              <div key={r.id} className="ex-row">
+                <div className="ex-top">
+                  <b>{r.nm}</b>
+                  <span className={`ex-price${r.perGSource === 'mine' ? ' mine' : ''}`}>
+                    {r.perGSource === 'mine' ? '내 매입가' : '기준가'} {perGText(r.perG)}원/g
+                  </span>
+                </div>
+                <div className="ex-calc num">
+                  접시 {r.served}g <i>÷</i> 수율 {r.yieldPct}% <i>=</i> <b>{r.raw}g</b> 사야 해요
+                </div>
+                <div className="ex-foot">
+                  <span className={`ex-ytag ${r.yieldSource}`}>{YIELD_SOURCE_LABEL[r.yieldSource]}</span>
+                  <b className="num">₩{won(r.cost)}</b>
+                </div>
+              </div>
+            ))}
+            <div className="ex-line"><span>식자재 합계</span><b className="num">₩{won(ex.food)}</b></div>
+            {ex.ovh.map((o, i) => (
+              <div key={i} className="ex-sub"><span>{o.k}</span><b className="num">₩{won(o.v)}</b></div>
+            ))}
+            <div className="ex-line"><span>부대비용 합계</span><b className="num">₩{won(ex.overhead)}</b></div>
+            <div className="ex-total">
+              <div className="ex-t-row"><span>총원가</span><b className="num">₩{won(ex.cost)}</b></div>
+              <div className="ex-t-row"><span>판매가</span><b className="num">₩{won(ex.price)}</b></div>
+              <div className="ex-t-row final">
+                <span>한 그릇 남는 돈</span>
+                <b className="num">₩{won(ex.profit)}</b>
+                <i className="num">마진 {ex.margin}%</i>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

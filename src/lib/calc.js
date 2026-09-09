@@ -298,6 +298,41 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
 }
 
 /* ────────────────────────────────────────────────────────────
+   계산 과정 펼쳐보기 — "이 숫자 어떻게 나왔어요?"
+   원가는 사장님이 가격을 걸고 믿어야 하는 숫자다. 결과만 던지면 못 믿는다.
+   재료마다 '얼마짜리를 얼마나 사서 얼마가 됐는지', 그리고 그 단가와 수율이
+   어디서 온 값인지(기준가/내 매입가, 표준/직접 잰 값)까지 함께 밝힌다.
+   ──────────────────────────────────────────────────────────── */
+export function explainCost(items, price, opts = {}) {
+  const rows = (items || []).map((it) => {
+    const p = PRODUCTS[it.id]
+    if (!p) return null
+    return {
+      id: it.id,
+      nm: p.nm,
+      served: it.grams,                              // 접시에 올라가는 양
+      yieldPct: yieldOf(it),
+      yieldSource: yieldSourceOf(it),                // measured | product | standard | raw
+      raw: Math.round(rawGramsOf(it) * 10) / 10,     // 사야 하는 양
+      perG: perGOf(it),
+      perGSource: it.perG != null ? 'mine' : 'base', // 내 매입가 | 기준가
+      basePerG: p.perG,
+      cost: costOf(it),
+    }
+  }).filter(Boolean)
+
+  const food = rows.reduce((a, r) => a + r.cost, 0)
+  const ovh = overheadBreakdown(price, opts)
+  const overhead = ovh.reduce((a, r) => a + r.v, 0)
+  const cost = food + overhead
+  const profit = price - cost
+  return {
+    rows, food, ovh, overhead, cost, price, profit,
+    margin: price > 0 ? Math.round((profit / price) * 100) : 0,
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
    시세 변동 영향 — "삼겹살이 20% 오르면 어느 메뉴가 위험한가"
    지금까지 앱에는 이 경로가 아예 없었다. 재료값이 튀어도
    어느 메뉴의 마진이 무너지는지 되짚을 방법이 없었다는 뜻이다.

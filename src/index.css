@@ -1810,3 +1810,45 @@ a{color:inherit;text-decoration:none}
   flex:0 0 auto;min-height:44px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;
   background:var(--paper);color:var(--ink-soft);font-family:inherit;font-size:13px;font-weight:700;
 }
+
+/* ---------- 계산 과정 펼쳐보기 — 믿을 수 있는 숫자로 ---------- */
+.explain{margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.explain .ex-head{
+  width:100%;min-height:52px;padding:15px 18px;border:0;background:transparent;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.3px;text-align:left;
+}
+.explain .ex-chev{color:var(--muted);transition:transform .28s cubic-bezier(.2,.8,.3,1)}
+.explain.open .ex-chev{transform:rotate(180deg)}
+.explain .ex-body{max-height:0;overflow:hidden;transition:max-height .34s cubic-bezier(.2,.8,.3,1)}
+.explain.open .ex-body{max-height:1600px}
+.explain .ex-row{padding:13px 18px;border-top:1px solid var(--line)}
+.explain .ex-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.explain .ex-top b{font-size:14.5px;font-weight:800;color:var(--ink)}
+.explain .ex-price{font-size:11.5px;font-weight:700;color:var(--muted)}
+.explain .ex-price.mine{color:var(--good-2)}
+.explain .ex-calc{margin-top:7px;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.explain .ex-calc i{font-style:normal;color:var(--muted);margin:0 3px}
+.explain .ex-calc b{font-weight:800;color:var(--ink)}
+.explain .ex-foot{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.explain .ex-ytag{font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:6px;background:var(--tile);color:var(--muted)}
+.explain .ex-ytag.measured{background:var(--mint-soft);color:var(--good-2)}
+.explain .ex-ytag.product{background:var(--sand);color:var(--sand-ink)}
+.explain .ex-foot b{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.explain .ex-line{
+  display:flex;align-items:center;justify-content:space-between;padding:12px 18px;
+  border-top:1px solid var(--line);background:#FBFAF8;font-size:13.5px;font-weight:700;color:var(--ink-soft);
+}
+.explain .ex-line b{font-size:15px;font-weight:800;color:var(--ink)}
+.explain .ex-sub{
+  display:flex;align-items:center;justify-content:space-between;padding:8px 18px;
+  font-size:12.5px;font-weight:500;color:var(--muted);
+}
+.explain .ex-sub b{font-weight:700;color:var(--ink-soft)}
+.explain .ex-total{padding:14px 18px;border-top:1px solid var(--line);background:var(--pine);color:#fff}
+.explain .ex-t-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.72)}
+.explain .ex-t-row+.ex-t-row{margin-top:7px}
+.explain .ex-t-row b{font-size:15px;font-weight:800;color:#fff}
+.explain .ex-t-row.final{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.16);color:#fff}
+.explain .ex-t-row.final b{font-size:21px;color:var(--mint)}
+.explain .ex-t-row.final i{font-style:normal;font-size:12px;font-weight:700;color:rgba(255,255,255,.6)}
