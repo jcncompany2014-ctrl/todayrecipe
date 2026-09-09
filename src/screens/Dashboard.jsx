@@ -1,12 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import GoalGauge from '../components/GoalGauge'
+import TrendChart from '../components/TrendChart'
 import { useStore } from '../state/store'
 import { won, round10, breakeven, goalPlan, manwon } from '../lib/calc'
 
 export default function Dashboard() {
   const nav = useNavigate()
-  const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, soldToday } = useStore()
+  const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, soldToday, recentDays } = useStore()
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
@@ -27,6 +28,15 @@ export default function Dashboard() {
       <div className="hd fade">
         <h1 className="hd-title">대시보드</h1>
         <p className="hd-desc">가게 전체 마진을 한눈에</p>
+      </div>
+
+      {/* 최근 7일 순이익 추이 — 날짜별 장부가 생기면서 가능해진 화면 */}
+      <div className="trend fade" style={{ animationDelay: '.04s' }}>
+        <div className="trend-head">
+          <h2>최근 7일 순이익</h2>
+          <span>고정비까지 뺀 값</span>
+        </div>
+        <TrendChart days={recentDays(7)} menus={menus} dailyFixed={dailyFixed} />
       </div>
 
       <div className="dash-actions fade">

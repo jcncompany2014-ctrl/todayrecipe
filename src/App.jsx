@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import AppShell from './components/AppShell'
 import Landing from './screens/Landing'
-import ChartTest from './screens/ChartTest'   // 시험용: lazy 없이 직접
 
 /* 앱 화면은 필요할 때 받는다.
    전에는 랜딩만 보러 온 사람도 13개 화면을 전부 내려받았다.
@@ -50,7 +49,6 @@ export default function App() {
           <Route path="matrix" element={<MenuMatrix />} />
           <Route path="vision" element={<Vision />} />
           <Route path="settings" element={<Settings />} />
-          <Route path="charttest" element={<ChartTest />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
