@@ -4,11 +4,11 @@ import Icon from '../components/Icon'
 import Thumb from '../components/Thumb'
 import { useStore } from '../state/store'
 import { PRODUCTS, CATS } from '../data/catalog'
-import { summarize, costOf, yieldOf, yieldSourceOf, YIELD_SOURCE_LABEL, yieldFromWeights, won, round10, COOKS, overheadFor, overheadBreakdown, perGText } from '../lib/calc'
+import { summarize, costOf, yieldOf, yieldSourceOf, YIELD_SOURCE_LABEL, yieldFromWeights, won, round10, COOKS, overheadFor, overheadBreakdown, perGText, priceTrendOf } from '../lib/calc'
 
 export default function Cart() {
   const nav = useNavigate()
-  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare, setMeasuredYield, clearMeasuredYield } = useStore()
+  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare, setMeasuredYield, clearMeasuredYield, ingredientPrices } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
   const [editId, setEditId] = useState(null)
@@ -101,6 +101,16 @@ export default function Cart() {
                             <Icon name="edit" size={10} stroke={2} />
                           </button>
                         )}
+                        {(() => {
+                          // 지난번에 얼마에 샀는지 — 시세 감각은 값 하나가 아니라 변화에서 온다
+                          const t = priceTrendOf(ingredientPrices[it.id])
+                          if (!t) return null
+                          return (
+                            <span className={`ing-trend ${t.up ? 'up' : 'down'}`}>
+                              지난번 {perGText(t.prev)}원 → <b className="num">{t.up ? '+' : ''}{t.pct}%</b>
+                            </span>
+                          )
+                        })()}
                       </div>
                       <div className="ing-cost">
                         <button

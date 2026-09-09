@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -80,7 +80,26 @@ export function runInvariants() {
   ok('수율이 낮아지면 사야 할 양은 늘어난다', rawGramsOf(mea) > rawGramsOf(std))
   ok(`원가도 함께 오른다 (${costOf(std)} -> ${costOf(mea)})`, costOf(mea) > costOf(std))
 
-  log.push('[7] 빈 장바구니에서도 죽지 않는다')
+  log.push('[7] 매입가 이력 — 지난번 대비')
+  ok('이력이 없으면 추세도 없다', priceTrendOf({ perG: 9, history: [] }) === null)
+  ok('기록 자체가 없으면 null', priceTrendOf(null) === null && priceTrendOf(undefined) === null)
+  const upT = priceTrendOf({ perG: 12.5, history: [{ perG: 10 }] })
+  ok(`10 -> 12.5 = +25% (오름)`, upT && upT.pct === 25 && upT.up === true)
+  const dnT = priceTrendOf({ perG: 11, history: [{ perG: 9 }, { perG: 12.5 }] })
+  ok(`가장 최근 값과 비교한다 (12.5 -> 11 = ${dnT && dnT.pct}%)`, dnT && dnT.pct === -12 && dnT.up === false)
+  ok('같은 값이면 추세 없음', priceTrendOf({ perG: 9, history: [{ perG: 9 }] }) === null)
+
+  log.push('[8] 계산 과정이 총합과 어긋나지 않는다')
+  const exp = explainCost(items, DEFAULT_BUILD.price)
+  const sum = summarize(items, DEFAULT_BUILD.price)
+  ok(`식자재 합계 일치 (${exp.food} = ${sum.food})`, exp.food === sum.food)
+  ok(`총원가 일치 (${exp.cost} = ${sum.cost})`, exp.cost === sum.cost)
+  ok(`마진 일치 (${exp.margin}% = ${sum.margin}%)`, exp.margin === sum.margin)
+  ok('재료 원가의 합 = 식자재 합계', exp.rows.reduce((a, r) => a + r.cost, 0) === exp.food)
+  ok('모든 재료가 출처를 갖는다', exp.rows.every((r) => r.yieldSource && r.perGSource))
+  ok('빈 입력에서도 안전', (() => { try { const e = explainCost([], 9000); return e.food === 0 } catch { return false } })())
+
+  log.push('[9] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 

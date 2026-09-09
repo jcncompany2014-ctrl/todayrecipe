@@ -297,6 +297,18 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
   return { level, title: V.title, line: V.line, actionsLabel: V.label, margin, actions: ranked }
 }
 
+/* 매입가 이력 — 값 하나가 아니라 '언제 얼마였는지'를 남긴다.
+   지난번 대비 얼마나 올랐는지 알아야 시세 감각이 생기고,
+   나중에 "평소보다 비싸게 사셨어요"를 말할 수 있는 근거가 된다. */
+export function priceTrendOf(rec) {
+  if (!rec || !Array.isArray(rec.history) || !rec.history.length) return null
+  const prev = rec.history[rec.history.length - 1]
+  if (!(prev && prev.perG > 0) || !(rec.perG > 0)) return null
+  if (prev.perG === rec.perG) return null
+  const pct = Math.round(((rec.perG - prev.perG) / prev.perG) * 1000) / 10
+  return { prev: prev.perG, now: rec.perG, pct, at: prev.at, up: pct > 0 }
+}
+
 /* ────────────────────────────────────────────────────────────
    계산 과정 펼쳐보기 — "이 숫자 어떻게 나왔어요?"
    원가는 사장님이 가격을 걸고 믿어야 하는 숫자다. 결과만 던지면 못 믿는다.

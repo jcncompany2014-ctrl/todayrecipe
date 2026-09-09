@@ -1852,3 +1852,11 @@ a{color:inherit;text-decoration:none}
 .explain .ex-t-row.final{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.16);color:#fff}
 .explain .ex-t-row.final b{font-size:21px;color:var(--mint)}
 .explain .ex-t-row.final i{font-style:normal;font-size:12px;font-weight:700;color:rgba(255,255,255,.6)}
+
+/* ---------- 매입가 이력: 지난번 대비 ---------- */
+.scr-cart .ing-trend{
+  display:block;margin-top:4px;font-size:10.5px;font-weight:700;letter-spacing:-.1px;
+}
+.scr-cart .ing-trend.up{color:var(--bad-1)}
+.scr-cart .ing-trend.down{color:var(--good-2)}
+.scr-cart .ing-trend b{font-weight:800}

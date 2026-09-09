@@ -189,7 +189,14 @@ export function StoreProvider({ children }) {
     const n = Number(perG)
     const v = isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : 0
     if (!v) return
-    setIngredientPrices((L) => ({ ...L, [id]: { perG: v, at: new Date().toISOString() } })) // 원장에 기록 → 모든 메뉴에 적용
+    // 원장에 기록 → 모든 메뉴에 적용. 값을 덮어쓰지 않고 지난 값을 이력으로 남긴다.
+    setIngredientPrices((L) => {
+      const prev = L[id]
+      if (prev && prev.perG === v) return L            // 같은 값이면 이력을 늘리지 않는다
+      const past = Array.isArray(prev && prev.history) ? prev.history : []
+      const history = (prev && prev.perG > 0 ? [...past, { perG: prev.perG, at: prev.at }] : past).slice(-20)
+      return { ...L, [id]: { perG: v, at: new Date().toISOString(), history } }
+    })
     setBuild((b) => ({ ...b, items: b.items.map((it) => (it.id === id ? { ...it, perG: v } : it)) }))
   }, [setIngredientPrices])
   // 기준가로 되돌리기 — 원장에서도 지운다
