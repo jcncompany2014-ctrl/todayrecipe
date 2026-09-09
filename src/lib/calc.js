@@ -67,13 +67,43 @@ export const overheadBreakdown = (price, opts = {}) => {
 }
 
 // 항목 수율(조리 안 하는 재료는 100% 고정)
+/* 수율의 출처는 세 겹이다. 위에 있을수록 세다.
+   1) 사장님이 우리 주방에서 직접 잰 값 (item.yieldPct)
+   2) 재료별 표준 수율 (catalog의 yieldBy) — 당면처럼 불어나는 재료
+   3) 조리법 표준 수율 (YIELD)
+   근거를 밝힐 수 있어야 신뢰가 생긴다. yieldSourceOf가 그 출처를 알려준다. */
 export function yieldOf(item) {
+  if (item && item.yieldPct > 0) return item.yieldPct
   const p = PRODUCTS[item.id]
   if (!p || !p.cookable) return 100
-  // 재료마다 조리법별 실제 수율이 다르다(당면은 삶으면 불어난다). 있으면 그 값이 우선.
   const own = p.yieldBy && p.yieldBy[item.method]
   const y = own != null ? own : YIELD[item.method]
   return y > 0 ? y : 100
+}
+
+// 'measured' | 'product' | 'standard' | 'raw'
+export function yieldSourceOf(item) {
+  if (item && item.yieldPct > 0) return 'measured'
+  const p = PRODUCTS[item.id]
+  if (!p || !p.cookable) return 'raw'
+  if (p.yieldBy && p.yieldBy[item.method] != null) return 'product'
+  return 'standard'
+}
+export const YIELD_SOURCE_LABEL = {
+  measured: '우리 가게에서 직접 잰 값',
+  product: '이 재료의 표준값',
+  standard: '조리법 표준값',
+  raw: '조리 안 함',
+}
+
+/* 저울 두 번으로 수율 구하기 — 원물 g, 조리 후 g.
+   결과는 1~400%로 가둔다(오타·단위 착오 방어). null이면 못 쓰는 입력. */
+export function yieldFromWeights(rawG, cookedG) {
+  const a = Number(rawG), b = Number(cookedG)
+  if (!isFinite(a) || !isFinite(b) || a <= 0 || b <= 0) return null
+  const pct = Math.round((b / a) * 1000) / 10
+  if (pct < 1 || pct > 400) return null
+  return pct
 }
 
 /* 원물 투입량(g) — 실제로 사야 하는 양. 원가·발주 둘 다 이 값에서 나온다. */

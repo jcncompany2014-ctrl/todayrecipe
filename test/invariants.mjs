@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -66,7 +66,21 @@ export function runInvariants() {
      board.length === 2 && board[0].marginAfter <= board[1].marginAfter)
   ok('riskBoard 빈 입력 안전', riskBoard(fakeMenus, {}).length === 0)
 
-  log.push('[6] 빈 장바구니에서도 죽지 않는다')
+  log.push('[6] 실측 수율 — 저울 두 번이 계산을 바꾼다')
+  ok('150g -> 120g = 80%', yieldFromWeights(150, 120) === 80)
+  ok('150g -> 105g = 70%', yieldFromWeights(150, 105) === 70)
+  ok('80g -> 200g = 250% (불어나는 재료)', yieldFromWeights(80, 200) === 250)
+  ok('0이나 음수는 거부', yieldFromWeights(0, 100) === null && yieldFromWeights(150, -5) === null)
+  ok('글자는 거부', yieldFromWeights('abc', 100) === null)
+  ok('말도 안 되는 값은 거부 (1g -> 100g = 10000%)', yieldFromWeights(1, 100) === null)
+  const std = { id: items[0].id, grams: 150, method: '볶기' }
+  const mea = { id: items[0].id, grams: 150, method: '볶기', yieldPct: 70 }
+  ok(`직접 잰 값이 표준값을 이긴다 (${yieldOf(std)}% -> ${yieldOf(mea)}%)`, yieldOf(std) === 80 && yieldOf(mea) === 70)
+  ok('출처를 구분해 알려준다', yieldSourceOf(std) === 'standard' && yieldSourceOf(mea) === 'measured')
+  ok('수율이 낮아지면 사야 할 양은 늘어난다', rawGramsOf(mea) > rawGramsOf(std))
+  ok(`원가도 함께 오른다 (${costOf(std)} -> ${costOf(mea)})`, costOf(mea) > costOf(std))
+
+  log.push('[7] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 

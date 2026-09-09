@@ -4,15 +4,21 @@ import Icon from '../components/Icon'
 import Thumb from '../components/Thumb'
 import { useStore } from '../state/store'
 import { PRODUCTS, CATS } from '../data/catalog'
-import { summarize, costOf, yieldOf, won, round10, COOKS, overheadFor, overheadBreakdown, perGText } from '../lib/calc'
+import { summarize, costOf, yieldOf, yieldSourceOf, YIELD_SOURCE_LABEL, yieldFromWeights, won, round10, COOKS, overheadFor, overheadBreakdown, perGText } from '../lib/calc'
 
 export default function Cart() {
   const nav = useNavigate()
-  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare } = useStore()
+  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare, setMeasuredYield, clearMeasuredYield } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
   const [editId, setEditId] = useState(null)
   const [editVal, setEditVal] = useState('')
+  // 수율 직접 재기 — 저울 두 번(원물/조리 후)
+  const [measureId, setMeasureId] = useState(null)
+  const [mRaw, setMRaw] = useState('')
+  const [mCooked, setMCooked] = useState('')
+  const mPct = yieldFromWeights(mRaw, mCooked)
+  const openMeasure = (id) => { setMeasureId((v) => (v === id ? null : id)); setMRaw(''); setMCooked('') }
 
   const currentStoreNm = currentStore ? currentStore.nm : '이 가게'
   const empty = build.items.length === 0
@@ -97,7 +103,13 @@ export default function Cart() {
                         )}
                       </div>
                       <div className="ing-cost">
-                        <span className="yld">수율 {yieldOf(it)}%</span>
+                        <button
+                          className={`yld${yieldSourceOf(it) === 'measured' ? ' measured' : ''}`}
+                          onClick={() => openMeasure(it.id)}
+                          title={YIELD_SOURCE_LABEL[yieldSourceOf(it)]}
+                        >
+                          수율 {yieldOf(it)}%
+                        </button>
                         <div className={`val num${bumped === it.id ? ' bump' : ''}`}>₩{won(costOf(it))}</div>
                       </div>
                     </div>
@@ -122,6 +134,42 @@ export default function Cart() {
                         <span className="raw">생 그대로 · 수율 100%</span>
                       )}
                     </div>
+
+                    {measureId === it.id && p.cookable && (
+                      <div className="ymeasure">
+                        <div className="ym-head">
+                          <b>{it.method} 수율 직접 재기</b>
+                          <span>{YIELD_SOURCE_LABEL[yieldSourceOf(it)]} · 지금 {yieldOf(it)}%</span>
+                        </div>
+                        <div className="ym-in">
+                          <label>
+                            <span>원물</span>
+                            <input type="number" inputMode="decimal" placeholder="150" value={mRaw}
+                              onChange={(e) => setMRaw(e.target.value)} /><em>g</em>
+                          </label>
+                          <span className="ym-arrow">→</span>
+                          <label>
+                            <span>{it.method} 후</span>
+                            <input type="number" inputMode="decimal" placeholder="120" value={mCooked}
+                              onChange={(e) => setMCooked(e.target.value)} /><em>g</em>
+                          </label>
+                        </div>
+                        <div className="ym-out">
+                          {mPct != null
+                            ? <>우리 가게 수율 <b className="num">{mPct}%</b>{mPct > 100 && <i> · 불어나는 재료네요</i>}</>
+                            : <span className="ym-hint">조리 전후 무게를 재서 넣어주세요</span>}
+                        </div>
+                        <div className="ym-act">
+                          {yieldSourceOf(it) === 'measured' && (
+                            <button className="ym-reset" onClick={() => { clearMeasuredYield(it.id, it.method); setMeasureId(null); doBump(it.id); toast('표준값으로 되돌렸어요') }}>표준값으로</button>
+                          )}
+                          <button className="ym-save" disabled={mPct == null}
+                            onClick={() => { setMeasuredYield(it.id, it.method, mPct); setMeasureId(null); doBump(it.id); toast(`<b>${p.nm}</b> ${it.method} 수율 ${mPct}%로 저장했어요`) }}>
+                            이 값으로 저장
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )
               })}

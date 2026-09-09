@@ -77,16 +77,45 @@ export function StoreProvider({ children }) {
      예전엔 build 안에만 붙어서, 같은 앞다리살을 12개 메뉴에 12번 입력해야 했다.
      { 재료id: { perG, at } } — at은 언제 넣은 값인지(나중에 시세 이력의 시작점). */
   const [ingredientPrices, setIngredientPrices] = usePersistentState('ingredientPrices', {}, okMap)
-  // 원장 값을 레시피 항목에 입힌다 — 메뉴를 열 때마다 '내 가게 가격'으로 맞춰준다
-  const applyLedger = useCallback((items, ledger) => {
+  /* 우리 가게 실측 수율 — { 재료id: { 조리법: 수율% } }
+     앱의 심장인 수율을 '표준 상수'에서 '이 주방에서 잰 데이터'로 바꾼다.
+     "수율 80%의 근거가 뭐냐"는 질문이 여기서 사라진다. */
+  const [measuredYields, setMeasuredYields] = usePersistentState('measuredYields', {}, okMap)
+
+  /* 가게에 쌓인 값(매입가·실측 수율)을 레시피 항목에 입힌다.
+     메뉴를 열거나 재료를 담을 때마다 '우리 가게 기준'으로 맞춰준다. */
+  const applyLedger = useCallback((items, ledger, yields) => {
     const L = ledger || ingredientPrices
+    const Y = yields || measuredYields
     return (items || []).map((it) => {
+      const next = { ...it }
       const rec = L[it.id]
-      if (rec && rec.perG > 0) return { ...it, perG: rec.perG }
-      const { perG, ...rest } = it
-      return rest
+      if (rec && rec.perG > 0) next.perG = rec.perG
+      else delete next.perG
+      const my = Y[it.id] && Y[it.id][it.method]
+      if (my > 0) next.yieldPct = my
+      else delete next.yieldPct
+      return next
     })
-  }, [ingredientPrices])
+  }, [ingredientPrices, measuredYields])
+
+  // 저울 두 번으로 잰 값을 기록 — 같은 재료·같은 조리법에 전부 적용된다
+  const setMeasuredYield = useCallback((id, method, pct) => {
+    if (!(pct > 0)) return
+    setMeasuredYields((M) => ({ ...M, [id]: { ...(M[id] || {}), [method]: pct } }))
+    setBuild((b) => ({ ...b, items: b.items.map((it) => (it.id === id && it.method === method ? { ...it, yieldPct: pct } : it)) }))
+  }, [setMeasuredYields])
+
+  // 표준값으로 되돌리기
+  const clearMeasuredYield = useCallback((id, method) => {
+    setMeasuredYields((M) => {
+      const cur = { ...(M[id] || {}) }
+      delete cur[method]
+      if (!Object.keys(cur).length) { const { [id]: _, ...rest } = M; return rest }
+      return { ...M, [id]: cur }
+    })
+    setBuild((b) => ({ ...b, items: b.items.map((it) => { if (it.id !== id || it.method !== method) return it; const { yieldPct, ...rest } = it; return rest }) }))
+  }, [setMeasuredYields])
 
   /* 부대비용은 '가게'의 속성이다 — 홀 전용 백반집과 배달 위주 가게가
      같은 수수료를 물면 안 된다. 전에는 전역 1벌이라 매장을 바꿔도 그대로였다. */
@@ -122,9 +151,11 @@ export function StoreProvider({ children }) {
       const rec = ingredientPrices[id]
       const fresh = { id, grams: p.defG, method: p.method }
       if (rec && rec.perG > 0) fresh.perG = rec.perG   // 전에 넣어둔 내 매입가가 있으면 바로 적용
+      const my = measuredYields[id] && measuredYields[id][p.method]
+      if (my > 0) fresh.yieldPct = my                  // 직접 잰 수율도 함께
       return { ...b, items: [...b.items, fresh] }
     })
-  }, [ingredientPrices])
+  }, [ingredientPrices, measuredYields])
 
   const removeItem = useCallback((id) => {
     setBuild((b) => ({ ...b, items: b.items.filter((it) => it.id !== id) }))
@@ -140,9 +171,17 @@ export function StoreProvider({ children }) {
   const setMethod = useCallback((id, method) => {
     setBuild((b) => ({
       ...b,
-      items: b.items.map((it) => (it.id === id ? { ...it, method } : it)),
+      items: b.items.map((it) => {
+        if (it.id !== id) return it
+        const next = { ...it, method }
+        // 조리법이 바뀌면 수율도 그 조리법으로 잰 값을 쓴다(없으면 표준값)
+        const my = measuredYields[id] && measuredYields[id][method]
+        if (my > 0) next.yieldPct = my
+        else delete next.yieldPct
+        return next
+      }),
     }))
-  }, [])
+  }, [measuredYields])
 
   // '내 매입가' — 재료 단가(원/g)를 사장님 값으로. 0/무효면 무시.
   const setItemPerG = useCallback((id, perG) => {
@@ -263,7 +302,7 @@ export function StoreProvider({ children }) {
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
     menus, build, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare,
-    ingredientPrices,
+    ingredientPrices, measuredYields, setMeasuredYield, clearMeasuredYield,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
     soldToday, setSold, resetSold, soldOn, yesterdaySold, recentDays, todayKey,
