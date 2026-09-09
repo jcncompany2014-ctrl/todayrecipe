@@ -144,3 +144,43 @@ export async function exportReceipt(data, mode = 'save') {
   setTimeout(() => URL.revokeObjectURL(url), 5000)
   return 'saved'
 }
+
+/* ────────────────────────────────────────────────────────────
+   발주서를 글로 내보내기
+   발주 결과가 화면 밖으로 나갈 방법이 없어, 사장님이 카톡 대화창에
+   손으로 옮겨 적고 있었다. 이미지가 아니라 '글'이어야 한다 —
+   붙여넣고 고칠 수 있어야 실제로 쓰인다.
+   ──────────────────────────────────────────────────────────── */
+export function orderText(d) {
+  const out = []
+  out.push(`[${d.storeNm || '우리 가게'}] ${d.nm} ${d.bowls}그릇 발주서`)
+  if (d.date) out.push(d.date)
+  out.push('')
+  d.rows.forEach((r) => out.push(`· ${r.nm}  ${r.grams}  약 ${r.buy}원`))
+  out.push('')
+  out.push(`합계  약 ${d.total}원`)
+  out.push('')
+  out.push('※ 조리 수율을 반영한 실제 구매량이에요')
+  out.push('오늘 몇 그릇? · todayrecipe.vercel.app')
+  return out.join('\n')
+}
+
+/* 'shared' | 'copied' | 'cancel' | 'fail' */
+export async function shareOrder(d) {
+  const text = orderText(d)
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${d.nm} 발주서`, text })
+      return 'shared'
+    } catch (e) {
+      if (e && e.name === 'AbortError') return 'cancel'
+      // 공유를 못 쓰는 환경이면 복사로 내려간다
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(text)
+    return 'copied'
+  } catch {
+    return 'fail'
+  }
+}

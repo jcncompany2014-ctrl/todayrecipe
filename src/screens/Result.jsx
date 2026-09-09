@@ -8,7 +8,7 @@ import {
   overheadFor, deliveryFeeFor, fixedOverheadFor, marginWithFoodShift, orderPlan, fmtGrams,
   costSegments, bestSubstitutions, diagnose, goalPlan, manwon,
 } from '../lib/calc'
-import { exportReceipt } from '../lib/receipt'
+import { exportReceipt, shareOrder } from '../lib/receipt'
 import GoalGauge from '../components/GoalGauge'
 
 // 원가 도넛 색 램프 — 재료는 그린, 부대비용은 웜/뉴트럴 (원물 vs 부대 한눈에)
@@ -56,7 +56,7 @@ function CostDonut({ data }) {
 
 export default function Result() {
   const nav = useNavigate()
-  const { build, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast } = useStore()
+  const { build, currentStore, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast } = useStore()
   const hasItems = build.items.length > 0
 
   const foodFixed = useMemo(
@@ -133,6 +133,25 @@ export default function Result() {
     saveBuild(price, margin)   // 방금 조정한 가격을 그대로 넘긴다(setPrice는 아직 반영 전)
     toast(`<b>${build.nm}</b> 저장됨 · 마진 ${margin}%로 메뉴판에 올렸어요`)
     setTimeout(() => nav('/app'), 700)
+  }
+
+  // 발주서를 글로 — 공유 시트가 있으면 공유, 없으면 클립보드 복사
+  const onShareOrder = async () => {
+    if (!plan) return
+    const r = await shareOrder({
+      nm: build.nm,
+      bowls: orderBowls,
+      storeNm: currentStore ? currentStore.nm : '우리 가게',
+      date: new Date().toLocaleDateString('ko-KR'),
+      rows: plan.rows.map((x) => ({ nm: x.nm, grams: fmtGrams(x.grams), buy: won(x.buy) })),
+      total: won(plan.total),
+    })
+    toast(
+      r === 'shared' ? '발주서를 공유했어요'
+        : r === 'copied' ? '발주서를 복사했어요 · 카톡에 붙여넣으세요'
+        : r === 'cancel' ? '취소했어요'
+        : '복사할 수 없는 환경이에요'
+    )
   }
 
   const onExport = async (mode) => {
@@ -362,6 +381,10 @@ export default function Result() {
             ))}
           </div>
           <div className="order-total"><span>예상 식자재 구매비</span><b className="num">약 ₩{won(plan.total)}</b></div>
+          <button className="order-share" onClick={onShareOrder}>
+            <Icon name="share" size={15} stroke={2} /> 발주서 내보내기
+          </button>
+          <p className="order-note">거래처에 그대로 붙여넣을 수 있는 글로 나가요</p>
         </div>
       )}
 
