@@ -10,8 +10,45 @@ import { PRODUCTS } from '../data/catalog'
    발주량                      = 원물 투입량 × 그릇 수
    → 원가와 발주가 '같은 투입량'에서 나오므로 서로 어긋날 수 없다.
    수율 100 초과 = 삶으면 불어나는 재료(밥·면·당면). 이때 투입량은 사용량보다 적다. */
+/* ── 수율 기본값의 출처 ────────────────────────────────────────────────
+   아래 네 값은 '조리법 표준 참고값'이다. 특정 문헌에서 그대로 가져온 수치가
+   아니므로, 앱은 이 값을 근거로 내세우지 않는다. 화면에도 '조리법 표준값'이라
+   밝히고, 더 정확한 값은 아래 두 경로로 얻는다.
+
+   ① 공공데이터에서 역산 — yieldFromMoisture()
+      국가표준식품성분표(농촌진흥청, 제10개정판)는 같은 식품을 '생것'과
+      '삶은것' 등 조리별로 나눠 수분(g)을 싣는다. 조리 중 중량 변화는
+      대부분 수분 변화이고 고형분은 보존되므로 수분에서 수율을 역산할 수 있다.
+        · 공공데이터포털 data.go.kr — 국가표준식품성분표 / Open API·엑셀
+        · 농식품올바로 www.nics.go.kr/food
+        · 식약처 식품영양성분DB (별도 API)
+      한계: 육류는 지방이 함께 빠져나가 수분만으로는 과대추정될 수 있다.
+      → 그래서 역산값도 '참고'이고, 최종 권위는 ②다.
+
+   ② 사장님 실측 — setMeasuredYield()
+      우리 주방에서 저울 두 번(원물 / 조리 후)으로 잰 값. 화력·조리시간이
+      가게마다 달라 이 값이 가장 정확하다. yieldOf()에서 가장 높은 우선순위.
+
+   `(미확인)` 농진청이 '중량변화율'을 단독 표로 공표하는지는 확인하지 못했다.
+   조사 범위에서 찾지 못한 것이지 부존재 증명이 아니다. */
 export const YIELD = { 생: 100, 볶기: 80, 삶기: 90, 튀김: 75 }
 export const COOKS = ['생', '볶기', '삶기', '튀김']
+
+/* 수분 함량으로 수율 역산 — 고형분 보존 원리.
+     생것 100g 중 고형분 = 100 - 수분_생
+     조리 후에도 고형분은 그대로이므로
+     조리 후 중량 = 고형분 ÷ (1 - 수분_조리/100)
+   예) 생것 수분 65%, 삶은 것 수분 55% → 35 ÷ 0.45 = 77.8 → 수율 78%
+   국가표준식품성분표의 같은 식품 '생것'과 '삶은것' 수분값을 넣으면 된다. */
+export function yieldFromMoisture(rawMoisturePct, cookedMoisturePct) {
+  const a = Number(rawMoisturePct), b = Number(cookedMoisturePct)
+  if (!isFinite(a) || !isFinite(b)) return null
+  if (a < 0 || a >= 100 || b < 0 || b >= 100) return null
+  const solids = 100 - a
+  const pct = Math.round((solids / (100 - b)) * 1000) / 10
+  if (pct < 1 || pct > 400) return null
+  return pct
+}
 
 // 부대비용 기본값
 export const DELIVERY_RATE = 0.12          // 배달앱 수수료 (판매가 정률)
@@ -137,8 +174,8 @@ export function yieldSourceOf(item) {
 }
 export const YIELD_SOURCE_LABEL = {
   measured: '우리 가게에서 직접 잰 값',
-  product: '이 재료의 표준값',
-  standard: '조리법 표준값',
+  product: '식품성분표 수분값으로 역산',
+  standard: '조리법 표준 참고값',
   raw: '조리 안 함',
 }
 

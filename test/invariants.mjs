@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR, yieldFromMoisture } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -123,7 +123,16 @@ export function runInvariants() {
   ok(`기본값 ${base}원 -> 우리 가게 ${mine}원`, mine === 1500 + 700 + 500 && base !== mine)
   ok('일부만 바꿔도 나머지는 기본값', fixedOverheadFor({ labor: 1000 }) === 1000 + 490 + 300)
 
-  log.push('[12] 빈 장바구니에서도 죽지 않는다')
+  log.push('[12] 공공데이터 수분값으로 수율 역산')
+  // 국가표준식품성분표의 같은 식품 '생것'/'삶은것' 수분(%)을 넣는다
+  ok(`돼지고기 생 65% -> 삶은 55% = 78% (상수 80%와 근접)`, yieldFromMoisture(65, 55) === 77.8)
+  ok('수분이 같으면 중량도 그대로', yieldFromMoisture(70, 70) === 100)
+  ok('조리로 수분이 늘면 불어난다(밥·면)', yieldFromMoisture(12, 65) > 100)
+  ok('조리로 수분이 줄면 줄어든다', yieldFromMoisture(75, 60) < 100)
+  ok('범위 밖 입력은 거부', yieldFromMoisture(-1, 50) === null && yieldFromMoisture(50, 100) === null)
+  ok('글자는 거부', yieldFromMoisture('a', 50) === null)
+
+  log.push('[13] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 
