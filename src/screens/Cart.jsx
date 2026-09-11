@@ -150,6 +150,9 @@ export default function Cart() {
                         <div className="ym-head">
                           <b>{it.method} 수율 직접 재기</b>
                           <span>{YIELD_SOURCE_LABEL[yieldSourceOf(it)]} · 지금 {yieldOf(it)}%</span>
+                          {p.yieldSrc && yieldSourceOf(it) === 'product' && (
+                            <em className="ym-src">출처 {p.yieldSrc}</em>
+                          )}
                         </div>
                         <div className="ym-in">
                           <label>

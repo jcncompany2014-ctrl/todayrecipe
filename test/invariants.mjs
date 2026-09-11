@@ -75,8 +75,11 @@ export function runInvariants() {
   ok('말도 안 되는 값은 거부 (1g -> 100g = 10000%)', yieldFromWeights(1, 100) === null)
   const std = { id: items[0].id, grams: 150, method: '볶기' }
   const mea = { id: items[0].id, grams: 150, method: '볶기', yieldPct: 70 }
-  ok(`직접 잰 값이 표준값을 이긴다 (${yieldOf(std)}% -> ${yieldOf(mea)}%)`, yieldOf(std) === 80 && yieldOf(mea) === 70)
-  ok('출처를 구분해 알려준다', yieldSourceOf(std) === 'standard' && yieldSourceOf(mea) === 'measured')
+  // 카탈로그 수율이 들어오면 기본값이 바뀌므로, 숫자가 아니라 '관계'를 검증한다
+  ok(`직접 잰 값이 다른 모든 값을 이긴다 (${yieldOf(std)}% -> ${yieldOf(mea)}%)`,
+     yieldOf(mea) === 70 && yieldOf(std) !== 70)
+  ok('출처를 구분해 알려준다',
+     yieldSourceOf(mea) === 'measured' && yieldSourceOf(std) !== 'measured')
   ok('수율이 낮아지면 사야 할 양은 늘어난다', rawGramsOf(mea) > rawGramsOf(std))
   ok(`원가도 함께 오른다 (${costOf(std)} -> ${costOf(mea)})`, costOf(mea) > costOf(std))
 
@@ -132,7 +135,21 @@ export function runInvariants() {
   ok('범위 밖 입력은 거부', yieldFromMoisture(-1, 50) === null && yieldFromMoisture(50, 100) === null)
   ok('글자는 거부', yieldFromMoisture('a', 50) === null)
 
-  log.push('[13] 빈 장바구니에서도 죽지 않는다')
+  log.push('[13] 카탈로그의 출처 있는 수율이 실제로 쓰인다')
+  const cases = [['onion', '볶기', 70], ['carrot', '볶기', 69], ['garlic', '볶기', 83], ['dangmyeon', '삶기', 440]]
+  for (const [id, method, expect] of cases) {
+    if (!PRODUCTS[id]) { ok(`${id} 카탈로그에 없음`, false); continue }
+    const got = yieldOf({ id, grams: 100, method })
+    ok(`${PRODUCTS[id].nm} ${method} = ${got}% (기대 ${expect}%)`, got === expect)
+    ok(`${PRODUCTS[id].nm} 출처가 '공식 수율표'로 표시된다`, yieldSourceOf({ id, grams: 100, method }) === 'product')
+  }
+  ok('출처 없는 재료는 조리법 표준값으로 물러난다',
+     yieldSourceOf({ id: 'kongnamul', grams: 100, method: '볶기' }) === 'standard')
+  ok('당면은 삶으면 불어난다(수율 100% 초과)', yieldOf({ id: 'dangmyeon', grams: 100, method: '삶기' }) > 100)
+  ok('불어나는 재료는 사야 할 양이 더 적다',
+     rawGramsOf({ id: 'dangmyeon', grams: 100, method: '삶기' }) < 100)
+
+  log.push('[14] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 

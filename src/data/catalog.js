@@ -15,14 +15,14 @@ export const CATS = {
 // img=실사진 경로(있으면 사용). 없으면 icon으로 폴백.
 export const PRODUCTS = {
   // ── 정육 ──
-  samgyup: { nm: '삼겹살',   cat: 'meat',  icon: 'meat',    price: 12000, unit: '/kg',   perG: 12,  trend: ['dn', 3], popular: true,  cookable: true,  method: '볶기', defG: 120, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/samgyup.webp' },
-  moksal:  { nm: '목살',     cat: 'meat',  icon: 'meat',    price: 11500, unit: '/kg',   perG: 11.5,trend: ['up', 4], popular: false, cookable: true,  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/moksal.webp' },
-  apdari:  { nm: '앞다리살', cat: 'meat',  icon: 'meat',    price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 1], popular: false, cookable: true,  method: '볶기', defG: 150, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/apdari.webp' },
-  beef:    { nm: '소고기(불고기)', cat: 'meat', icon: 'meat', price: 15000, unit: '/kg', perG: 15,  trend: ['up', 4], popular: false, cookable: true,  method: '볶기', defG: 120, origin: '호주산', spec: '냉장 · 불고기용' },
+  samgyup: { nm: '삼겹살',   cat: 'meat',  icon: 'meat',    price: 12000, unit: '/kg',   perG: 12,  trend: ['dn', 3], popular: true,  cookable: true, yieldBy: { 삶기: 77 }, yieldSrc: '표12 11125 등심 근사',  method: '볶기', defG: 120, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/samgyup.webp' },
+  moksal:  { nm: '목살',     cat: 'meat',  icon: 'meat',    price: 11500, unit: '/kg',   perG: 11.5,trend: ['up', 4], popular: false, cookable: true, yieldBy: { 볶기: 82, 삶기: 78 }, yieldSrc: 'USDA R2 NDB 10178·10029',  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/moksal.webp' },
+  apdari:  { nm: '앞다리살', cat: 'meat',  icon: 'meat',    price: 9000,  unit: '/kg',   perG: 9,   trend: ['dn', 1], popular: false, cookable: true, yieldBy: { 볶기: 82, 삶기: 74 }, yieldSrc: 'USDA R2 NDB 10178·10075',  method: '볶기', defG: 150, origin: '국내산', spec: '냉장 · 1kg 팩', img: '/img/apdari.webp' },
+  beef:    { nm: '소고기(불고기)', cat: 'meat', icon: 'meat', price: 15000, unit: '/kg', perG: 15,  trend: ['up', 4], popular: false, cookable: true, yieldBy: { 삶기: 70 }, yieldSrc: '표12 11301 앞다리 적육',  method: '볶기', defG: 120, origin: '호주산', spec: '냉장 · 불고기용' },
   chadol:  { nm: '차돌박이', cat: 'meat',  icon: 'meat',    price: 22000, unit: '/kg',   perG: 22,  trend: ['up', 3], popular: false, cookable: true,  method: '볶기', defG: 80,  origin: '미국산', spec: '냉동 · 슬라이스' },
   galbi:   { nm: '돼지갈비', cat: 'meat',  icon: 'meat',    price: 13000, unit: '/kg',   perG: 13,  trend: ['up', 2], popular: false, cookable: true,  method: '볶기', defG: 200, origin: '국내산', spec: '냉장 · 양념용' },
-  dakdari: { nm: '닭다리살', cat: 'meat',  icon: 'chicken', price: 7500,  unit: '/kg',   perG: 7.5, trend: ['dn', 6], popular: false, cookable: true,  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 정육 1kg', img: '/img/dakdari.webp' },
-  dakgasal:{ nm: '닭가슴살', cat: 'meat',  icon: 'chicken', price: 8000,  unit: '/kg',   perG: 8,   trend: ['dn', 2], popular: false, cookable: true,  method: '삶기', defG: 120, origin: '국내산', spec: '냉장 · 정육 1kg' },
+  dakdari: { nm: '닭다리살', cat: 'meat',  icon: 'chicken', price: 7500,  unit: '/kg',   perG: 7.5, trend: ['dn', 6], popular: false, cookable: true, yieldBy: { 삶기: 70, 튀김: 75 }, yieldSrc: '표12 11223·11289',  method: '볶기', defG: 130, origin: '국내산', spec: '냉장 · 정육 1kg', img: '/img/dakdari.webp' },
+  dakgasal:{ nm: '닭가슴살', cat: 'meat',  icon: 'chicken', price: 8000,  unit: '/kg',   perG: 8,   trend: ['dn', 2], popular: false, cookable: true, yieldBy: { 볶기: 64, 삶기: 77 }, yieldSrc: '표12 11298 / USDA NDB 5061',  method: '삶기', defG: 120, origin: '국내산', spec: '냉장 · 정육 1kg' },
   bacon:   { nm: '베이컨',   cat: 'meat',  icon: 'meat',    price: 14000, unit: '/kg',   perG: 14,  trend: ['fl', 0], popular: false, cookable: true,  method: '볶기', defG: 40,  origin: '수입산', spec: '냉장 · 슬라이스' },
   luncheon:{ nm: '런천햄',   cat: 'meat',  icon: 'meat',    price: 12000, unit: '/kg',   perG: 12,  trend: ['fl', 0], popular: false, cookable: true,  method: '볶기', defG: 60,  origin: '국내산', spec: '캔 · 340g' },
 
@@ -37,16 +37,16 @@ export const PRODUCTS = {
   myeolchi:{ nm: '멸치',     cat: 'sea',   icon: 'fish',    price: 25000, unit: '/kg',   perG: 25,  trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 15,  origin: '국내산', spec: '건멸치 · 육수용' },
 
   // ── 청과 ──
-  onion:   { nm: '양파',     cat: 'veg',   icon: 'onion',   price: 2000,  unit: '/kg',   perG: 2,   trend: ['dn', 8], popular: true,  cookable: true,  method: '생',   defG: 60,  origin: '국내산', spec: '망 · 1.5kg', img: '/img/onion.webp' },
-  daepa:   { nm: '대파',     cat: 'veg',   icon: 'scallion',price: 3500,  unit: '/단',   perG: 12,  trend: ['dn', 2], popular: true,  cookable: true,  method: '생',   defG: 15,  origin: '국내산', spec: '흙대파 · 1단', img: '/img/daepa.webp' },
-  garlic:  { nm: '다진마늘', cat: 'veg',   icon: 'garlic',  price: 8000,  unit: '/kg',   perG: 8,   trend: ['fl', 0], popular: false, cookable: true,  method: '생',   defG: 10,  origin: '국내산', spec: '간 마늘 · 팩', img: '/img/garlic.webp' },
-  potato:  { nm: '감자',     cat: 'veg',   icon: 'potato',  price: 2500,  unit: '/kg',   perG: 2.5, trend: ['dn', 3], popular: false, cookable: true,  method: '볶기', defG: 100, origin: '국내산', spec: '수미 · 1kg' },
-  carrot:  { nm: '당근',     cat: 'veg',   icon: 'carrot',  price: 2000,  unit: '/kg',   perG: 2,   trend: ['fl', 0], popular: false, cookable: true,  method: '볶기', defG: 40,  origin: '국내산', spec: '세척 · 1kg' },
+  onion:   { nm: '양파',     cat: 'veg',   icon: 'onion',   price: 2000,  unit: '/kg',   perG: 2,   trend: ['dn', 8], popular: true,  cookable: true, yieldBy: { 볶기: 70, 삶기: 89 }, yieldSrc: '표12 06336·06155',  method: '생',   defG: 60,  origin: '국내산', spec: '망 · 1.5kg', img: '/img/onion.webp' },
+  daepa:   { nm: '대파',     cat: 'veg',   icon: 'scallion',price: 3500,  unit: '/단',   perG: 12,  trend: ['dn', 2], popular: true,  cookable: true, yieldBy: { 볶기: 94, 삶기: 100 }, yieldSrc: '표12 06351·06350',  method: '생',   defG: 15,  origin: '국내산', spec: '흙대파 · 1단', img: '/img/daepa.webp' },
+  garlic:  { nm: '다진마늘', cat: 'veg',   icon: 'garlic',  price: 8000,  unit: '/kg',   perG: 8,   trend: ['fl', 0], popular: false, cookable: true, yieldBy: { 볶기: 83 }, yieldSrc: '표12 06349',  method: '생',   defG: 10,  origin: '국내산', spec: '간 마늘 · 팩', img: '/img/garlic.webp' },
+  potato:  { nm: '감자',     cat: 'veg',   icon: 'potato',  price: 2500,  unit: '/kg',   perG: 2.5, trend: ['dn', 3], popular: false, cookable: true, yieldBy: { 삶기: 97, 튀김: 71 }, yieldSrc: '표12 02019·02067',  method: '볶기', defG: 100, origin: '국내산', spec: '수미 · 1kg' },
+  carrot:  { nm: '당근',     cat: 'veg',   icon: 'carrot',  price: 2000,  unit: '/kg',   perG: 2,   trend: ['fl', 0], popular: false, cookable: true, yieldBy: { 볶기: 69, 삶기: 87 }, yieldSrc: '표12 06345·06215',  method: '볶기', defG: 40,  origin: '국내산', spec: '세척 · 1kg' },
   mu:      { nm: '무',       cat: 'veg',   icon: 'radish',  price: 1500,  unit: '/개',   perG: 2,   trend: ['fl', 0], popular: false, cookable: true,  method: '삶기', defG: 100, origin: '국내산', spec: '1개 · 약 800g' },
-  baechu:  { nm: '배추',     cat: 'veg',   icon: 'cabbage', price: 3000,  unit: '/포기', perG: 1.5, trend: ['dn', 6], popular: false, cookable: true,  method: '생',   defG: 150, origin: '국내산', spec: '1포기 · 약 2kg' },
-  yangbaechu:{ nm: '양배추', cat: 'veg',   icon: 'cabbage', price: 3500,  unit: '/통',   perG: 2.2, trend: ['dn', 2], popular: false, cookable: true,  method: '볶기', defG: 80,  origin: '국내산', spec: '1통' },
+  baechu:  { nm: '배추',     cat: 'veg',   icon: 'cabbage', price: 3000,  unit: '/포기', perG: 1.5, trend: ['dn', 6], popular: false, cookable: true, yieldBy: { 삶기: 72 }, yieldSrc: '표12 06234',  method: '생',   defG: 150, origin: '국내산', spec: '1포기 · 약 2kg' },
+  yangbaechu:{ nm: '양배추', cat: 'veg',   icon: 'cabbage', price: 3500,  unit: '/통',   perG: 2.2, trend: ['dn', 2], popular: false, cookable: true, yieldBy: { 볶기: 80 }, yieldSrc: '표12 06333',  method: '볶기', defG: 80,  origin: '국내산', spec: '1통' },
   kongnamul:{ nm: '콩나물',  cat: 'veg',   icon: 'sprout',  price: 3000,  unit: '/kg',   perG: 3,   trend: ['dn', 2], popular: true,  cookable: true,  method: '삶기', defG: 80,  origin: '국내산', spec: '국산콩 · 1kg' },
-  neutari: { nm: '느타리버섯',cat: 'veg',   icon: 'mushroom',price: 6000,  unit: '/kg',   perG: 6,   trend: ['fl', 0], popular: false, cookable: true,  method: '볶기', defG: 60,  origin: '국내산', spec: '1kg' },
+  neutari: { nm: '느타리버섯',cat: 'veg',   icon: 'mushroom',price: 6000,  unit: '/kg',   perG: 6,   trend: ['fl', 0], popular: false, cookable: true, yieldBy: { 볶기: 90, 삶기: 88 }, yieldSrc: '표12 08046·08017 만가닥버섯 근사',  method: '볶기', defG: 60,  origin: '국내산', spec: '1kg' },
   cheongyang:{ nm: '청양고추',cat: 'veg',  icon: 'pepper',  price: 12000, unit: '/kg',   perG: 12,  trend: ['up', 3], popular: false, cookable: true,  method: '생',   defG: 10,  origin: '국내산', spec: '1kg' },
   buchu:   { nm: '부추',     cat: 'veg',   icon: 'scallion',price: 8000,  unit: '/kg',   perG: 8,   trend: ['fl', 0], popular: false, cookable: true,  method: '생',   defG: 30,  origin: '국내산', spec: '1단' },
 
@@ -63,11 +63,11 @@ export const PRODUCTS = {
   salt:    { nm: '소금',     cat: 'sauce', icon: 'sack',    price: 2000,  unit: '/kg',   perG: 2,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 8,   origin: '국내산', spec: '천일염 · 1kg' },
 
   // ── 기타 ──
-  egg:     { nm: '계란',     cat: 'etc',   icon: 'egg',     price: 6000,  unit: '/30구', perG: 4,   trend: ['up', 5], popular: true,  cookable: true,  method: '삶기', defG: 50,  origin: '국내산', spec: '특란 · 30구', img: '/img/egg.webp' },
+  egg:     { nm: '계란',     cat: 'etc',   icon: 'egg',     price: 6000,  unit: '/30구', perG: 4,   trend: ['up', 5], popular: true,  cookable: true, yieldBy: { 볶기: 95, 삶기: 100 }, yieldSrc: '표12 12022·12005',  method: '삶기', defG: 50,  origin: '국내산', spec: '특란 · 30구', img: '/img/egg.webp' },
   rice:    { nm: '쌀(밥)',   cat: 'etc',   icon: 'rice',    price: 3000,  unit: '/kg',   perG: 3,   trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 100, origin: '국내산', spec: '백미 · 1kg', img: '/img/rice.webp' },
   dubu:    { nm: '두부',     cat: 'etc',   icon: 'tofu',    price: 2000,  unit: '/모',   perG: 6,   trend: ['fl', 0], popular: true,  cookable: true,  method: '삶기', defG: 120, origin: '국내산', spec: '찌개용 · 300g' },
   kimchi:  { nm: '배추김치', cat: 'etc',   icon: 'cabbage', price: 6000,  unit: '/kg',   perG: 6,   trend: ['fl', 0], popular: true,  cookable: false, method: '생',   defG: 100, origin: '국내산', spec: '포기김치 · 1kg' },
-  dangmyeon:{ nm: '당면',    cat: 'etc',   icon: 'noodle',  price: 5000,  unit: '/kg',   perG: 5,   trend: ['fl', 0], popular: false, cookable: true,  method: '삶기', defG: 60,  origin: '국내산', spec: '1kg' },
+  dangmyeon:{ nm: '당면',    cat: 'etc',   icon: 'noodle',  price: 5000,  unit: '/kg',   perG: 5,   trend: ['fl', 0], popular: false, cookable: true, yieldBy: { 삶기: 440 }, yieldSrc: '표12 02061 녹두당면',  method: '삶기', defG: 60,  origin: '국내산', spec: '1kg' },
   ramyeon: { nm: '라면사리', cat: 'etc',   icon: 'noodle',  price: 700,   unit: '/개',   perG: 7,   trend: ['fl', 0], popular: false, cookable: true,  method: '삶기', defG: 100, origin: '국내산', spec: '5개입' },
   flour:   { nm: '밀가루',   cat: 'etc',   icon: 'sack',    price: 1500,  unit: '/kg',   perG: 1.5, trend: ['fl', 0], popular: false, cookable: false, method: '생',   defG: 50,  origin: '수입 원료', spec: '중력분 · 1kg' },
   oil:     { nm: '식용유',   cat: 'etc',   icon: 'oil',     price: 6000,  unit: '/1.8L', perG: 3,   trend: ['up', 2], popular: false, cookable: false, method: '생',   defG: 10,  origin: '수입 원료', spec: '콩기름 · 1.8L', img: '/img/oil.webp' },

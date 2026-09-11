@@ -174,9 +174,18 @@ export function yieldSourceOf(item) {
 }
 export const YIELD_SOURCE_LABEL = {
   measured: '우리 가게에서 직접 잰 값',
-  product: '식품성분표 수분값으로 역산',
+  product: '공식 수율표 기준',
   standard: '조리법 표준 참고값',
   raw: '조리 안 함',
+}
+
+/* 수율 데이터 출처 — 표기 의무가 있다.
+   일본 문부과학성 이용규약은 상업적 이용을 허용하되 출처 표시와
+   가공 사실 표시를 요구한다. USDA 자료는 CC0 라 법적 의무는 없지만 함께 밝힌다. */
+export const YIELD_ATTRIBUTION = {
+  primary: '日本食品標準成分表（八訂）増補2023年 표12 「조리방법의 개요 및 중량변화율표」 (일본 문부과학성)',
+  secondary: 'USDA Table of Cooking Yields for Meat and Poultry, Release 2 (2014) · CC0 1.0',
+  note: '재료·조리법을 우리 앱 분류에 맞춰 선택·대응시킨 가공 데이터입니다. 원문 그대로가 아닙니다.',
 }
 
 /* 저울 두 번으로 수율 구하기 — 원물 g, 조리 후 g.
