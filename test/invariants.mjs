@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -99,7 +99,31 @@ export function runInvariants() {
   ok('모든 재료가 출처를 갖는다', exp.rows.every((r) => r.yieldSource && r.perGSource))
   ok('빈 입력에서도 안전', (() => { try { const e = explainCost([], 9000); return e.food === 0 } catch { return false } })())
 
-  log.push('[9] 빈 장바구니에서도 죽지 않는다')
+  log.push('[9] 안전마진은 가게마다 달라야 한다')
+  const good = safeMarginOf({ dailyFixed: 200000, dailyGoal: 50000, bowls: 120, avgPrice: 9000 })
+  const thin = safeMarginOf({ dailyFixed: 242308, dailyGoal: 100000, bowls: 55, avgPrice: 8500 })
+  const none = safeMarginOf({ dailyFixed: 200000, dailyGoal: 0, bowls: 0, avgPrice: 0 })
+  const cheap = safeMarginOf({ dailyFixed: 50000, dailyGoal: 0, bowls: 100, avgPrice: 9000 })
+  ok(`고정비가 낮으면 안전선도 낮다 (${cheap.pct}% < ${good.pct}%)`, cheap.pct < good.pct)
+  ok(`기록이 없으면 기본 30%로 물러난다 (${none.pct}%)`, none.pct === 30 && none.basis === 'default')
+  ok(`도달 불가면 상한에서 멈춘다 (${thin.pct}% = 상한)`, thin.reachable === false && thin.pct === SAFE_MARGIN_CEIL)
+  ok(`도달 불가면 필요 판매량을 알려준다 (${thin.needBowls}그릇)`, thin.needBowls > thin.bowls)
+  ok(`하한 아래로 내려가지 않는다 (${cheap.pct}% >= ${SAFE_MARGIN_FLOOR}%)`, cheap.pct >= SAFE_MARGIN_FLOOR)
+  ok('매출이 0이면 기본값', safeMarginOf({ dailyFixed: 100000, bowls: 0, avgPrice: 9000 }).basis === 'default')
+
+  log.push('[10] 신호등 기준선도 가게를 따른다')
+  ok('안전선 23%면 25%는 건강', sig(25, 23) === 'g')
+  ok('안전선 40%면 25%는 위험', sig(25, 40) === 'b')
+  ok('안전선 30%면 25%는 주의', sig(25, 30) === 'w')
+  ok('기준선을 안 주면 종전 30% 기준', sig(31) === 'g' && sig(25) === 'w' && sig(19) === 'b')
+
+  log.push('[11] 인건비·가스는 가게마다 바꿀 수 있다')
+  const base = fixedOverheadFor({})
+  const mine = fixedOverheadFor({ labor: 1500, gas: 700, packaging: 500 })
+  ok(`기본값 ${base}원 -> 우리 가게 ${mine}원`, mine === 1500 + 700 + 500 && base !== mine)
+  ok('일부만 바꿔도 나머지는 기본값', fixedOverheadFor({ labor: 1000 }) === 1000 + 490 + 300)
+
+  log.push('[12] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
 

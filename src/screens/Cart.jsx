@@ -8,7 +8,7 @@ import { summarize, costOf, yieldOf, yieldSourceOf, YIELD_SOURCE_LABEL, yieldFro
 
 export default function Cart() {
   const nav = useNavigate()
-  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare, setMeasuredYield, clearMeasuredYield, ingredientPrices } = useStore()
+  const { currentStore, build, setGrams, setMethod, setItemPerG, resetItemPerG, removeItem, toast, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare, setMeasuredYield, clearMeasuredYield, ingredientPrices, setLabor, setGas } = useStore()
   const [ovhOpen, setOvhOpen] = useState(false)
   const [bumped, setBumped] = useState(null)
   const [editId, setEditId] = useState(null)
@@ -228,6 +228,22 @@ export default function Cart() {
                   <button aria-label="감소" onClick={() => setPackaging(costOpts.packaging - 100)}><Icon name="minus" size={14} stroke={2.4} /></button>
                   <span className="v num">{won(costOpts.packaging)}<i>원</i></span>
                   <button aria-label="증가" onClick={() => setPackaging(costOpts.packaging + 100)}><Icon name="plus" size={14} stroke={2.4} /></button>
+                </div>
+              </div>
+              <div className="oe-row">
+                <span className="oe-lab">그릇당 인건비</span>
+                <div className="stepper oe-stepper">
+                  <button aria-label="인건비 감소" onClick={() => setLabor((costOpts.labor ?? 880) - 50)}><Icon name="minus" size={14} stroke={2.4} /></button>
+                  <span className="v num">{won(costOpts.labor ?? 880)}<i>원</i></span>
+                  <button aria-label="인건비 증가" onClick={() => setLabor((costOpts.labor ?? 880) + 50)}><Icon name="plus" size={14} stroke={2.4} /></button>
+                </div>
+              </div>
+              <div className="oe-row">
+                <span className="oe-lab">가스·부자재</span>
+                <div className="stepper oe-stepper">
+                  <button aria-label="가스비 감소" onClick={() => setGas((costOpts.gas ?? 490) - 50)}><Icon name="minus" size={14} stroke={2.4} /></button>
+                  <span className="v num">{won(costOpts.gas ?? 490)}<i>원</i></span>
+                  <button aria-label="가스비 증가" onClick={() => setGas((costOpts.gas ?? 490) + 50)}><Icon name="plus" size={14} stroke={2.4} /></button>
                 </div>
               </div>
               <p className="oe-hint">

@@ -8,7 +8,7 @@ import { sig } from '../lib/calc'
    딥그린 헤더(브랜드·인사·전체 현황) + '내 가게' 카드 리스트. */
 export default function Stores() {
   const nav = useNavigate()
-  const { stores, enterStore, currentStoreId, toast } = useStore()
+  const { stores, enterStore, currentStoreId, toast, safeMargin } = useStore()
 
   const open = (id) => { enterStore(id); nav('/app/menu') }
   const info = (s) => {
@@ -16,7 +16,7 @@ export default function Stores() {
     const avg = n ? Math.round(s.menus.reduce((a, m) => a + m.margin, 0) / n) : 0
     const bowls = s.menus.reduce((a, m) => a + (m.pop || 0), 0)
     const photo = (s.menus.find((m) => m.img) || {}).img || null
-    return { n, avg, bowls, photo, s: sig(avg) }
+    return { n, avg, bowls, photo, s: sig(avg, safeMargin.pct) }
   }
   const totalMenus = stores.reduce((a, s) => a + s.menus.length, 0)
   const allMargins = stores.flatMap((s) => s.menus.map((m) => m.margin))

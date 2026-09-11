@@ -20,6 +20,9 @@ export const DELIVERY_RATE = 0.12          // 배달앱 수수료 (판매가 정
    기본값은 종전 동작과 동일(전부 배달·정액 0)로 두고, 사장님이 우리 가게 실제 비중을 넣게 한다. */
 export const DELIVERY_FLAT = 0             // 건당 정액 배달비(원)
 export const DELIVERY_SHARE = 1            // 매출 중 배달 주문 비중 (0~1)
+/* 그릇당 부대비용 기본값 — 전부 '기본값'일 뿐이다.
+   백반집과 스테이크집의 그릇당 인건비가 같을 리 없다.
+   사장님이 우리 가게 값을 넣으면 그 값을 쓴다(costOpts). */
 export const PACKAGING = 300
 export const LABOR = 880
 export const GAS = 490
@@ -38,11 +41,54 @@ export const perGText = (v) => {
 // 큰 금액은 '만원' 단위로 (한 달 고정비·목표 등)
 export const manwon = (n) => `${won(Math.round(n / 10000))}만원`
 
-// 신호등: ≥30 초록 / 20~29 앰버 / <20 빨강
-export const sig = (m) => (m >= 30 ? 'g' : m >= 20 ? 'w' : 'b')
+/* ── 안전마진 ──────────────────────────────────────────────────────────
+   지금까지 모든 가게에 30%를 들이댔다. 그런데 월세 300만원 가게와
+   800만원 가게의 안전선이 같을 리 없다. 그 가게 고정비에서 역산한다.
+
+     하루에 N그릇, 평균 판매가 P로 팔 때
+     본전:        N x P x 마진율 = 하루 고정비
+     → 필요 마진 = (하루 고정비 + 하루 목표) ÷ (N x P)
+
+   판매량·판매가를 모르면 업계 통념인 30%로 물러난다(그때는 그렇게 밝힌다). */
+export const DEFAULT_SAFE_MARGIN = 30
+
+/* 외식업에서 실제로 도달 가능한 마진의 현실적 상한.
+   이걸 넘는 값이 나오면 그건 '마진을 올려야 한다'가 아니라
+   '지금 판매량으로는 고정비를 못 맞춘다'는 뜻이다. 그렇게 말해줘야 한다. */
+export const SAFE_MARGIN_CEIL = 55
+export const SAFE_MARGIN_FLOOR = 15
+
+export function safeMarginOf({ dailyFixed, dailyGoal = 0, bowls, avgPrice }) {
+  const revenue = (bowls || 0) * (avgPrice || 0)
+  if (!(revenue > 0) || !(dailyFixed > 0)) {
+    return { pct: DEFAULT_SAFE_MARGIN, basis: 'default', reachable: true }
+  }
+  const target = dailyFixed + Math.max(0, dailyGoal)
+  const need = (target / revenue) * 100
+  const reachable = need <= SAFE_MARGIN_CEIL
+
+  if (!reachable) {
+    /* 판매량이 모자란 경우. 도달 가능한 마진(상한)으로 되돌리고,
+       그 마진에서 고정비를 맞추려면 몇 그릇이 필요한지 함께 알려준다. */
+    const needBowls = Math.ceil(target / (avgPrice * (SAFE_MARGIN_CEIL / 100)))
+    return {
+      pct: SAFE_MARGIN_CEIL, basis: 'store', reachable: false,
+      rawNeed: Math.round(need), needBowls, bowls, avgPrice,
+      revenue: Math.round(revenue), shortBowls: Math.max(0, needBowls - bowls),
+    }
+  }
+  const pct = Math.round(Math.max(SAFE_MARGIN_FLOOR, need))
+  return { pct, basis: 'store', reachable: true, revenue: Math.round(revenue), bowls, avgPrice }
+}
+
+/* 신호등 — 기준선은 가게마다 다르다. safe를 주지 않으면 종전대로 30%.
+   주의 구간은 안전선 아래 10%p. */
+export const sig = (m, safe = DEFAULT_SAFE_MARGIN) =>
+  (m >= safe ? 'g' : m >= safe - 10 ? 'w' : 'b')
 
 // 부대비용 (판매가·가게 설정 연동)
-export const fixedOverheadFor = (opts = {}) => (opts.packaging ?? PACKAGING) + LABOR + GAS
+export const fixedOverheadFor = (opts = {}) =>
+  (opts.packaging ?? PACKAGING) + (opts.labor ?? LABOR) + (opts.gas ?? GAS)
 export const deliveryFeeFor = (price, opts = {}) => {
   const rate = opts.rate ?? DELIVERY_RATE
   const flat = opts.flatFee ?? DELIVERY_FLAT
@@ -61,8 +107,8 @@ export const overheadBreakdown = (price, opts = {}) => {
   return [
   { k: label, v: deliveryFeeFor(price, opts) },
   { k: '포장비', v: opts.packaging ?? PACKAGING },
-  { k: '조리 인건비', v: LABOR },
-  { k: '가스·부자재', v: GAS },
+  { k: '조리 인건비', v: opts.labor ?? LABOR },
+  { k: '가스·부자재', v: opts.gas ?? GAS },
   ]
 }
 
@@ -248,7 +294,7 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
   const s = summarize(items, price, opts)
   const { food, profit, margin } = s
   const rate = opts.rate ?? DELIVERY_RATE
-  const level = sig(margin)
+  const level = sig(margin, opts.safeMargin > 0 ? opts.safeMargin : DEFAULT_SAFE_MARGIN)
 
   const V = {
     g: { title: '마진이 건강해요', line: '이 가격, 자신 있게 받으셔도 돼요.', label: '마진을 더 높이고 싶다면' },
@@ -264,8 +310,9 @@ export function diagnose(build, opts = {}, dailyFixed = DAILY_FIXED) {
 
   const actions = []
 
-  // 1) 판매가 조정 (현재 목표 미달일 때만)
-  const tm = margin < 30 ? 30 : 35
+  // 1) 판매가 조정 — 목표는 '우리 가게 안전선'. 넘었으면 5%p 더.
+  const safe = opts.safeMargin > 0 ? opts.safeMargin : 30
+  const tm = margin < safe ? safe : safe + 5
   const tp = targetPrice(tm)
   if (tp && tp > price) actions.push({ kind: 'price', icon: 'money', label: `판매가를 ${won(tp)}원으로 올리면`, effect: `마진 ${tm}%`, delta: tm - margin })
 

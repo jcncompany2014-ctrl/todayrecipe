@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useRef } from 'react'
 import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
-import { overheadFor } from '../lib/calc'
+import { overheadFor, safeMarginOf } from '../lib/calc'
 import { usePersistentState } from './persist'
 
 /* 복원값 검증 — 손상되거나 옛 구조면 조용히 시드로 되돌린다.
@@ -12,7 +12,7 @@ const okStores = (v) => Array.isArray(v) && v.length > 0
 const okBuild = (v) => v && typeof v === 'object' && Array.isArray(v.items) && typeof v.price === 'number'
 const okNum = (v) => typeof v === 'number' && isFinite(v) && v >= 0
 /* 부대비용 기본값 — 종전 동작과 동일(전부 배달·정액 0). 사장님이 우리 가게 실제 비중을 넣으면 그때부터 달라진다. */
-const DEFAULT_COST_OPTS = { rate: 0.12, packaging: 300, flatFee: 0, deliveryShare: 1 }
+const DEFAULT_COST_OPTS = { rate: 0.12, packaging: 300, flatFee: 0, deliveryShare: 1, labor: 880, gas: 490 }
 const okMap = (v) => !!v && typeof v === 'object' && !Array.isArray(v)
 const okBool = (v) => typeof v === 'boolean'
 
@@ -131,6 +131,9 @@ export function StoreProvider({ children }) {
   const setFlatFee = useCallback((v) => patchCostOpts({ flatFee: Math.max(0, Math.round(v)) }), [patchCostOpts])
   // 매출 중 배달 비중 0~1 — 홀 전용이면 0으로 두면 배달비가 아예 안 붙는다
   const setDeliveryShare = useCallback((v) => patchCostOpts({ deliveryShare: Math.min(1, Math.max(0, v)) }), [patchCostOpts])
+  // 그릇당 인건비·가스 — 백반집과 스테이크집이 같을 리 없다
+  const setLabor = useCallback((v) => patchCostOpts({ labor: Math.max(0, Math.round(v)) }), [patchCostOpts])
+  const setGas = useCallback((v) => patchCostOpts({ gas: Math.max(0, Math.round(v)) }), [patchCostOpts])
 
   // 토스트
   const [toastMsg, setToastMsg] = useState(null)
@@ -303,12 +306,24 @@ export function StoreProvider({ children }) {
     return out
   }, [salesLog, currentStoreId, todayKey])
 
+  /* 우리 가게 안전마진 — 업계 통념 30%가 아니라 이 가게 고정비에서 역산한다.
+     판매량은 최근 실제 기록을 우선하고, 없으면 메뉴판의 예상 판매량을 쓴다. */
+  const avgPrice = menus.length ? Math.round(menus.reduce((a, m) => a + m.price, 0) / menus.length) : 0
+  const recent = recentDays(7).filter((d) => d.count > 0)
+  const bowlsPerDay = recent.length
+    ? Math.round(recent.reduce((a, d) => a + d.count, 0) / recent.length)
+    : menus.reduce((a, m) => a + (m.pop || 0), 0)
+  const safeMargin = safeMarginOf({ dailyFixed, dailyGoal, bowls: bowlsPerDay, avgPrice })
+  // 계산 함수들이 opts.safeMargin 을 보도록 함께 실어 보낸다
+  const costOptsWithSafe = { ...costOpts, safeMargin: safeMargin.pct }
+
   const value = {
     onboarded, setOnboarded,
     stores, currentStore, currentStoreId, enterStore,
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
-    menus, build, costOpts, setRate, setPackaging, setFlatFee, setDeliveryShare,
+    menus, build, costOpts: costOptsWithSafe, setRate, setPackaging, setFlatFee, setDeliveryShare, setLabor, setGas,
+    safeMargin,
     ingredientPrices, measuredYields, setMeasuredYield, clearMeasuredYield,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,

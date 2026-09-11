@@ -2371,3 +2371,13 @@ a{color:inherit;text-decoration:none}
 }
 .trend-empty b{display:block;font-size:14.5px;font-weight:800;color:var(--ink-soft)}
 .trend-empty span{display:block;margin-top:8px;font-size:12.5px;font-weight:500;color:var(--muted);line-height:1.6}
+
+/* ---------- 안전마진의 근거를 밝힌다 ---------- */
+.safe-basis{
+  margin:0 var(--gut,18px) 12px;padding:11px 14px;border-radius:var(--r-block,14px);
+  background:var(--sand);color:var(--sand-ink);
+  font-size:12px;font-weight:600;line-height:1.6;word-break:keep-all;
+}
+.safe-basis b{font-weight:800}
+.safe-basis.warn{background:rgba(208,75,63,.08);color:var(--bad-1)}
+.safe-basis.warn b{color:var(--bad-1)}

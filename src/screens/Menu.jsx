@@ -9,7 +9,7 @@ import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
 
 export default function Menu() {
   const nav = useNavigate()
-  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu, newBuild } = useStore()
+  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu, newBuild, safeMargin } = useStore()
   const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
   const [editMenu, setEditMenu] = useState(null)
@@ -95,10 +95,20 @@ export default function Menu() {
 
       {/* 신호등 범례 */}
       <div className="legend-row fade" style={{ animationDelay: '.08s' }}>
-        <span className="lg-item"><i className="dot g-bg" />건강 30% 이상</span>
-        <span className="lg-item"><i className="dot w-bg" />주의 20~29%</span>
-        <span className="lg-item"><i className="dot b-bg" />위험 20% 미만</span>
+        <span className="lg-item"><i className="dot g-bg" />건강 {safeMargin.pct}% 이상</span>
+        <span className="lg-item"><i className="dot w-bg" />주의 {Math.max(0, safeMargin.pct - 10)}~{safeMargin.pct - 1}%</span>
+        <span className="lg-item"><i className="dot b-bg" />위험 {Math.max(0, safeMargin.pct - 10)}% 미만</span>
       </div>
+
+      {/* 안전선의 근거 — 왜 이 숫자인지 밝힌다 */}
+      <p className={`safe-basis fade${safeMargin.reachable === false ? ' warn' : ''}`}>
+        {safeMargin.basis !== 'store'
+          ? <>안전선 <b className="num">{safeMargin.pct}%</b> · 판매량이 쌓이면 우리 가게 고정비로 다시 계산해 드려요</>
+          : safeMargin.reachable === false
+            ? <>지금 판매량으론 고정비를 맞추기 어려워요. 계산상 마진 <b className="num">{safeMargin.rawNeed}%</b>가 필요한데 외식업에서 나오기 힘든 수치예요.
+                <b> 마진보다 판매량이 문제</b>예요 — 마진 {safeMargin.pct}%로 본전을 맞추려면 하루 <b className="num">{safeMargin.needBowls}그릇</b>(지금보다 {safeMargin.shortBowls}그릇 더)이 필요해요.</>
+            : <>우리 가게 안전선 <b className="num">{safeMargin.pct}%</b> · 하루 고정비 {won(dailyFixed)}원{monthlyGoal > 0 && <> + 목표 {won(dailyGoal)}원</>}을 하루 {safeMargin.bowls}그릇 × 평균 {won(safeMargin.avgPrice)}원으로 나눈 값이에요</>}
+      </p>
 
       {/* 메뉴 리스트 */}
       <div className="menu-sec-head">
@@ -118,7 +128,7 @@ export default function Menu() {
           </div>
         )}
         {sorted.map((m, i) => {
-          const s = sig(m.margin)
+          const s = sig(m.margin, safeMargin.pct)
           const profit = round10(profitOf(m))
           return (
             <div key={m.id} className="mcard fade" style={{ animationDelay: `${0.1 + i * 0.04}s` }} onClick={() => openMenu(m)}>

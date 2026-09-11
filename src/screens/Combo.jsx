@@ -10,7 +10,7 @@ const round100 = (n) => Math.round(n / 100) * 100
 /* 세트·콤보 메뉴 — 여러 메뉴를 묶어 세트가를 정하고, 할인이 마진을 얼마나 깎는지 바로 확인. */
 export default function Combo() {
   const nav = useNavigate()
-  const { menus } = useStore()
+  const { menus, safeMargin } = useStore()
   const [picked, setPicked] = useState([])
   const [price, setPrice] = useState(0)
   const [touched, setTouched] = useState(false)
@@ -37,7 +37,7 @@ export default function Combo() {
   // 마진 30% 지키는 최저 세트가
   const minPrice30 = round100(sumCost / 0.7)
   const maxDiscount = Math.max(0, sumPrice - minPrice30)
-  const s = sig(comboMargin)
+  const s = sig(comboMargin, safeMargin.pct)
 
   const bump = (d) => { setTouched(true); setPrice((p) => Math.max(0, round100(p + d))) }
   const ready = chosen.length >= 2

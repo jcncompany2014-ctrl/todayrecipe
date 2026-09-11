@@ -57,7 +57,7 @@ function CostDonut({ data }) {
 
 export default function Result() {
   const nav = useNavigate()
-  const { build, currentStore, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast } = useStore()
+  const { build, currentStore, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast, safeMargin } = useStore()
   const hasItems = build.items.length > 0
 
   const foodFixed = useMemo(
@@ -74,7 +74,7 @@ export default function Result() {
   const cost = foodFixed + overheadFor(price, costOpts)
   const profit = price - cost
   const margin = price > 0 ? Math.round((profit / price) * 100) : 0
-  const s = sig(margin)
+  const s = sig(margin, safeMargin.pct)
   const bowls = breakeven(profit, dailyFixed)
   const gp = goalPlan(profit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산: 본전·목표달성 그릇 수
   const COOK_VERB = { 볶기: '볶으면', 삶기: '삶으면', 튀김: '튀기면' }
@@ -124,7 +124,7 @@ export default function Result() {
     if (!foodFixed) return []
     return [5, 10, -5].map((pct) => {
       const m = marginWithFoodShift(foodFixed, price, pct, costOpts)
-      return { pct, m, d: m - margin, s: sig(m) }
+      return { pct, m, d: m - margin, s: sig(m, safeMargin.pct) }
     })
   }, [foodFixed, price, margin, costOpts])
 
