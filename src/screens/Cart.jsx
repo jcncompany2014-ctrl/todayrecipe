@@ -74,6 +74,7 @@ export default function Cart() {
             <div className="ings">
               {build.items.map((it) => {
                 const p = PRODUCTS[it.id]
+                if (!p) return null   // 카탈로그에서 사라진 재료(지운 직접 추가 재료 등) — 화면을 죽이지 않는다
                 return (
                   <div key={it.id} className="ing">
                     <button className="ing-x" aria-label="빼기" onClick={() => { removeItem(it.id); toast(`<b>${p.nm}</b> 뺐어요`) }}>

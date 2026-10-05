@@ -3,7 +3,20 @@ import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
 import { overheadFor, safeMarginOf } from '../lib/calc'
-import { usePersistentState } from './persist'
+import { usePersistentState, load, save, clearAll, storageAvailable, SCHEMA } from './persist'
+
+/* ── 사장님이 직접 추가한 재료 ─────────────────────────────────────────
+   계산 엔진(calc.js)은 카탈로그(PRODUCTS)만 본다. 그래서 직접 추가한 재료를
+   PRODUCTS에 '등록'해 엔진이 똑같이 계산하게 만든다.
+   첫 렌더 전에 등록돼 있어야 하므로 모듈 로드 시점에 저장본을 읽어 바로 붙인다. */
+const CUSTOM_KEY = 'customProducts'
+const registered = new Set()
+function registerCustom(map) {
+  // 지워진 것은 카탈로그에서도 뺀다
+  registered.forEach((id) => { if (!map || !map[id]) { delete PRODUCTS[id]; registered.delete(id) } })
+  Object.entries(map || {}).forEach(([id, p]) => { PRODUCTS[id] = p; registered.add(id) })
+}
+registerCustom(load(CUSTOM_KEY, {}))
 
 /* 복원값 검증 — 손상되거나 옛 구조면 조용히 시드로 되돌린다.
    저장된 값을 그대로 믿으면, 한 번 깨진 값이 앱을 영구히 죽인다. */
@@ -50,6 +63,31 @@ export function StoreProvider({ children }) {
       : s)))
   }, [currentStoreId])
   const enterStore = useCallback((id) => setCurrentStoreId(id), [])
+
+  /* ── 사업장 추가·수정·삭제 ─────────────────────────────────────────
+     예전엔 '사업장 추가'를 누르면 "곧 지원돼요" 토스트만 떴다. */
+  const addStore = useCallback(({ nm, type = '', loc = '', costOpts } = {}) => {
+    const id = 'st_' + Date.now().toString(36)
+    const store = { id, nm: (nm || '새 가게').trim().slice(0, 24), type, loc, menus: [] }
+    if (costOpts) store.costOpts = costOpts
+    setStores((all) => [...all, store])
+    setCurrentStoreId(id)
+    return id
+  }, [setStores, setCurrentStoreId])
+
+  const updateStore = useCallback((id, patch) => {
+    setStores((all) => all.map((s) => (s.id === id ? { ...s, ...patch } : s)))
+  }, [setStores])
+
+  // 마지막 한 곳은 지울 수 없다 — 가게가 0개면 앱이 설 자리가 없다
+  const deleteStore = useCallback((id) => {
+    setStores((all) => {
+      if (all.length <= 1) return all
+      const next = all.filter((s) => s.id !== id)
+      if (id === currentStoreId) setCurrentStoreId(next[0].id)
+      return next
+    })
+  }, [setStores, currentStoreId, setCurrentStoreId])
   // 현재 빌드 중인 메뉴 (마트→장바구니→결과 공유 상태)
   const [build, setBuild] = usePersistentState('build', () => clone(DEFAULT_BUILD), okBuild)
   // 온보딩 — 앱 첫 진입 시 1회(인메모리, 사양상 저장 없음). '건너뛰기'/'시작하기'로 해제.
@@ -213,9 +251,15 @@ export function StoreProvider({ children }) {
   const setBuildMeta = useCallback((meta) => setBuild((b) => ({ ...b, ...meta })), [])
 
   // 새 메뉴 시작 (+ FAB)
-  const newBuild = useCallback(() => {
-    setBuild({ id: 'm' + Date.now(), nm: '새 메뉴', price: 9000, icon: 'donbap', items: [] })
-  }, [])
+  const newBuild = useCallback((meta = {}) => {
+    setBuild({
+      id: 'm' + Date.now(),
+      nm: (meta.nm || '새 메뉴').trim().slice(0, 24),
+      price: meta.price > 0 ? Math.round(meta.price) : 9000,
+      icon: meta.icon || 'donbap',
+      items: [],
+    })
+  }, [setBuild])
 
   // 저장된 메뉴 열기 — 저장된 레시피(items)가 있으면 그대로 복원, 없으면 원가 역산
   const loadMenu = useCallback((menu) => {
@@ -237,7 +281,9 @@ export function StoreProvider({ children }) {
   // 메뉴 편집(이름·사진 등) — 메뉴판에서 바로 수정
   const updateMenu = useCallback((id, patch) => {
     setMenus((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)))
-  }, [setMenus])
+    // 지금 장바구니·결과에서 보고 있는 메뉴라면 거기에도 같은 이름·가격을 반영
+    setBuild((b) => (b.id === id ? { ...b, ...('nm' in patch ? { nm: patch.nm } : {}), ...('price' in patch ? { price: patch.price } : {}) } : b))
+  }, [setMenus, setBuild])
 
   // 메뉴 복제 — 원본 바로 아래에 '(복사)'로
   const duplicateMenu = useCallback((id) => {
@@ -317,6 +363,104 @@ export function StoreProvider({ children }) {
   // 계산 함수들이 opts.safeMargin 을 보도록 함께 실어 보낸다
   const costOptsWithSafe = { ...costOpts, safeMargin: safeMargin.pct }
 
+  /* ── 재료 직접 추가 ────────────────────────────────────────────────
+     카탈로그 50종에 없는 재료(우리 가게만 쓰는 소스, 특수 부위 등)를 사장님이
+     직접 넣는다. 계산 엔진이 그대로 쓰도록 PRODUCTS에 등록한다. */
+  const [customProducts, setCustomProductsRaw] = usePersistentState(CUSTOM_KEY, () => load(CUSTOM_KEY, {}), okMap)
+  const setCustomProducts = useCallback((updater) => {
+    setCustomProductsRaw((cur) => {
+      const next = typeof updater === 'function' ? updater(cur) : updater
+      registerCustom(next)   // 엔진이 다음 렌더에서 바로 보도록 (멱등이라 두 번 불려도 안전)
+      return next
+    })
+  }, [setCustomProductsRaw])
+
+  const CAT_ICON = { meat: 'meat', sea: 'fish', veg: 'sprout', sauce: 'jar', etc: 'sack' }
+  const addProduct = useCallback(({ nm, cat = 'etc', perG, cookable = false, method = '볶기', defG = 100 }) => {
+    const name = (nm || '').trim().slice(0, 20)
+    const unit = Number(perG)
+    if (!name || !(unit > 0)) return null
+    const id = 'c_' + Date.now().toString(36)
+    const safeCat = CAT_ICON[cat] ? cat : 'etc'
+    const product = {
+      nm: name, cat: safeCat, icon: CAT_ICON[safeCat],
+      price: Math.round(unit * 1000), unit: '/kg', perG: Math.round(unit * 100) / 100,
+      trend: ['fl', 0], cookable: !!cookable, method: cookable ? method : '생',
+      defG: Math.max(1, Math.round(defG)), origin: '직접 추가', spec: '우리 가게 등록 재료', custom: true,
+    }
+    setCustomProducts((m) => ({ ...m, [id]: product }))
+    return id
+  }, [setCustomProducts])
+
+  const updateProduct = useCallback((id, patch) => {
+    setCustomProducts((m) => (m[id] ? { ...m, [id]: { ...m[id], ...patch } } : m))
+  }, [setCustomProducts])
+
+  // 어느 메뉴든 쓰고 있으면 지우지 않는다 — 지우면 그 메뉴가 열리지 않는다
+  const productInUse = useCallback((id) => {
+    if (build.items.some((it) => it.id === id)) return '지금 담고 있는 메뉴'
+    for (const st of stores) {
+      const m = st.menus.find((x) => (x.items || []).some((it) => it.id === id))
+      if (m) return `${st.nm} · ${m.nm}`
+    }
+    return null
+  }, [build, stores])
+
+  const deleteProduct = useCallback((id) => {
+    const used = productInUse(id)
+    if (used) return { ok: false, usedBy: used }
+    setCustomProducts((m) => { const { [id]: _, ...rest } = m; return rest })
+    return { ok: true }
+  }, [productInUse, setCustomProducts])
+
+  /* ── 첫 실행: 내 가게로 시작 ─────────────────────────────────────────
+     예전엔 누구나 '행복분식'(남의 가게)으로 시작했다. 이제 내 가게를 만든다.
+     예시 가게는 둘러보기용으로만 남긴다. */
+  const isSample = stores.some((s) => SEED_STORES.some((x) => x.id === s.id))
+
+  const startMyStore = useCallback(({ nm, type = '', monthlyFixed: mf, workDays: wd, deliveryShare = 1 } = {}) => {
+    const id = 'st_' + Date.now().toString(36)
+    const store = {
+      id, nm: (nm || '우리 가게').trim().slice(0, 24), type, loc: '', menus: [],
+      costOpts: { ...DEFAULT_COST_OPTS, deliveryShare: Math.min(1, Math.max(0, deliveryShare)) },
+    }
+    setStores([store])                      // 예시 가게는 치우고 내 가게만
+    setCurrentStoreId(id)
+    if (mf > 0) setMF(mf)
+    if (wd > 0) setWD(wd)
+    setBuild({ id: 'm' + Date.now(), nm: '새 메뉴', price: 9000, icon: 'donbap', items: [] })
+    setSalesLog({})
+    setOnboardedState(true)
+    return id
+  }, [setStores, setCurrentStoreId, setMF, setWD, setBuild, setSalesLog, setOnboardedState])
+
+  const exploreSample = useCallback(() => setOnboardedState(true), [setOnboardedState])
+
+  /* ── 백업·복원 ─────────────────────────────────────────────────────
+     서버가 없다. 기기를 바꾸거나 브라우저 데이터를 지우면 전부 사라진다.
+     그래서 파일로 빼두고 다시 넣을 수 있어야 한다. 지금 상태(React)에서 바로 뽑는다 —
+     저장소는 첫 렌더에 기본값을 쓰지 않으므로 거기서 읽으면 빠지는 값이 생긴다. */
+  const exportData = useCallback(() => ({
+    app: 'todayrecipe', schema: SCHEMA, exportedAt: new Date().toISOString(),
+    data: {
+      stores, currentStoreId, build, onboarded: true,
+      monthlyFixed, monthlyGoal, workDays,
+      ingredientPrices, measuredYields, salesLog, [CUSTOM_KEY]: customProducts,
+    },
+  }), [stores, currentStoreId, build, monthlyFixed, monthlyGoal, workDays, ingredientPrices, measuredYields, salesLog, customProducts])
+
+  // 성공하면 저장소에 쓰고 새로 연다 — 반쯤 섞인 상태를 만들지 않기 위해
+  const importData = useCallback((obj) => {
+    if (!obj || obj.app !== 'todayrecipe' || !obj.data) return { ok: false, why: '오늘 몇 그릇? 백업 파일이 아니에요' }
+    const d = obj.data
+    if (!okStores(d.stores)) return { ok: false, why: '가게 정보가 손상된 파일이에요' }
+    Object.entries(d).forEach(([k, v]) => { if (v !== undefined && v !== null) save(k, v) })
+    return { ok: true, stores: d.stores.length, menus: d.stores.reduce((a, x) => a + x.menus.length, 0) }
+  }, [])
+
+  const resetAll = useCallback(() => { clearAll(); window.location.href = '/app' }, [])
+  const storageOK = storageAvailable()
+
   const value = {
     onboarded, setOnboarded,
     stores, currentStore, currentStoreId, enterStore,
@@ -328,6 +472,10 @@ export function StoreProvider({ children }) {
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,
     newBuild, loadMenu, saveBuild, updateMenu, duplicateMenu, deleteMenu,
     soldToday, setSold, resetSold, soldOn, yesterdaySold, recentDays, todayKey,
+    addStore, updateStore, deleteStore,
+    customProducts, addProduct, updateProduct, deleteProduct, productInUse,
+    isSample, startMyStore, exploreSample,
+    exportData, importData, resetAll, storageOK,
     toast, toastMsg,
   }
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>
