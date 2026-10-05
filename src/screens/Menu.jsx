@@ -4,40 +4,53 @@ import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import GoalGauge from '../components/GoalGauge'
 import MenuEditSheet from '../components/MenuEditSheet'
+import NewMenuSheet from '../components/NewMenuSheet'
+import Orb from '../components/Orb'
 import { useStore } from '../state/store'
 import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
+import '../styles/menu2.css'
 
 export default function Menu() {
   const nav = useNavigate()
-  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu, newBuild, safeMargin } = useStore()
+  const { menus, currentStore, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, loadMenu, safeMargin, viewingSample, setOnboarded } = useStore()
   const [editOpen, setEditOpen] = useState(false)
   const [sortHigh, setSortHigh] = useState(true)
   const [editMenu, setEditMenu] = useState(null)
+  const [newOpen, setNewOpen] = useState(false)
 
   // 메뉴판이 빌 수 있다(전부 삭제·첫 사용). 빈 상태에서도 화면은 살아 있어야 한다.
-  const hasMenus = menus.length > 0
-  const profitOf = (m) => (m.price * m.margin) / 100
-  const avgProfit = hasMenus ? round10(menus.reduce((a, m) => a + profitOf(m), 0) / menus.length) : 0
+  const list = Array.isArray(menus) ? menus : []
+  const hasMenus = list.length > 0
+  const profitOf = (m) => ((Number(m.price) || 0) * (Number(m.margin) || 0)) / 100
+  const avgProfit = hasMenus ? round10(list.reduce((a, m) => a + profitOf(m), 0) / list.length) : 0
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
-  const best = hasMenus ? menus.reduce((a, b) => (b.margin > a.margin ? b : a)) : null
-  const healthy = menus.filter((m) => m.margin >= 30).length
-  const sorted = [...menus].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
+  const best = hasMenus ? list.reduce((a, b) => (b.margin > a.margin ? b : a)) : null
+  const healthy = list.filter((m) => m.margin >= 30).length
+  const sorted = [...list].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
 
   const openMenu = (m) => { loadMenu(m); nav('/app/result') }
 
   return (
     <>
     <div className="scroll">
+      {/* 예시 데이터로 보는 중이면 — 내 가게로 시작할 길을 맨 위에 */}
+      {viewingSample && (
+        <div className="mn2-sample fade" role="note">
+          <p>예시 가게(<b>{currentStore?.nm || '행복분식'}</b>)로 보는 중이에요</p>
+          <button type="button" onClick={() => setOnboarded(false)}>내 가게로 시작</button>
+        </div>
+      )}
+
       {/* 사업장 전환 + 메뉴판 헤더 */}
       <div className="hd fade">
         <button className="store-switch" onClick={() => nav('/app')}>
           <span className="ss-ic"><Icon name="store" size={15} stroke={1.9} /></span>
-          <span className="ss-nm">{currentStore.nm}</span>
+          <span className="ss-nm">{currentStore?.nm || '가게 선택'}</span>
           <Icon name="chevD" size={15} stroke={2.2} className="ss-chev" />
         </button>
         <div className="hd-row">
           <h1 className="hd-title">내 메뉴판</h1>
-          <span className="hd-count num">{hasMenus ? `메뉴 ${menus.length} · 효자 ${best.nm}` : '메뉴를 추가해 보세요'}</span>
+          <span className="hd-count num">{hasMenus ? `메뉴 ${list.length} · 효자 ${best.nm}` : '메뉴를 추가해 보세요'}</span>
         </div>
       </div>
 
@@ -121,10 +134,13 @@ export default function Menu() {
 
       <div className="list">
         {!hasMenus && (
-          <div className="menu-empty fade">
-            <span className="me-ic"><Icon name="cart" size={26} stroke={1.7} /></span>
-            <p>아직 등록한 메뉴가 없어요<br />재료를 담으면 첫 메뉴의 진짜 원가가 나와요</p>
-            <button className="me-btn" onClick={() => { newBuild(); nav('/app/market') }}>첫 메뉴 만들기</button>
+          <div className="mn2-empty fade">
+            <div className="mn2-empty-orb"><Orb mood="idle" size={64} tone="green" label="첫 메뉴를 기다리는 중" /></div>
+            <h3>아직 메뉴가 없어요</h3>
+            <p>메뉴 이름과 가격을 정하고 재료를 담으면<br />그 메뉴의 진짜 원가와 마진이 나와요</p>
+            <button type="button" className="mn2-go" onClick={() => setNewOpen(true)}>
+              <Icon name="plus" size={19} stroke={2.4} />첫 메뉴 만들기
+            </button>
           </div>
         )}
         {sorted.map((m, i) => {
@@ -153,6 +169,11 @@ export default function Menu() {
             </div>
           )
         })}
+        {hasMenus && (
+          <button type="button" className="mn2-add" onClick={() => setNewOpen(true)}>
+            <Icon name="plus" size={18} stroke={2.4} />새 메뉴 추가
+          </button>
+        )}
       </div>
 
       <button className="combo-cta fade" onClick={() => nav('/app/combo')}>
@@ -161,7 +182,8 @@ export default function Menu() {
         <Icon name="chevR" size={17} stroke={2} />
       </button>
     </div>
-    {editMenu && <MenuEditSheet menu={editMenu} onClose={() => setEditMenu(null)} />}
+    {editMenu && <MenuEditSheet key={editMenu.id} menu={editMenu} onClose={() => setEditMenu(null)} />}
+    <NewMenuSheet open={newOpen} onClose={() => setNewOpen(false)} />
     </>
   )
 }

@@ -1,0 +1,146 @@
+/* ============================================================
+   사업장 선택 — 추가·고치기·지우기 (Stores.jsx 전용, 접두어 .sr2-)
+   카드 안쪽(.st-photo .st-body .st-nm …)은 index.css 의 기존 디자인을 그대로 쓴다.
+   ============================================================ */
+
+/* 카드 — 예전 .st-card(버튼 하나)를 '들어가기 + 고치기' 두 버튼으로 나눈 틀 */
+.sr2-card{
+  display:flex;align-items:stretch;width:100%;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card);
+  box-shadow:var(--sh-2);overflow:hidden;
+  transition:border-color var(--dur-2) var(--ease-out),box-shadow var(--dur-3) var(--ease-out);
+}
+.sr2-card.is-on{border-color:var(--good-1);box-shadow:0 0 0 1px var(--good-1),var(--sh-2)}
+.sr2-open{
+  flex:1;min-width:0;display:flex;align-items:center;gap:var(--sp-3);
+  text-align:left;background:none;border:none;padding:14px 10px 14px 14px;cursor:pointer;
+  color:inherit;font:inherit;min-height:90px;
+  transition:transform var(--dur-1) var(--ease-out),background var(--dur-2) var(--ease-out);
+}
+.sr2-open:active{transform:scale(.985)}
+.sr2-open:hover{background:var(--paper-2)}
+.sr2-open:focus-visible,.sr2-more:focus-visible{outline:2px solid var(--good-1);outline-offset:-3px}
+
+.sr2-nm{flex-wrap:wrap;row-gap:4px;word-break:keep-all}
+.sr2-nm-tx{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.sr2-here{
+  flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:0;
+  color:var(--good-2);background:var(--wash-good);padding:2px 7px;border-radius:var(--r-chip);
+}
+
+.sr2-empty{
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  font-size:12.5px;font-weight:700;color:var(--good-2);word-break:keep-all;
+}
+.sr2-dash{font-weight:700;color:var(--muted);margin-left:2px}
+
+.sr2-more{
+  flex:0 0 auto;width:64px;min-height:44px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:none;border:none;border-left:1px solid var(--line);
+  color:var(--ink-soft);cursor:pointer;font:inherit;
+  transition:background var(--dur-2) var(--ease-out);
+}
+.sr2-more span{font-size:11.5px;font-weight:700;letter-spacing:0;word-break:keep-all}
+.sr2-more:hover{background:var(--tile)}
+.sr2-more:active{background:var(--track)}
+
+.sr2-add{min-height:64px}
+
+/* ---------- 바텀시트 (.screen 이 position:relative — 작업 영역 안에 뜬다) ---------- */
+.sr2-wrap{
+  position:absolute;inset:0;z-index:30;
+  background:color-mix(in srgb,var(--ink) 42%,transparent);
+  display:flex;align-items:flex-end;
+  animation:sr2fade var(--dur-2) ease both;
+}
+.sr2-sheet{
+  width:100%;max-height:92%;display:flex;flex-direction:column;
+  background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;
+  padding:10px var(--sp-5) calc(var(--sp-5) + env(safe-area-inset-bottom));
+  box-shadow:var(--sh-3);
+  animation:sr2up var(--dur-3) var(--ease-out) both;
+}
+/* PC 작업 영역이 넓으면 시트를 가운데 폭으로 */
+@media (min-width:768px){
+  .sr2-sheet{max-width:520px;margin:0 auto}
+}
+.sr2-grab{width:38px;height:4px;border-radius:var(--r-pill);background:var(--track);margin:2px auto 14px;flex:0 0 auto}
+.sr2-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-4);flex:0 0 auto}
+.sr2-head b{font-size:var(--t-sec);font-weight:800;letter-spacing:var(--ls-snug);word-break:keep-all}
+.sr2-x{
+  width:44px;height:44px;margin-right:-8px;border:none;background:none;border-radius:var(--r-ctl);
+  color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.sr2-x:hover{background:var(--tile)}
+
+.sr2-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
+
+.sr2-field{display:block;margin-bottom:var(--sp-5)}
+.sr2-field>span{
+  display:flex;align-items:center;gap:6px;
+  font-size:var(--t-lab);font-weight:700;color:var(--ink-soft);margin-bottom:var(--sp-2);word-break:keep-all;
+}
+.sr2-req,.sr2-opt{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:0;padding:1px 6px;border-radius:var(--r-chip)}
+.sr2-req{color:var(--bad-2);background:var(--wash-bad)}
+.sr2-opt{color:var(--muted);background:var(--tile)}
+.sr2-field input{
+  width:100%;min-height:50px;font-size:16px;font-weight:600;color:var(--ink);
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-ctl);
+  padding:13px 14px;outline:none;font-family:inherit;
+  transition:border-color var(--dur-2) var(--ease-out);
+}
+.sr2-field input::placeholder{color:var(--hairline);font-weight:500}
+.sr2-field input:focus{border-color:var(--ink)}
+.sr2-field input[aria-invalid="true"]{border-color:var(--bad-1)}
+.sr2-err,.sr2-hint{display:block;margin-top:6px;font-style:normal;font-size:12.5px;font-weight:600;line-height:var(--lh-snug);word-break:keep-all}
+.sr2-err{color:var(--bad-2)}
+.sr2-hint{color:var(--warn-2)}
+
+.sr2-chips{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+.sr2-chip{
+  display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 14px;
+  font-family:inherit;font-size:14px;font-weight:700;color:var(--ink-soft);word-break:keep-all;
+  background:var(--tile);border:1px solid transparent;border-radius:var(--r-pill);cursor:pointer;
+  transition:background var(--dur-2) var(--ease-out),color var(--dur-2) var(--ease-out),transform var(--dur-1) var(--ease-out);
+}
+.sr2-chip:active{transform:scale(.96)}
+.sr2-chip.on{background:var(--pine);color:var(--paper);border-color:var(--pine)}
+
+.sr2-note{
+  display:flex;align-items:flex-start;gap:7px;margin:0 0 var(--sp-4);
+  padding:12px 14px;border-radius:var(--r-ctl);background:var(--sand);color:var(--sand-ink);
+  font-size:13px;font-weight:600;line-height:var(--lh-snug);word-break:keep-all;
+}
+.sr2-note svg{flex:0 0 auto;margin-top:2px}
+
+.sr2-save{
+  flex:0 0 auto;width:100%;min-height:54px;border:none;border-radius:var(--r-block);
+  font-family:inherit;font-size:16px;font-weight:800;letter-spacing:var(--ls-snug);
+  background:var(--pine);color:var(--paper);cursor:pointer;box-shadow:var(--sh-3);
+  transition:transform var(--dur-1) var(--ease-out),opacity var(--dur-2) var(--ease-out);
+}
+.sr2-save:active{transform:scale(.98)}
+.sr2-save:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+.sr2-danger{flex:0 0 auto;margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line);text-align:center}
+.sr2-del{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:48px;
+  font-family:inherit;font-size:14.5px;font-weight:700;color:var(--bad-1);
+  background:none;border:1px solid var(--line);border-radius:var(--r-ctl);cursor:pointer;
+  transition:background var(--dur-2) var(--ease-out);
+}
+.sr2-del:hover:not(:disabled){background:var(--wash-bad)}
+.sr2-del:disabled{color:var(--muted);background:var(--tile);cursor:not-allowed}
+.sr2-del-why{margin:7px 0 0;font-size:12px;font-weight:600;color:var(--muted);line-height:var(--lh-snug);word-break:keep-all}
+
+@keyframes sr2fade{from{opacity:0}to{opacity:1}}
+@keyframes sr2up{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sr2-wrap,.sr2-sheet{animation:none}}
+
+/* 작은 폰: 오른쪽 '고치기' 칸이 있으니 화살표는 빼서 가게 정보 줄에 자리를 준다 */
+@media (max-width:480px){
+  .sr2-open .st-go{display:none}
+  .sr2-open{padding-right:12px}
+  .sr2-more{width:58px}
+}

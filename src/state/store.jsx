@@ -1,9 +1,9 @@
-import { createContext, useContext, useState, useCallback, useRef } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
 import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
 import { overheadFor, safeMarginOf } from '../lib/calc'
-import { usePersistentState, load, save, clearAll, storageAvailable, SCHEMA } from './persist'
+import { usePersistentState, load, save, clearAll, storageAvailable, SCHEMA, lastSaveFailed, onSaveStatus } from './persist'
 
 /* ── 사장님이 직접 추가한 재료 ─────────────────────────────────────────
    계산 엔진(calc.js)은 카탈로그(PRODUCTS)만 본다. 그래서 직접 추가한 재료를
@@ -176,8 +176,17 @@ export function StoreProvider({ children }) {
   // 토스트
   const [toastMsg, setToastMsg] = useState(null)
   const tRef = useRef()
+  /* 토스트는 HTML로 그려진다(굵은 글씨 때문에). 그런데 이제 메뉴·재료 이름을 사장님이
+     마음대로 쓰고, 남이 준 백업 파일도 불러올 수 있다. 이름에 <img onerror=…> 가
+     들어 있으면 스크립트가 실행된다(저장형 XSS). 호출하는 곳마다 막는 대신 여기 한 곳에서
+     정확히 '<b>'와 '</b>'만 살리고 나머지 꺾쇠는 전부 글자로 바꾼다.
+     & 는 건드리지 않는다 — 호출부에서 이미 이스케이프한 &lt; 가 두 번 바뀌지 않게. */
   const toast = useCallback((msg) => {
-    setToastMsg(msg)
+    const safe = String(msg == null ? '' : msg)
+      .replace(/<\/b>/g, '\u0001').replace(/<b>/g, '\u0002')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\u0002/g, '<b>').replace(/\u0001/g, '</b>')
+    setToastMsg(safe)
     clearTimeout(tRef.current)
     tRef.current = setTimeout(() => setToastMsg(null), 2400)
   }, [])
@@ -388,6 +397,11 @@ export function StoreProvider({ children }) {
       trend: ['fl', 0], cookable: !!cookable, method: cookable ? method : '생',
       defG: Math.max(1, Math.round(defG)), origin: '직접 추가', spec: '우리 가게 등록 재료', custom: true,
     }
+    // 즉시 카탈로그에 등록한다. 상태 갱신은 다음 렌더에 처리되는데, build 훅이
+    // customProducts 훅보다 먼저 선언돼 있어 addProduct 직후 toggleItem 을 부르면
+    // PRODUCTS[id] 가 아직 없어 죽었다(재료 화면은 useEffect 로 우회하고 있었다).
+    PRODUCTS[id] = product
+    registered.add(id)
     setCustomProducts((m) => ({ ...m, [id]: product }))
     return id
   }, [setCustomProducts])
@@ -416,7 +430,11 @@ export function StoreProvider({ children }) {
   /* ── 첫 실행: 내 가게로 시작 ─────────────────────────────────────────
      예전엔 누구나 '행복분식'(남의 가게)으로 시작했다. 이제 내 가게를 만든다.
      예시 가게는 둘러보기용으로만 남긴다. */
-  const isSample = stores.some((s) => SEED_STORES.some((x) => x.id === s.id))
+  const isSeedId = (id) => SEED_STORES.some((x) => x.id === id)
+  const isSample = stores.some((s) => isSeedId(s.id))
+  // 사장님이 직접 만든 가게 / 지금 보는 가게가 예시 가게인가
+  const userStores = stores.filter((s) => !isSeedId(s.id))
+  const viewingSample = isSeedId(currentStoreId)
 
   const startMyStore = useCallback(({ nm, type = '', monthlyFixed: mf, workDays: wd, deliveryShare = 1 } = {}) => {
     const id = 'st_' + Date.now().toString(36)
@@ -424,12 +442,19 @@ export function StoreProvider({ children }) {
       id, nm: (nm || '우리 가게').trim().slice(0, 24), type, loc: '', menus: [],
       costOpts: { ...DEFAULT_COST_OPTS, deliveryShare: Math.min(1, Math.max(0, deliveryShare)) },
     }
-    setStores([store])                      // 예시 가게는 치우고 내 가게만
+    /* 예시 가게만 치운다. 예전엔 setStores([store]) 로 목록을 통째로 갈아서,
+       예시로 둘러보다 자기 가게를 추가하고 메뉴까지 만든 사장님이 [내 가게로 시작]을
+       누르면 그 가게·메뉴·판매 기록이 확인 없이 사라졌다. */
+    setStores((all) => [...all.filter((s) => !isSeedId(s.id)), store])
     setCurrentStoreId(id)
     if (mf > 0) setMF(mf)
     if (wd > 0) setWD(wd)
     setBuild({ id: 'm' + Date.now(), nm: '새 메뉴', price: 9000, icon: 'donbap', items: [] })
-    setSalesLog({})
+    setSalesLog((L) => {   // 예시 가게의 판매 기록만 지운다
+      const next = {}
+      Object.entries(L || {}).forEach(([k, v]) => { if (!isSeedId(k)) next[k] = v })
+      return next
+    })
     setOnboardedState(true)
     return id
   }, [setStores, setCurrentStoreId, setMF, setWD, setBuild, setSalesLog, setOnboardedState])
@@ -459,7 +484,10 @@ export function StoreProvider({ children }) {
   }, [])
 
   const resetAll = useCallback(() => { clearAll(); window.location.href = '/app' }, [])
-  const storageOK = storageAvailable()
+  // 저장소가 있어도 '실제로 저장에 실패하는 중'이면 OK가 아니다
+  const [saveError, setSaveError] = useState(lastSaveFailed())
+  useEffect(() => onSaveStatus(setSaveError), [])
+  const storageOK = storageAvailable() && !saveError
 
   const value = {
     onboarded, setOnboarded,
@@ -474,8 +502,8 @@ export function StoreProvider({ children }) {
     soldToday, setSold, resetSold, soldOn, yesterdaySold, recentDays, todayKey,
     addStore, updateStore, deleteStore,
     customProducts, addProduct, updateProduct, deleteProduct, productInUse,
-    isSample, startMyStore, exploreSample,
-    exportData, importData, resetAll, storageOK,
+    isSample, userStores, viewingSample, startMyStore, exploreSample,
+    exportData, importData, resetAll, storageOK, saveError,
     toast, toastMsg,
   }
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>

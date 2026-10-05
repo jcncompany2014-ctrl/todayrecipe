@@ -11,17 +11,19 @@ export default function Dashboard() {
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
-  const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / menus.length)
+  const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / (menus.length || 1))   // 메뉴 0개면 NaN 대신 0
   const shopBowls = breakeven(avgProfit, dailyFixed)
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 가게 전체: 한 달 목표 → 하루치 역산
 
   const counts = { g: 0, w: 0, b: 0 }
   menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
   const total = menus.length
-  const pct = (n) => Math.round((n / total) * 100)
+  const pct = (n) => (total ? Math.round((n / total) * 100) : 0)
   const C = { g: '#16A06A', w: '#D69412', b: '#D04B3F' }
   const a1 = pct(counts.g), a2 = pct(counts.w)
-  const donut = `conic-gradient(${C.g} 0 ${a1}%, ${C.w} ${a1}% ${a1 + a2}%, ${C.b} ${a1 + a2}% 100%)`
+  const donut = total
+    ? `conic-gradient(${C.g} 0 ${a1}%, ${C.w} ${a1}% ${a1 + a2}%, ${C.b} ${a1 + a2}% 100%)`
+    : 'var(--track)'   // 메뉴가 없으면 '전부 위험'처럼 빨갛게 칠하지 않는다
 
   return (
     <div className="scroll">

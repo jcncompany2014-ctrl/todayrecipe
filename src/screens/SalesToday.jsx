@@ -3,6 +3,8 @@ import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
 import { won } from '../lib/calc'
+import Orb from '../components/Orb'
+import '../styles/orbs.css'
 
 /* 오늘 장사 마감 — 메뉴별 판매 개수만 넣으면 오늘 매출·원가·순이익 자동 정산. */
 export default function SalesToday() {
@@ -76,7 +78,15 @@ export default function SalesToday() {
 
         <div className="stl-msg">
           {totalCount === 0
-            ? <>아래에서 오늘 판 개수를 넣어보세요</>
+            ? (
+              <div className="ob-stl">
+                <span className="ob-inl"><Orb mood="listening" size={32} tone="mint" label="판매 입력을 기다리는 중" /></span>
+                <span className="ob-stl-tx">
+                  <b>판 개수를 넣으면 바로 정산돼요</b>
+                  <span>{menus.length > 0 ? '아래 메뉴마다 + 를 눌러 주세요' : '먼저 메뉴판에 메뉴를 올려 주세요'}</span>
+                </span>
+              </div>
+            )
             : goalDone
               ? <>오늘 목표까지 달성했어요! 수고하셨어요</>
               : beDone
@@ -91,6 +101,13 @@ export default function SalesToday() {
       </div>
 
       <div className="stl-list">
+        {rows.length === 0 && (
+          <div className="ob-nomenu">
+            <b>아직 메뉴가 없어요</b>
+            <span>메뉴판에 메뉴를 올리면 여기서 판 개수를 넣을 수 있어요</span>
+            <button className="ob-mx-btn" onClick={() => nav('/app/menu')}>메뉴판으로 가기</button>
+          </div>
+        )}
         {rows.map(({ m, count, profit }) => (
           <div className={`stl-row${count > 0 ? ' on' : ''}`} key={m.id}>
             <div className="stl-photo"><Photo src={m.img} icon={m.icon} iconSize={22} alt={m.nm} /></div>

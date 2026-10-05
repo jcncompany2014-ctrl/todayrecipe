@@ -1,16 +1,18 @@
+import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Icon from './Icon'
-import { useStore } from '../state/store'
+import NewMenuSheet from './NewMenuSheet'
 
 export default function TabBar() {
   const nav = useNavigate()
   const { pathname } = useLocation()
-  const { newBuild } = useStore()
   const on = (p) => (pathname === p ? 'tab on' : 'tab')
 
-  const startNew = () => { newBuild(); nav('/app/market') }
+  const [newOpen, setNewOpen] = useState(false)
+  const startNew = () => setNewOpen(true)
 
   return (
+    <>
     <nav className="tabbar">
       <button className={on('/app/menu')} onClick={() => nav('/app/menu')}>
         <Icon name="list" size={23} stroke={1.8} />
@@ -34,5 +36,7 @@ export default function TabBar() {
         <span>설정</span>
       </button>
     </nav>
+    <NewMenuSheet open={newOpen} onClose={() => setNewOpen(false)} />
+    </>
   )
 }

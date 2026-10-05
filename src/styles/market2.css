@@ -1,0 +1,120 @@
+/* 재료 담기 — 재료 직접 추가 · 내 재료 관리 (Market.jsx 전용, 접두어 mk2-) */
+
+/* 검색창 — 아이폰 자동 확대 방지 */
+.scr-market .search input.mk2-search-in{font-size:16px}
+
+/* 목록 행의 '내 재료' 꼬리표 */
+.mk2-tag{display:inline-block;vertical-align:2px;margin-left:6px;padding:2px 7px;border-radius:var(--r-chip);
+  background:var(--sand);color:var(--sand-ink);font-size:11px;font-weight:700;letter-spacing:-.2px}
+
+/* 내가 추가한 재료 섹션 */
+.mk2-mysec .sec-head{align-items:center}
+.mk2-more{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 14px;margin-right:-8px;
+  border:none;background:none;border-radius:var(--r-ctl);font:inherit;font-size:14px;font-weight:700;
+  color:var(--good-2);cursor:pointer}
+.mk2-more:active{background:var(--tile)}
+.mk2-my .vmeta{word-break:keep-all}
+.mk2-edit{flex:0 0 auto;width:44px;height:44px;border-radius:13px;border:1.5px solid var(--line);background:var(--paper);
+  color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:-6px;
+  transition:transform var(--dur-1) var(--ease-out)}
+.mk2-edit:active{transform:scale(.92);background:var(--tile)}
+
+/* 목록 끝 · 검색 결과 끝 — 직접 추가 입구 */
+.mk2-tail{padding:18px 16px 8px}
+.mk2-cta{width:100%;display:flex;align-items:center;gap:14px;min-height:64px;padding:12px 16px;cursor:pointer;
+  border:1.5px dashed var(--rule);border-radius:var(--r-block);background:var(--paper-2);text-align:left;font:inherit;color:var(--ink);
+  transition:transform var(--dur-1) var(--ease-out),background var(--dur-2)}
+.mk2-cta:active{transform:scale(.985);background:var(--tile)}
+.mk2-cta-ic{flex:0 0 auto;width:42px;height:42px;border-radius:13px;background:var(--pine);color:var(--mint);
+  display:flex;align-items:center;justify-content:center}
+.mk2-cta-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;word-break:keep-all}
+.mk2-cta-tx b{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.mk2-cta-tx span{font-size:13.5px;font-weight:600;color:var(--good-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mk2-cta-cr{flex:0 0 auto;color:var(--hairline)}
+
+/* 검색 결과 없음 */
+.mk2-empty{padding:30px 22px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;word-break:keep-all}
+.mk2-empty p{margin-top:12px;font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--ink)}
+.mk2-empty>span{display:block;margin-top:6px;font-size:14px;font-weight:500;color:var(--muted);line-height:1.5;max-width:300px}
+.mk2-empty-btn{margin-top:18px;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:52px;
+  padding:0 22px;max-width:100%;border:none;border-radius:var(--r-block);background:var(--pine);color:#fff;cursor:pointer;
+  font:inherit;font-size:15.5px;font-weight:700;letter-spacing:-.3px;box-shadow:var(--sh-3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:transform var(--dur-1) var(--ease-out)}
+.mk2-empty-btn svg{color:var(--mint);flex:0 0 auto}
+.mk2-empty-btn:active{transform:scale(.97)}
+
+/* 재료 상세 시트 안의 '고치기' */
+.mk2-ps-edit{margin-top:8px;width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:7px;
+  border:1.5px solid var(--line);border-radius:15px;background:var(--paper);color:var(--ink-soft);cursor:pointer;
+  font:inherit;font-size:14.5px;font-weight:700}
+.mk2-ps-edit:active{background:var(--tile)}
+
+/* ── 추가·고치기 바텀시트 ───────────────────────────────────────── */
+.mk2-wrap{position:absolute;inset:0;z-index:9;background:rgba(20,16,12,.45);
+  animation:mk2fade var(--dur-2) ease both}
+@keyframes mk2fade{from{opacity:0}to{opacity:1}}
+.mk2-sheet{position:absolute;left:0;right:0;bottom:0;max-height:calc(100% - 20px);overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;background:var(--paper);border-radius:var(--r-sheet) var(--r-sheet) 0 0;
+  padding:10px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -18px 44px -18px rgba(26,22,19,.4);
+  word-break:keep-all;animation:mk2up var(--dur-4) var(--ease-out) both}
+@keyframes mk2up{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+.mk2-grab{width:38px;height:4px;border-radius:var(--r-pill);background:var(--track);margin:2px auto 12px}
+.mk2-shead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mk2-shead h2{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+.mk2-x{flex:0 0 auto;width:44px;height:44px;margin-right:-8px;border:none;border-radius:var(--r-ctl);background:none;
+  color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mk2-x:active{background:var(--tile)}
+.mk2-lead{margin-top:4px;font-size:14px;font-weight:500;color:var(--muted);line-height:1.5}
+
+.mk2-lab{display:block;margin:18px 0 8px;font-size:14px;font-weight:700;color:var(--ink-soft)}
+.mk2-lab em{font-style:normal;font-size:12px;font-weight:700;color:var(--good-2);margin-left:5px}
+
+.mk2-in{width:100%;min-height:52px;padding:0 15px;border:1.5px solid var(--line);border-radius:var(--r-ctl);
+  background:var(--tile);font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);outline:none;
+  transition:border-color var(--dur-2),background var(--dur-2)}
+.mk2-in::placeholder{color:var(--hairline);font-weight:500}
+.mk2-in:focus{border-color:var(--pine);background:var(--paper)}
+.mk2-field{display:flex;align-items:center;gap:10px}
+.mk2-field+.mk2-field{margin-top:8px}
+.mk2-seg+.mk2-field{margin-top:10px}
+.mk2-field .mk2-in{flex:1;min-width:0;text-align:right;font-size:19px;font-weight:800}
+.mk2-unit{flex:0 0 auto;min-width:28px;font-size:15px;font-weight:700;color:var(--ink-soft)}
+
+.mk2-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mk2-chip{display:inline-flex;align-items:center;gap:7px;min-height:46px;padding:0 14px 0 6px;cursor:pointer;
+  border:1.5px solid var(--line);border-radius:var(--r-pill);background:var(--paper);font:inherit;
+  font-size:15px;font-weight:700;color:var(--ink-soft);transition:border-color var(--dur-1),background var(--dur-1)}
+.mk2-chip-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.mk2-chip.on{border-color:var(--pine);background:var(--pine);color:#fff}
+.mk2-cook .mk2-chip{padding:0 16px}
+.mk2-chip em{font-style:normal;font-size:12px;font-weight:600;color:var(--muted);margin-left:2px}
+.mk2-chip.on em{color:var(--mint-soft)}
+
+.mk2-seg{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--tile)}
+.mk2-seg button{flex:1;min-height:46px;padding:0 6px;border:none;border-radius:11px;background:none;cursor:pointer;
+  font:inherit;font-size:14.5px;font-weight:700;color:var(--muted);transition:background var(--dur-2),color var(--dur-2)}
+.mk2-seg button.on{background:var(--paper);color:var(--ink);box-shadow:var(--sh-2)}
+.mk2-seg+.mk2-chips{margin-top:10px}
+
+.mk2-calc{margin-top:8px;font-size:13.5px;font-weight:600;color:var(--good-2);text-align:right}
+.mk2-err{margin-top:8px;font-size:13.5px;font-weight:600;color:var(--bad-2);line-height:1.45}
+.mk2-errbox{margin-top:16px;padding:12px 14px;border-radius:var(--r-ctl);background:var(--wash-bad)}
+.mk2-hint{margin-top:10px;font-size:13px;font-weight:500;color:var(--sand-ink);background:var(--sand);
+  padding:10px 13px;border-radius:var(--r-ctl);line-height:1.45}
+
+.mk2-preview{margin-top:18px;display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:2px 10px;
+  padding:14px 16px;border-radius:var(--r-block);background:var(--pine);color:var(--on-dark-2)}
+.mk2-preview span{font-size:14px;font-weight:600}
+.mk2-preview b{font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--mint-ink)}
+.mk2-preview em{grid-column:1 / -1;font-style:normal;font-size:12.5px;font-weight:500;color:var(--on-dark-3)}
+
+.mk2-save{margin-top:18px;width:100%;min-height:56px;border:none;border-radius:var(--r-block);cursor:pointer;
+  background:var(--ink);color:#fff;font:inherit;font-size:16.5px;font-weight:800;letter-spacing:-.3px;
+  box-shadow:0 14px 28px -10px rgba(26,22,19,.45);transition:transform var(--dur-1) var(--ease-out),opacity var(--dur-2)}
+.mk2-save:active:not(:disabled){transform:scale(.98)}
+.mk2-save:disabled{background:var(--track);color:var(--hairline);box-shadow:none;cursor:not-allowed}
+.mk2-del{margin-top:8px;width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:6px;
+  border:none;background:none;border-radius:var(--r-ctl);cursor:pointer;font:inherit;font-size:14.5px;font-weight:700;color:var(--bad-1)}
+.mk2-del:active{background:var(--wash-bad)}
+
+@media (prefers-reduced-motion:reduce){.mk2-wrap,.mk2-sheet{animation:none}}

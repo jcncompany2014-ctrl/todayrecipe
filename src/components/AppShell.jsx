@@ -1,7 +1,9 @@
+import { lazy, Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import TabBar from './TabBar'
 import Sidebar from './Sidebar'
-import Onboarding from './Onboarding'
+/* 첫 실행 화면은 처음 한 번만 본다 — 한 번 설정한 사장님이 매번 내려받을 이유가 없다 */
+const Onboarding = lazy(() => import('./Onboarding'))
 import { useStore } from '../state/store'
 
 // 라우트 → 화면 스코프 클래스 + 하단 탭 노출 여부(모바일)
@@ -41,7 +43,7 @@ export default function AppShell() {
             dangerouslySetInnerHTML={{ __html: toastMsg || '' }} />
         </div>
       </main>
-      {!onboarded && <Onboarding />}
+      {!onboarded && <Suspense fallback={null}><Onboarding /></Suspense>}
     </div>
   )
 }

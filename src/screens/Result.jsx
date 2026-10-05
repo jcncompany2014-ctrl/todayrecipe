@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
+import Orb from '../components/Orb'
+import '../styles/orbs.css'
 import { useStore } from '../state/store'
 import { PRODUCTS } from '../data/catalog'
 import {
@@ -55,10 +57,50 @@ function CostDonut({ data }) {
   )
 }
 
+/* 계산 연출 — 같은 레시피를 다시 볼 때마다 기다리게 하지 않는다.
+   레시피(메뉴 id + 담은 재료)가 바뀐 경우에만, 이번 탭에서 한 번 보여준다. */
+const CALC_SEEN_KEY = 'ob-calc-seen'
+const CALC_MS = 900
+const seenMemory = new Set()   // sessionStorage 가 막힌 환경(사생활 모드 등)의 대체 기억
+
+function readSeen() {
+  try {
+    const raw = window.sessionStorage.getItem(CALC_SEEN_KEY)
+    const arr = raw ? JSON.parse(raw) : []
+    return Array.isArray(arr) ? arr : []
+  } catch (e) { return [...seenMemory] }
+}
+function markSeen(key) {
+  seenMemory.add(key)
+  try {
+    const arr = readSeen().filter((k) => k !== key)
+    arr.push(key)
+    window.sessionStorage.setItem(CALC_SEEN_KEY, JSON.stringify(arr.slice(-40)))
+  } catch (e) { /* 저장 못 해도 seenMemory 로 이번 방문 동안은 기억한다 */ }
+}
+function prefersReducedMotion() {
+  try { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) } catch (e) { return false }
+}
+function shouldPlayCalc(key) {
+  if (!key || typeof window === 'undefined') return false
+  if (prefersReducedMotion()) return false
+  return !seenMemory.has(key) && !readSeen().includes(key)
+}
+
 export default function Result() {
   const nav = useNavigate()
   const { build, currentStore, dailyFixed, dailyGoal, monthlyGoal, setMonthlyGoal, costOpts, setPrice, saveBuild, toast, safeMargin } = useStore()
   const hasItems = build.items.length > 0
+
+  // 재료가 담긴 레시피만 '수율을 반영하는' 계산을 한다 — 그때만 연출
+  const calcKey = hasItems ? `${build.id || 'b'}:${build.items.map((it) => it.id).join(',')}` : null
+  const [calcing, setCalcing] = useState(() => shouldPlayCalc(calcKey))
+  useEffect(() => {
+    if (!calcing) return undefined
+    markSeen(calcKey)
+    const t = setTimeout(() => setCalcing(false), CALC_MS)
+    return () => clearTimeout(t)
+  }, [calcing, calcKey])
 
   const foodFixed = useMemo(
     () => (hasItems ? summarize(build.items, build.price, costOpts).food : build.fixedFood || 0),
@@ -91,7 +133,7 @@ export default function Result() {
   const yieldItem = useMemo(() => {
     const cooked = build.items
       .map((it) => ({ it, p: PRODUCTS[it.id], y: yieldOf(it) }))
-      .filter((x) => x.p.cookable && x.y < 100)
+      .filter((x) => x.p && x.p.cookable && x.y < 100)
       .sort((a, b) => a.y - b.y)
     return cooked[0] || null
   }, [build])
@@ -178,15 +220,34 @@ export default function Result() {
     }
   }
 
+  const header = (
+    <div className="hd fade">
+      <div className="hd-top">
+        <button className="iconbtn" aria-label="뒤로" onClick={() => nav(-1)}><Icon name="back" size={22} stroke={2} /></button>
+        <h1>마진 결과</h1>
+      </div>
+      <p className="sub">{build.nm} 원가와 마진이에요</p>
+    </div>
+  )
+
+  // 앱이 일하는 순간 — 약 0.9초. 누르면 바로 결과로 넘어간다.
+  if (calcing) {
+    return (
+      <div className="scroll">
+        {header}
+        <button type="button" className="ob-calc" onClick={() => setCalcing(false)} aria-live="polite" aria-label="계산 중 · 누르면 바로 결과 보기">
+          <Orb mood="calculating" size={64} tone="green" label="원가 계산 중" />
+          <div className="ob-calc-tx">재료 <b className="num">{build.items.length}개</b>의 조리 수율을<br />반영하는 중…</div>
+          <div className="ob-calc-bar" aria-hidden="true"><i /></div>
+          <span className="ob-calc-skip">눌러서 바로 보기</span>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="scroll">
-      <div className="hd fade">
-        <div className="hd-top">
-          <button className="iconbtn" aria-label="뒤로" onClick={() => nav(-1)}><Icon name="back" size={22} stroke={2} /></button>
-          <h1>마진 결과</h1>
-        </div>
-        <p className="sub">{build.nm} 원가와 마진이에요</p>
-      </div>
+      {header}
 
       <div className="cards">
         <div className="rcard fade">
@@ -304,7 +365,7 @@ export default function Result() {
       {/* AI 마진 진단 */}
       {diag ? (
         <div className="diag fade">
-          <div className="advice-head"><span className="tag"><Icon name="sparkle" size={12} stroke={0} fill /> AI</span> 마진 진단</div>
+          <div className="advice-head"><span className="tag"><Icon name="sparkle" size={12} stroke={0} fill /> AI</span> 마진 진단 <span className="ob-inl"><Orb mood="diagnosing" size={20} tone="green" label="AI 진단" /></span></div>
           <div className={`diag-verdict ${diag.level}`}>
             <span className={`dv-dot ${diag.level}-bg`} />
             <div className="dv-tx"><b>{diag.title}</b><span>{diag.line}</span></div>

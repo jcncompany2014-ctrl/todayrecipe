@@ -35,13 +35,31 @@ export function load(k, fallback) {
   }
 }
 
+/* 저장 실패 상태 — 예전엔 실패를 조용히 삼켰다. 그래서 큰 사진 한 장으로 저장소가
+   가득 차면 그 뒤로 아무것도 저장되지 않는데 화면엔 '자동 저장 중'이 계속 떴다.
+   이제 실패하면 구독자에게 알린다(화면이 경고를 띄운다). */
+let saveFailed = false
+const saveListeners = new Set()
+function setSaveFailed(v) {
+  if (saveFailed === v) return
+  saveFailed = v
+  saveListeners.forEach((fn) => { try { fn(v) } catch { /* 무시 */ } })
+}
+export const lastSaveFailed = () => saveFailed
+export function onSaveStatus(fn) {
+  saveListeners.add(fn)
+  return () => saveListeners.delete(fn)
+}
+
 export function save(k, v) {
   if (!usable()) return false
   try {
     window.localStorage.setItem(keyOf(k), JSON.stringify(v))
+    setSaveFailed(false)
     return true
   } catch {
-    return false // 용량 초과 등 — 무시(계산은 계속된다)
+    setSaveFailed(true) // 용량 초과 등 — 계산은 계속되지만 화면에 알린다
+    return false
   }
 }
 

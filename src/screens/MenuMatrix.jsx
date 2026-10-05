@@ -4,11 +4,14 @@ import Photo from '../components/Photo'
 import QuadrantChart, { QCOL } from '../components/QuadrantChart'
 import { useStore } from '../state/store'
 import { won, menuMatrix, QUADRANTS, QUAD_ORDER } from '../lib/calc'
+import Orb from '../components/Orb'
+import '../styles/orbs.css'
 
 /* 메뉴 엔지니어링 — 인기(판매량) × 마진 사분면으로 올릴 메뉴·손볼 메뉴를 짚어준다. */
 export default function MenuMatrix() {
   const nav = useNavigate()
-  const { menus, soldToday } = useStore()
+  const { menus = [], soldToday = {} } = useStore()
+  const tooFew = menus.length < 2   // 비교할 상대가 없으면 사분면은 의미가 없다
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
   const useReal = soldCount > 0
   const popOf = (m) => (useReal ? (soldToday[m.id] || 0) : (m.pop || 0))
@@ -27,6 +30,19 @@ export default function MenuMatrix() {
         <p className="sub">잘 팔리는 메뉴가 꼭 잘 남는 건 아니에요. 인기와 마진을 같이 봐야 진짜가 보여요.</p>
       </div>
 
+      {tooFew ? (
+        <div className="mx-chartcard fade">
+          <div className="ob-mx">
+            <div className="ob-empty-orb"><Orb mood="idle" size={32} tone="pine" label="메뉴를 기다리는 중" /></div>
+            <b>메뉴가 2개 이상이면 비교할 수 있어요</b>
+            <p>{menus.length === 0
+              ? '아직 메뉴판에 메뉴가 없어요. 메뉴를 올리면 인기와 마진을 나란히 놓고 볼 수 있어요.'
+              : <>지금은 <em className="ob-mx-nm">{menus[0].nm}</em> 하나뿐이에요. 메뉴를 하나 더 올리면 어느 쪽이 더 남는지 보여드려요.</>}</p>
+            <button className="ob-mx-btn" onClick={() => nav('/app/menu')}>메뉴판으로 가기</button>
+          </div>
+        </div>
+      ) : (
+      <>
       <div className="mx-chartcard fade">
         <div className="mx-src">
           <span className={`mx-srcdot${useReal ? ' live' : ''}`} />
@@ -71,7 +87,10 @@ export default function MenuMatrix() {
         )
       })}
 
+
       <div className="mx-foot fade">숫자는 <b>하루 이익 기여(그릇당 남는 돈 × 판매량)</b>예요. 스타는 지키고, 일꾼은 마진을, 숨은 보석은 노출을 손보면 같은 손님으로 더 남아요.</div>
+      </>
+      )}
     </div>
   )
 }

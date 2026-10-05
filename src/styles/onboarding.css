@@ -1,0 +1,212 @@
+/* ============================================================
+   첫 실행 — 내 가게 시작 설정 (Onboarding.jsx)
+   접두어 .ob2-  ·  루트는 .onb (셸이 fixed·z-index 로 덮는다)
+   ============================================================ */
+.onb.ob2-root{
+  position:fixed;inset:0;z-index:60;
+  display:flex;flex-direction:column;
+  background:var(--pine);color:#fff;
+  word-break:keep-all;overflow-wrap:anywhere;
+  animation:ob2In var(--dur-3) var(--ease-out) both;
+}
+.onb.ob2-root.ob2-s2{background:var(--paper-2, var(--paper));color:var(--ink)}
+@keyframes ob2In{from{opacity:0}to{opacity:1}}
+
+.ob2-panel{flex:1;min-height:0;display:flex;flex-direction:column;width:100%}
+.ob2-fade{animation:ob2Rise var(--dur-4) var(--ease-out) both}
+@keyframes ob2Rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* 딥그린 면 (①·③) */
+.ob2-dark{
+  background:
+    radial-gradient(110% 70% at 85% -10%, rgba(65,211,146,.22) 0%, rgba(65,211,146,0) 60%),
+    linear-gradient(165deg, var(--pine-2) 0%, var(--pine) 58%, var(--pine-3, var(--pine)) 100%);
+  color:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.ob2-light{background:var(--paper-2, var(--paper));color:var(--ink)}
+
+/* ── 상단: 뒤로 · 진행 점 ── */
+.ob2-top{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);
+  width:100%;max-width:560px;margin:0 auto;
+  padding:calc(var(--sp-3) + env(safe-area-inset-top)) var(--sp-4) var(--sp-2);
+  min-height:64px;
+}
+.ob2-s1 .ob2-top{justify-content:center;position:relative}
+.ob2-top-light{border-bottom:1px solid transparent}
+.ob2-top-sp{width:48px;height:48px;flex:0 0 auto}
+
+.ob2-dots{display:flex;align-items:center;gap:8px}
+.ob2-dot{width:8px;height:8px;border-radius:var(--r-pill);background:rgba(255,255,255,.28);
+  transition:width var(--dur-3) var(--ease-out), background var(--dur-2)}
+.ob2-dot.done{background:var(--mint-soft)}
+.ob2-dot.on{width:26px;background:var(--mint)}
+.ob2-light .ob2-dot{background:var(--track)}
+.ob2-light .ob2-dot.done{background:var(--good-1)}
+.ob2-light .ob2-dot.on{background:var(--pine)}
+
+.ob2-back,.ob2-close{
+  flex:0 0 auto;width:48px;height:48px;border-radius:var(--r-ctl);border:none;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--tile);color:var(--ink);
+  transition:transform var(--dur-1), background var(--dur-2);
+}
+.ob2-back-dark,.ob2-close{background:rgba(255,255,255,.1);color:#fff}
+.ob2-close{position:absolute;right:var(--sp-4);top:calc(var(--sp-3) + env(safe-area-inset-top))}
+.ob2-back:active,.ob2-close:active{transform:scale(.94)}
+
+/* ── 히어로 (①·③) ── */
+.ob2-hero{
+  flex:1 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  width:100%;max-width:560px;margin:0 auto;padding:var(--sp-6) var(--sp-6) var(--sp-5);
+}
+.ob2-brand{margin-top:var(--sp-5);font-size:14px;font-weight:800;letter-spacing:.4px;color:var(--mint-soft)}
+.ob2-h1{margin:var(--sp-2) 0 0;font-size:32px;font-weight:800;line-height:1.24;letter-spacing:-1.2px;color:#fff}
+.ob2-h1 span{display:block}
+.ob2-lead{margin-top:var(--sp-4);font-size:16px;font-weight:500;line-height:1.6;color:rgba(255,255,255,.82);max-width:30em}
+
+.ob2-hero-done{justify-content:flex-start;padding-top:var(--sp-5)}
+.ob2-h1-done{margin-top:var(--sp-5)}
+.ob2-h1-done .ob2-store{color:var(--mint)}
+.ob2-lead-done{font-size:15.5px}
+
+.ob2-sum{
+  margin:var(--sp-5) 0 0;width:100%;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-block);
+  padding:var(--sp-2) var(--sp-4);
+}
+.ob2-sum>div{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.ob2-sum>div:last-child{border-bottom:none}
+.ob2-sum dt{font-size:14.5px;font-weight:600;color:rgba(255,255,255,.72)}
+.ob2-sum dd{margin:0;font-size:16px;font-weight:800;color:#fff;text-align:right}
+.ob2-sum dd small{font-size:12px;font-weight:700;color:var(--mint-soft);margin-left:4px}
+.ob2-sum .ob2-sum-key dt{color:var(--mint-soft)}
+.ob2-sum .ob2-sum-key dd{font-size:19px;color:var(--mint)}
+
+/* ── 하단 액션 (①·③) ── */
+.ob2-actions{
+  flex:0 0 auto;display:flex;flex-direction:column;gap:var(--sp-3);
+  width:100%;max-width:560px;margin:0 auto;
+  padding:var(--sp-3) var(--sp-6) calc(var(--sp-6) + env(safe-area-inset-bottom));
+}
+.ob2-fine{text-align:center;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.62);margin-top:2px}
+
+/* ── 버튼 ── */
+.ob2-btn{
+  display:flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  width:100%;min-height:58px;padding:0 var(--sp-5);
+  border:none;border-radius:var(--r-block);cursor:pointer;
+  font-family:inherit;font-size:17px;font-weight:800;letter-spacing:-.3px;
+  transition:transform var(--dur-1), box-shadow var(--dur-2), background var(--dur-2);
+}
+.ob2-btn:active{transform:scale(.98)}
+.ob2-btn svg{flex:0 0 auto}
+.ob2-btn-mint{background:var(--mint);color:var(--pine);box-shadow:0 14px 30px -14px rgba(65,211,146,.7)}
+.ob2-btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.28);font-weight:700;font-size:16px;min-height:54px}
+.ob2-btn-ghost:active{background:rgba(255,255,255,.08)}
+.ob2-btn-pine{background:var(--pine);color:#fff;box-shadow:var(--sh-lift)}
+.ob2-root :focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+.ob2-light :focus-visible{outline-color:var(--pine)}
+
+/* ── ② 설정 폼 ── */
+.ob2-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.ob2-wrap{width:100%;max-width:560px;margin:0 auto;padding:0 var(--sp-4)}
+.ob2-body .ob2-wrap{padding-bottom:var(--sp-6)}
+.ob2-h2{margin:var(--sp-2) 0 0;font-size:26px;font-weight:800;letter-spacing:-.9px;line-height:1.3;color:var(--ink)}
+.ob2-sub{margin-top:var(--sp-2);font-size:15px;font-weight:500;line-height:1.6;color:var(--ink-soft)}
+
+.ob2-field{
+  margin:var(--sp-4) 0 0;padding:var(--sp-4);border:1px solid var(--line);border-radius:var(--r-card);
+  background:var(--paper);box-shadow:var(--sh-1);min-width:0;
+}
+fieldset.ob2-field{margin-inline:0}
+.ob2-lab{display:flex;align-items:center;gap:var(--sp-2);padding:0;
+  font-size:16.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px;margin-bottom:var(--sp-3)}
+fieldset .ob2-lab{float:left;width:100%}
+fieldset .ob2-lab + *{clear:both}
+.ob2-lab em{font-style:normal;font-size:12px;font-weight:800;padding:3px 8px;border-radius:var(--r-chip)}
+.ob2-req{background:var(--pine);color:#fff}
+.ob2-opt{background:var(--tile);color:var(--muted)}
+.ob2-hint{margin:-4px 0 var(--sp-3);font-size:14px;font-weight:600;color:var(--muted)}
+
+.ob2-input{
+  width:100%;min-height:54px;padding:0 var(--sp-4);
+  font-family:inherit;font-size:18px;font-weight:700;color:var(--ink);
+  background:var(--tile);border:2px solid transparent;border-radius:var(--r-ctl);outline:none;
+  transition:border-color var(--dur-2), background var(--dur-2);
+  -webkit-appearance:none;appearance:none;
+}
+.ob2-input::placeholder{color:var(--muted);font-weight:600;opacity:.8}
+.ob2-input:focus{border-color:var(--pine);background:var(--paper)}
+.ob2-input.is-err{border-color:var(--bad-1);background:var(--paper)}
+
+.ob2-unit{position:relative;display:flex;align-items:center}
+.ob2-unit .ob2-input{padding-right:64px;text-align:right;font-variant-numeric:tabular-nums;font-size:20px}
+.ob2-unit.is-err .ob2-input{border-color:var(--bad-1)}
+.ob2-suffix{position:absolute;right:var(--sp-4);font-size:16px;font-weight:800;color:var(--ink-soft);pointer-events:none}
+
+.ob2-err{margin-top:var(--sp-2);font-size:14.5px;font-weight:700;color:var(--bad-1)}
+.ob2-calc{margin-top:var(--sp-2);font-size:14.5px;font-weight:600;color:var(--ink-soft);line-height:1.5}
+.ob2-calc b{color:var(--ink);font-weight:800}
+
+.ob2-why{
+  display:flex;align-items:flex-start;gap:6px;margin-top:var(--sp-3);
+  font-size:14px;font-weight:500;line-height:1.55;color:var(--muted);
+}
+.ob2-why svg{flex:0 0 auto;margin-top:3px;color:var(--good-2)}
+
+/* 칩 */
+.ob2-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-2)}
+.ob2-chip{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  min-height:48px;padding:0 6px;border-radius:var(--r-ctl);cursor:pointer;
+  font-family:inherit;font-size:16px;font-weight:700;color:var(--ink-soft);
+  background:var(--tile);border:2px solid transparent;
+  transition:background var(--dur-2), color var(--dur-2), border-color var(--dur-2), transform var(--dur-1);
+}
+.ob2-chip:active{transform:scale(.96)}
+.ob2-chip.on{background:var(--pine);color:#fff;border-color:var(--pine)}
+.ob2-chips-share{grid-template-columns:repeat(5,minmax(0,1fr))}
+.ob2-chip-2{flex-direction:column;gap:1px;min-height:64px;padding:6px 4px}
+.ob2-chip-t{font-size:14.5px;font-weight:800;line-height:1.25;text-align:center}
+.ob2-chip-s{font-size:13px;font-weight:700;color:var(--muted)}
+.ob2-chip.on .ob2-chip-s{color:var(--mint-soft)}
+
+/* 스테퍼 */
+.ob2-step{display:flex;align-items:center;gap:var(--sp-3)}
+.ob2-stepbtn{
+  flex:0 0 auto;width:56px;height:56px;border-radius:var(--r-ctl);border:none;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;background:var(--tile);color:var(--ink);
+  transition:transform var(--dur-1), opacity var(--dur-2);
+}
+.ob2-stepbtn:active{transform:scale(.94)}
+.ob2-stepbtn:disabled{opacity:.35;cursor:default;transform:none}
+.ob2-stepval{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--ink-soft)}
+.ob2-stepval b{font-size:28px;font-weight:800;color:var(--ink);letter-spacing:-.6px;margin-right:2px}
+
+/* 하단 고정 CTA */
+.ob2-foot{
+  flex:0 0 auto;background:var(--paper);border-top:1px solid var(--line);
+  padding:var(--sp-3) 0 calc(var(--sp-3) + env(safe-area-inset-bottom));
+}
+
+/* 좁은 폰 */
+@media (max-width:360px){
+  .ob2-h1{font-size:28px}
+  .ob2-chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ob2-chips-share{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ob2-hero,.ob2-actions{padding-left:var(--sp-4);padding-right:var(--sp-4)}
+}
+@media (max-width:420px){
+  .ob2-chips-share{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+/* 넓은 화면 — 가운데 정렬 */
+@media (min-width:900px){
+  .ob2-hero{align-items:flex-start}
+  .ob2-h1{font-size:38px}
+}
+@media (prefers-reduced-motion:reduce){
+  .onb.ob2-root,.ob2-fade{animation:none}
+  .ob2-dot,.ob2-btn,.ob2-chip{transition:none}
+}

@@ -1,0 +1,148 @@
+/* ============================================================
+   메뉴 만들기·고치기 (menu2) — 새 메뉴 시트 · 메뉴 편집 시트 · 예시 배너 · 빈 메뉴판
+   시트는 document.body 로 포털해서 position:fixed 로 띄운다.
+   사이드바(.screen 밖)에서 열어도, 폰 탭바에서 열어도 같은 자리에 뜬다.
+   ============================================================ */
+
+/* ---------- 시트 공통 ---------- */
+.mn2-wrap{
+  position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(20,16,12,.46);animation:mn2-fade var(--dur-2,.2s) ease both;
+  word-break:keep-all;
+}
+.mn2-sheet{
+  position:relative;width:100%;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;
+  background:var(--paper);color:var(--ink);border-radius:24px 24px 0 0;
+  padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -18px 44px -18px rgba(26,22,19,.4);
+  animation:mn2-up .32s var(--ease-out,cubic-bezier(.2,.8,.3,1)) both;
+}
+.mn2-grab{width:40px;height:4px;border-radius:99px;background:var(--track);margin:2px auto 14px}
+.mn2-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.mn2-head h2{font-size:19px;font-weight:800;letter-spacing:-.5px;line-height:1.3}
+.mn2-x{
+  flex:0 0 auto;width:44px;height:44px;margin-right:-8px;border:0;border-radius:12px;background:transparent;
+  color:var(--ink-soft);display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.mn2-x:hover{background:var(--tile)}
+.mn2-lead{font-size:14px;font-weight:500;color:var(--muted);line-height:1.6;margin-bottom:18px}
+
+@keyframes mn2-fade{from{opacity:0}to{opacity:1}}
+@keyframes mn2-up{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+
+/* PC — 바텀시트 대신 가운데 대화상자 */
+@media (min-width:900px){
+  .mn2-wrap{align-items:center;padding:24px}
+  .mn2-sheet{max-width:460px;border-radius:24px;padding:20px 26px 24px;box-shadow:0 30px 70px -20px rgba(26,22,19,.45)}
+  .mn2-grab{display:none}
+}
+
+/* ---------- 입력 ---------- */
+.mn2-field{display:block;margin-bottom:16px}
+.mn2-lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px;
+  font-size:14px;font-weight:700;color:var(--ink-soft)}
+.mn2-lab em{font-style:normal;font-size:12.5px;font-weight:600;color:var(--muted)}
+.mn2-lab .req{color:var(--bad-1);margin-left:2px}
+.mn2-input{
+  position:relative;display:flex;align-items:center;min-height:54px;border-radius:14px;
+  background:var(--paper-2,var(--tile));border:1.5px solid var(--line);transition:border-color .15s,box-shadow .15s;
+}
+.mn2-input:focus-within{border-color:var(--pine);box-shadow:0 0 0 3px var(--wash-good)}
+.mn2-input.bad{border-color:var(--bad-1);box-shadow:0 0 0 3px var(--wash-bad)}
+.mn2-input input{
+  flex:1;min-width:0;height:52px;padding:0 14px;border:0;background:transparent;outline:none;
+  font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.2px;
+}
+.mn2-input input::placeholder{color:var(--hairline,var(--muted));font-weight:500}
+.mn2-input .mn2-unit{padding-right:16px;font-size:16px;font-weight:700;color:var(--muted)}
+.mn2-input input.num{text-align:right;font-variant-numeric:tabular-nums}
+.mn2-err{margin-top:7px;font-size:13px;font-weight:700;color:var(--bad-2,var(--bad-1));line-height:1.5}
+.mn2-help{margin-top:7px;font-size:13px;font-weight:500;color:var(--muted);line-height:1.55}
+
+/* 빠른 가격 칩 */
+.mn2-chips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:10px}
+.mn2-chip{
+  min-width:0;min-height:44px;padding:0 2px;white-space:nowrap;border-radius:12px;border:1px solid var(--line);background:var(--paper);
+  font-family:inherit;font-size:14px;font-weight:700;color:var(--ink-soft);cursor:pointer;font-variant-numeric:tabular-nums;letter-spacing:-.3px;
+}
+.mn2-chip:hover{border-color:var(--rule,var(--line))}
+.mn2-chip.on{background:var(--pine);border-color:var(--pine);color:#fff}
+
+/* 주요 버튼 */
+.mn2-go{
+  width:100%;min-height:56px;margin-top:6px;border:0;border-radius:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--pine);color:#fff;font-family:inherit;font-size:16.5px;font-weight:800;letter-spacing:-.3px;
+  box-shadow:0 14px 28px -12px rgba(12,43,30,.6);transition:transform .14s,background .14s;
+}
+.mn2-go:hover{background:var(--pine-2)}
+.mn2-go:active{transform:scale(.985)}
+.mn2-go:disabled{opacity:.45;cursor:default;box-shadow:none}
+.mn2-sub{text-align:center;margin-top:10px;font-size:13px;font-weight:500;color:var(--muted);line-height:1.55}
+
+/* ---------- 편집 시트 ---------- */
+.mn2-photo-row{display:flex;align-items:center;gap:14px;margin:8px 0 18px}
+.mn2-photo{flex:0 0 auto;width:72px;height:72px;border-radius:18px;overflow:hidden;background:var(--tile);
+  display:flex;align-items:center;justify-content:center;color:var(--ink-soft)}
+.mn2-photo img{width:100%;height:100%;object-fit:cover}
+.mn2-photo-act{display:flex;flex-wrap:wrap;gap:6px}
+.mn2-btn{
+  display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:0;border-radius:12px;cursor:pointer;
+  background:var(--tile);color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;
+}
+.mn2-btn.ghost{background:none;color:var(--muted);font-weight:600;padding:0 8px}
+
+/* 가격이 바뀌면 — 마진 변화 안내 */
+.mn2-shift{
+  margin:-4px 0 16px;padding:14px 15px;border-radius:14px;background:var(--sand);color:var(--sand-ink);
+  font-size:13.5px;font-weight:600;line-height:1.6;
+}
+.mn2-shift b{font-weight:800}
+.mn2-shift .mn2-shift-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:15px;color:var(--ink)}
+.mn2-shift .mn2-shift-row .was{color:var(--muted);text-decoration:line-through;font-weight:700}
+.mn2-shift .g{color:var(--good-2)} .mn2-shift .w{color:var(--warn-2,var(--warn-1))} .mn2-shift .b{color:var(--bad-2,var(--bad-1))}
+.mn2-link{
+  display:inline-flex;align-items:center;gap:4px;min-height:44px;margin-top:4px;padding:0;border:0;background:none;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:800;color:var(--pine);text-decoration:underline;text-underline-offset:3px;
+}
+
+.mn2-actions{display:flex;gap:8px;margin-top:10px}
+.mn2-act{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border-radius:14px;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper);font-family:inherit;font-size:14.5px;font-weight:700;color:var(--ink-soft);
+}
+.mn2-act:active{transform:scale(.98)}
+.mn2-act.danger{color:var(--bad-1)}
+.mn2-act.danger:hover{border-color:var(--bad-1);background:var(--wash-bad)}
+
+/* ---------- 메뉴판: 예시 데이터 배너 ---------- */
+.mn2-sample{
+  margin:6px 22px 12px;padding:13px 14px 13px 16px;border-radius:16px;
+  background:var(--sand);color:var(--sand-ink);display:flex;align-items:center;gap:12px;word-break:keep-all;
+}
+.mn2-sample p{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.5}
+.mn2-sample p b{font-weight:800}
+.mn2-sample button{
+  flex:0 0 auto;min-height:44px;padding:0 14px;border:0;border-radius:12px;cursor:pointer;
+  background:var(--pine);color:#fff;font-family:inherit;font-size:14px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;
+}
+
+/* ---------- 메뉴판: 빈 상태 ---------- */
+.mn2-empty{
+  background:var(--paper);border:1px solid var(--line);border-radius:22px;
+  padding:30px 24px 26px;text-align:center;word-break:keep-all;
+}
+.mn2-empty-orb{display:flex;justify-content:center;margin-bottom:14px}
+.mn2-empty h3{font-size:18px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+.mn2-empty p{font-size:14.5px;font-weight:500;color:var(--ink-soft);line-height:1.65}
+.mn2-empty .mn2-go{max-width:300px;margin:20px auto 0}
+
+/* 메뉴 리스트 끝 — 새 메뉴 추가 */
+.mn2-add{
+  width:100%;min-height:56px;border:1.5px dashed var(--rule,var(--line));border-radius:18px;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;font-size:15px;font-weight:800;color:var(--pine);transition:background .14s,border-color .14s;
+}
+.mn2-add:hover{background:var(--wash-good);border-color:var(--pine)}
+
+@media (prefers-reduced-motion:reduce){.mn2-wrap,.mn2-sheet{animation:none}}

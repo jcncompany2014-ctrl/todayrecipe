@@ -1,0 +1,62 @@
+/* 오브 — '앱이 일하거나 기다리는 순간'에만 쓴다.
+   접두어 .ob- (index.css 의 .ob-lab/.ob-big/.ob-diag/.ob-dot 은 온보딩 소유 — 겹치지 않게 이름을 피함) */
+
+/* 결과 화면 — 계산 연출 */
+.ob-calc{
+  margin:28px 18px 0;min-height:260px;padding:var(--sp-6,28px) var(--sp-5,20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  width:calc(100% - 36px);box-sizing:border-box;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card,20px);
+  box-shadow:var(--sh-1,none);color:var(--ink);font:inherit;text-align:center;cursor:pointer;
+  word-break:keep-all;-webkit-tap-highlight-color:transparent;
+  animation:ob-in var(--dur-2,.2s) var(--ease-out,ease-out) both;
+}
+.ob-calc:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.ob-calc-tx{font-size:16px;font-weight:800;letter-spacing:-.3px;line-height:1.45;color:var(--ink)}
+.ob-calc-tx b{color:var(--good-2,var(--pine))}
+.ob-calc-sub{font-size:13px;font-weight:500;color:var(--muted);line-height:1.5}
+.ob-calc-bar{width:140px;height:4px;border-radius:99px;background:var(--track);overflow:hidden}
+.ob-calc-bar i{display:block;height:100%;width:100%;background:var(--good-1,var(--mint));border-radius:inherit;
+  transform-origin:left center;animation:ob-fill .9s linear both}
+.ob-calc-skip{font-size:12.5px;font-weight:600;color:var(--muted);min-height:44px;display:flex;align-items:center}
+@keyframes ob-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes ob-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* 제목 옆 작은 오브 */
+.ob-inl{display:inline-flex;align-items:center;flex:0 0 auto;line-height:0}
+.ob-inl canvas{display:block}
+
+/* 빈 상태 공용 — 오브를 글 위에 세운다 */
+.ob-empty-orb{display:flex;justify-content:center;margin:0 auto 10px;line-height:0}
+.ob-empty-orb canvas{display:block}
+
+/* 오늘 마감 — 판매 0개일 때 (어두운 요약 카드 위) */
+.ob-stl{display:flex;align-items:center;gap:10px;word-break:keep-all}
+.ob-stl .ob-inl{width:32px;height:32px}
+.ob-stl-tx{display:flex;flex-direction:column;gap:2px}
+.ob-stl-tx b{font-size:14px;font-weight:800;color:var(--paper)}
+.ob-stl-tx span{font-size:12px;font-weight:500;color:rgba(255,255,255,.62)}
+
+/* 메뉴 분석 — 메뉴가 2개 미만 */
+.ob-mx{
+  padding:var(--sp-6,28px) var(--sp-4,16px) var(--sp-5,20px);text-align:center;word-break:keep-all;
+  background:var(--tile);border-radius:var(--r-block,16px);
+}
+.ob-mx b{display:block;font-size:15px;font-weight:800;color:var(--ink);line-height:1.45}
+.ob-mx p{margin-top:8px;font-size:13px;font-weight:500;color:var(--muted);line-height:1.6}
+.ob-mx-btn{
+  margin-top:16px;min-height:48px;padding:0 20px;border:none;border-radius:var(--r-ctl,12px);
+  background:var(--pine);color:var(--paper);font:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.ob-mx-btn:active{transform:scale(.98)}
+
+/* 오늘 마감 — 메뉴가 하나도 없을 때 */
+.ob-nomenu{padding:24px 16px;text-align:center;background:var(--tile);border-radius:var(--r-block,16px);word-break:keep-all}
+.ob-nomenu b{display:block;font-size:14.5px;font-weight:800;color:var(--ink-soft)}
+.ob-nomenu span{display:block;margin-top:6px;font-size:12.5px;font-weight:500;color:var(--muted);line-height:1.6}
+
+@media (prefers-reduced-motion:reduce){
+  .ob-calc,.ob-calc-bar i{animation:none}
+}
+.ob-mx .ob-mx-nm{font-style:normal;font-weight:800;color:var(--ink)}
