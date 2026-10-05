@@ -4,7 +4,7 @@ import Icon from './Icon'
 import Photo from './Photo'
 import { Mn2Sheet, esc, onlyDigits, commas, priceError, NAME_MAX } from './NewMenuSheet'
 import { useStore } from '../state/store'
-import { won, sig, overheadFor } from '../lib/calc'
+import { won, sig, overheadFor, profitOf } from '../lib/calc'
 import '../styles/menu2.css'
 
 /* 메뉴 편집 시트 — 이름·판매가·사진 수정, 복제, 삭제.
@@ -32,14 +32,15 @@ export default function MenuEditSheet({ menu, onClose }) {
   const newPrice = pErr ? oldPrice : Number(price)
   const priceChanged = !pErr && newPrice !== oldPrice
 
-  // 같은 식자재 원가로 새 가격의 마진을 어림 — loadMenu 의 역산과 같은 식
-  const estMargin = (() => {
-    if (!priceChanged || !oldPrice || newPrice <= 0) return oldMargin
+  // 같은 식자재 원가로 새 가격의 남는 돈·마진을 어림 — loadMenu 의 역산과 같은 식
+  const est = (() => {
+    if (!priceChanged || !oldPrice || newPrice <= 0) return { margin: oldMargin, profit: null }
     const opts = costOpts || {}
-    const food = Math.max(0, Math.round((oldPrice * (100 - oldMargin)) / 100) - overheadFor(oldPrice, opts))
-    const cost = food + overheadFor(newPrice, opts)
-    return Math.round(((newPrice - cost) / newPrice) * 100)
+    const food = Math.max(0, Math.round(oldPrice - profitOf(menu)) - overheadFor(oldPrice, opts))
+    const profit = Math.round(newPrice - (food + overheadFor(newPrice, opts)))
+    return { margin: Math.round((profit / newPrice) * 100), profit }
   })()
+  const estMargin = est.margin
   const safePct = safeMargin && Number.isFinite(safeMargin.pct) ? safeMargin.pct : 30
   const sOld = sig(oldMargin, safePct)
   const sNew = sig(estMargin, safePct)
@@ -83,7 +84,7 @@ export default function MenuEditSheet({ menu, onClose }) {
     setTried(true)
     if (nameErr || pErr) return null
     const patch = { nm: name.slice(0, NAME_MAX), price: newPrice, img }
-    if (priceChanged) patch.margin = estMargin
+    if (priceChanged) { patch.margin = estMargin; patch.profit = est.profit }
     return patch
   }
 

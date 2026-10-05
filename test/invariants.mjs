@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR, yieldFromMoisture } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR, yieldFromMoisture, profitOf } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -152,6 +152,15 @@ export function runInvariants() {
   log.push('[14] 빈 장바구니에서도 죽지 않는다')
   ok('빈 items 요약', (() => { try { summarize([], 9000); return true } catch { return false } })())
   ok('빈 items 발주', (() => { try { return orderPlan([], 10).total === 0 } catch { return false } })())
+
+  log.push('[15] 한 그릇 남는 돈은 화면마다 같은 값이다')
+  {
+    const s = summarize(items, DEFAULT_BUILD.price)
+    const saved = { price: DEFAULT_BUILD.price, margin: s.margin, profit: DEFAULT_BUILD.price - s.cost }
+    ok(`저장된 메뉴는 결과 화면 금액 그대로 (${saved.profit}원)`, profitOf(saved) === Math.round(DEFAULT_BUILD.price - s.cost))
+    ok('금액이 없는 옛 메뉴는 가격 × 마진으로 물러난다', profitOf({ price: 9000, margin: 36 }) === 3240)
+    ok('빈 메뉴·글자 입력에도 죽지 않는다', profitOf(null) === 0 && profitOf({ price: 'a', margin: 'b' }) === 0)
+  }
 
   return { pass, fail, log, foodCost: items.reduce((a, it) => a + costOf(it), 0), summary: summarize(items, DEFAULT_BUILD.price) }
 }

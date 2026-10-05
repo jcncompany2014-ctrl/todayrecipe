@@ -69,6 +69,17 @@ export const DAILY_FIXED = 243000
 
 export const won = (n) => Math.round(n).toLocaleString('ko-KR')
 export const round10 = (n) => Math.round(n / 10) * 10
+
+/* 메뉴 한 그릇이 남기는 돈(원) — 모든 화면이 이 함수 하나로 읽는다.
+   결과 화면에서 저장한 메뉴는 계산된 금액(profit)을 그대로 갖고 있다.
+   예전엔 화면마다 '가격 × 반올림한 마진%'로 다시 곱해서, 결과 화면은 3,220원,
+   메뉴판·대시보드는 3,240원이라고 서로 다르게 말했다(마진 35.8% → 36%). */
+export const profitOf = (m) => {
+  if (!m) return 0
+  const p = Number(m.profit)
+  if (Number.isFinite(p)) return Math.round(p)
+  return Math.round(((Number(m.price) || 0) * (Number(m.margin) || 0)) / 100)
+}
 /* 원/g 표시 — 소수점을 살린다. 양파 2.4원/g을 2원으로 뭉개면
    '내 매입가'를 넣는 의미 자체가 사라진다(그램 단가는 원래 잘다). */
 export const perGText = (v) => {
@@ -510,7 +521,7 @@ export function menuMatrix(menus, popOf) {
   const rows = withPop.map((r) => {
     const hiM = r.margin >= avgMargin, hiP = r.pop >= avgPop
     const q = hiM ? (hiP ? 'star' : 'puzzle') : (hiP ? 'plow' : 'dog')
-    const profitEach = Math.round((r.m.price * r.margin) / 100)
+    const profitEach = profitOf(r.m)
     return { m: r.m, margin: r.margin, pop: r.pop, q, profitEach, contrib: profitEach * r.pop }
   }).sort((a, b) => b.contrib - a.contrib)
   const counts = rows.reduce((a, r) => { a[r.q] = (a[r.q] || 0) + 1; return a }, {})

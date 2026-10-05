@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useRef, useEffect } f
 import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
-import { overheadFor, safeMarginOf } from '../lib/calc'
+import { overheadFor, safeMarginOf, profitOf } from '../lib/calc'
 import { usePersistentState, load, save, clearAll, storageAvailable, SCHEMA, lastSaveFailed, onSaveStatus } from './persist'
 
 /* ── 사장님이 직접 추가한 재료 ─────────────────────────────────────────
@@ -282,14 +282,20 @@ export function StoreProvider({ children }) {
       return
     }
     if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
-    const cost = Math.round((menu.price * (100 - menu.margin)) / 100)
+    const cost = Math.round(menu.price - profitOf(menu))
     // 부대비용은 가게 설정(costOpts) 기준으로 역산해야 한다 — 기본값으로 풀면 마진이 되돌아간다
     setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price, costOpts)) })
   }, [costOpts, applyLedger])
 
   // 메뉴 편집(이름·사진 등) — 메뉴판에서 바로 수정
   const updateMenu = useCallback((id, patch) => {
-    setMenus((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)))
+    setMenus((list) => list.map((m) => {
+      if (m.id !== id) return m
+      const next = { ...m, ...patch }
+      // 가격·마진이 바뀌었는데 남는 돈을 함께 주지 않았다면 옛 금액은 더 이상 맞지 않다
+      if (!('profit' in patch) && (next.price !== m.price || next.margin !== m.margin)) delete next.profit
+      return next
+    }))
     // 지금 장바구니·결과에서 보고 있는 메뉴라면 거기에도 같은 이름·가격을 반영
     setBuild((b) => (b.id === id ? { ...b, ...('nm' in patch ? { nm: patch.nm } : {}), ...('price' in patch ? { price: patch.price } : {}) } : b))
   }, [setMenus, setBuild])
@@ -310,12 +316,13 @@ export function StoreProvider({ children }) {
   /* 결과 저장 → 메뉴판에 누적(upsert). 레시피(items)도 함께 기억.
      price를 인자로 받는 이유: setPrice는 비동기다. 같은 틱에 build.price를 읽으면
      아직 옛 값이라 '옛 가격 + 새 마진'이라는 있을 수 없는 조합이 저장된다. */
-  const saveBuild = useCallback((price, margin) => {
+  const saveBuild = useCallback((price, margin, profit) => {
     setMenus((list) => {
       const cleared = list.map((m) => ({ ...m, badge: undefined }))
       const idx = cleared.findIndex((m) => m.id === build.id)
       const patch = {
         id: build.id, nm: build.nm, price, margin,
+        profit: Number.isFinite(profit) ? Math.round(profit) : undefined,   // 결과 화면이 낸 금액 그대로
         icon: build.icon || 'donbap', img: build.img,
         items: clone(build.items), badge: '방금 계산',
       }

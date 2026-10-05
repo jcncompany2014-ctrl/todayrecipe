@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
-import { won, sig } from '../lib/calc'
+import { won, sig, profitOf } from '../lib/calc'
 
 const round100 = (n) => Math.round(n / 100) * 100
 
@@ -22,7 +22,7 @@ export default function Combo() {
 
   const chosen = picked.map((id) => menus.find((m) => m.id === id)).filter(Boolean)
   const sumPrice = chosen.reduce((a, m) => a + m.price, 0)
-  const sumProfit = chosen.reduce((a, m) => a + Math.round((m.price * m.margin) / 100), 0)
+  const sumProfit = chosen.reduce((a, m) => a + profitOf(m), 0)
   const sumCost = sumPrice - sumProfit // 낱개 원가 합
 
   const suggested = round100(sumPrice * 0.9) // 기본 10% 할인

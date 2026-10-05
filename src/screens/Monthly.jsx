@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useStore } from '../state/store'
-import { won, manwon } from '../lib/calc'
+import { won, manwon, profitOf } from '../lib/calc'
 
 /* 이번 달 손익 요약 — 메뉴별 '하루 평균 판매량'만 넣으면 한 달 매출·순이익을 역산. */
 export default function Monthly() {
@@ -21,7 +21,7 @@ export default function Monthly() {
   const rows = menus.map((m) => {
     const d = daily[m.id] || 0
     const qty = d * workDays
-    const profitEach = Math.round((m.price * m.margin) / 100)
+    const profitEach = profitOf(m)
     return { m, d, qty, revenue: m.price * qty, profit: profitEach * qty }
   })
   const anyInput = rows.some((r) => r.d > 0)

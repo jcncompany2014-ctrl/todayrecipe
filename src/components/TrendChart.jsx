@@ -2,7 +2,7 @@ import { AreaChart } from '../charts/area-chart'
 import { Area } from '../charts/area'
 import { Grid } from '../charts/grid'
 import { XAxis } from '../charts/x-axis'
-import { won } from '../lib/calc'
+import { won, profitOf } from '../lib/calc'
 import Orb from './Orb'
 import '../styles/orbs.css'
 
@@ -10,13 +10,13 @@ import '../styles/orbs.css'
    판매 기록(salesLog)에 날짜가 생기면서 비로소 그릴 수 있게 됐다.
    차트는 대시보드에서만 불러온다(대시보드가 lazy라 첫 로드에 안 실린다). */
 export default function TrendChart({ days = [], menus = [], dailyFixed = 0 }) {
-  const priceOf = {}
-  menus.forEach((m) => { priceOf[m.id] = { price: m.price, margin: m.margin } })
+  const profitById = {}
+  menus.forEach((m) => { profitById[m.id] = profitOf(m) })
 
   const data = days.map((d) => {
     const gross = Object.entries(d.sold || {}).reduce((a, [id, n]) => {
-      const m = priceOf[id]
-      return a + (m ? Math.round((m.price * m.margin) / 100) * n : 0)
+      const p = profitById[id]
+      return a + (p != null ? p * n : 0)
     }, 0)
     const [y, mo, dd] = d.key.split('-').map(Number)
     return { date: new Date(y, mo - 1, dd), net: gross - dailyFixed, bowls: d.count }

@@ -3,7 +3,7 @@ import Icon from '../components/Icon'
 import GoalGauge from '../components/GoalGauge'
 import TrendChart from '../components/TrendChart'
 import { useStore } from '../state/store'
-import { won, round10, breakeven, goalPlan, manwon } from '../lib/calc'
+import { won, round10, breakeven, goalPlan, manwon, profitOf } from '../lib/calc'
 
 export default function Dashboard() {
   const nav = useNavigate()
@@ -11,7 +11,7 @@ export default function Dashboard() {
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
-  const avgProfit = round10(menus.reduce((a, m) => a + (m.price * m.margin) / 100, 0) / (menus.length || 1))   // 메뉴 0개면 NaN 대신 0
+  const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / (menus.length || 1))   // 메뉴 0개면 NaN 대신 0
   const shopBowls = breakeven(avgProfit, dailyFixed)
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 가게 전체: 한 달 목표 → 하루치 역산
 

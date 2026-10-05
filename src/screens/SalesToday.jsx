@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
-import { won } from '../lib/calc'
+import { won, profitOf } from '../lib/calc'
 import Orb from '../components/Orb'
 import '../styles/orbs.css'
 
@@ -13,7 +13,7 @@ export default function SalesToday() {
 
   const rows = menus.map((m) => {
     const count = soldToday[m.id] || 0
-    const profit = Math.round((m.price * m.margin) / 100) // 그릇당 남는 돈
+    const profit = profitOf(m) // 그릇당 남는 돈
     return { m, count, profit }
   })
   const totalCount = rows.reduce((a, r) => a + r.count, 0)
@@ -26,7 +26,7 @@ export default function SalesToday() {
 
   /* 어제와 견주기 — 날짜별 장부가 생기면서 비로소 가능해진 것.
      어제는 '하루 전체', 오늘은 '지금까지'다. 그 차이를 문구로 밝힌다. */
-  const yRows = menus.map((m) => ({ count: yesterdaySold[m.id] || 0, profit: Math.round((m.price * m.margin) / 100) }))
+  const yRows = menus.map((m) => ({ count: yesterdaySold[m.id] || 0, profit: profitOf(m) }))
   const yCount = yRows.reduce((a, r) => a + r.count, 0)
   const yGross = yRows.reduce((a, r) => a + r.profit * r.count, 0)
   const yNet = yGross - dailyFixed

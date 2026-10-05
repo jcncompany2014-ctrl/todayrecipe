@@ -7,7 +7,7 @@ import MenuEditSheet from '../components/MenuEditSheet'
 import NewMenuSheet from '../components/NewMenuSheet'
 import Orb from '../components/Orb'
 import { useStore } from '../state/store'
-import { won, round10, sig, goalPlan, manwon } from '../lib/calc'
+import { won, round10, sig, goalPlan, manwon, profitOf } from '../lib/calc'
 import '../styles/menu2.css'
 
 export default function Menu() {
@@ -21,7 +21,6 @@ export default function Menu() {
   // 메뉴판이 빌 수 있다(전부 삭제·첫 사용). 빈 상태에서도 화면은 살아 있어야 한다.
   const list = Array.isArray(menus) ? menus : []
   const hasMenus = list.length > 0
-  const profitOf = (m) => ((Number(m.price) || 0) * (Number(m.margin) || 0)) / 100
   const avgProfit = hasMenus ? round10(list.reduce((a, m) => a + profitOf(m), 0) / list.length) : 0
   const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
   const best = hasMenus ? list.reduce((a, b) => (b.margin > a.margin ? b : a)) : null
@@ -61,18 +60,30 @@ export default function Menu() {
             ? <>한 달 <b>{manwon(monthlyGoal)}</b> 목표 · 영업 {workDays}일 기준</>
             : <>가게 유지 기준 · 영업 {workDays}일</>}
         </div>
-        <div className="hero-num">
-          <span className="pre">하루</span><b className="num">{gp.total === Infinity ? '—' : gp.total}</b><span className="unit">그릇</span><span className="tail">팔면 돼요</span>
-        </div>
+        {/* 메뉴가 없으면 숫자 자리에 '—'를 크게 찍지 않는다(검은 막대처럼 보였다).
+            대신 이 카드가 무엇을 알려줄지 말하고, 첫 메뉴 버튼을 화면 맨 위에 둔다 */}
+        {hasMenus ? (
+          <div className="hero-num">
+            <span className="pre">하루</span><b className="num">{gp.total === Infinity ? '?' : gp.total}</b><span className="unit">그릇</span><span className="tail">팔면 돼요</span>
+          </div>
+        ) : (
+          <div className="hero-first">
+            <p className="hf-q">하루 <b>몇 그릇</b> 팔아야 할까요?</p>
+            <p className="hf-sub">메뉴를 하나 만들면 고정비·목표에 맞춰 바로 계산해 드려요</p>
+            <button type="button" className="mn2-go hf-go" onClick={() => setNewOpen(true)}>
+              <Icon name="plus" size={19} stroke={2.4} />첫 메뉴 만들기
+            </button>
+          </div>
+        )}
 
-        {!hasMenus
-          ? <div className="hero-warn">메뉴를 하나 추가하면 하루 몇 그릇 팔아야 하는지 나와요</div>
-          : gp.total === Infinity
-            ? <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요</div>
-            : <GoalGauge be={gp.be} total={gp.total} />}
+        {hasMenus && (gp.total === Infinity
+          ? <div className="hero-warn">그릇당 남는 돈이 0 이하라 계산이 안 돼요 · 가격이나 재료를 확인해 주세요</div>
+          : <GoalGauge be={gp.be} total={gp.total} />)}
 
         <div className="hero-foot">
-          <span>그릇당 평균 <b className="num">{won(avgProfit)}원</b></span>
+          {hasMenus
+            ? <span>그릇당 평균 <b className="num">{won(avgProfit)}원</b></span>
+            : <span>한 달 고정비 <b className="num">{manwon(monthlyFixed)}</b>{monthlyGoal > 0 && <> · 목표 <b className="num">{manwon(monthlyGoal)}</b></>}</span>}
           <button className="hero-edit" onClick={() => setEditOpen((v) => !v)}>{editOpen ? '닫기' : '조정'}</button>
         </div>
         {editOpen && (
@@ -138,9 +149,11 @@ export default function Menu() {
             <div className="mn2-empty-orb"><Orb mood="idle" size={64} tone="green" label="첫 메뉴를 기다리는 중" /></div>
             <h3>아직 메뉴가 없어요</h3>
             <p>메뉴 이름과 가격을 정하고 재료를 담으면<br />그 메뉴의 진짜 원가와 마진이 나와요</p>
-            <button type="button" className="mn2-go" onClick={() => setNewOpen(true)}>
-              <Icon name="plus" size={19} stroke={2.4} />첫 메뉴 만들기
-            </button>
+            <ol className="mn2-steps">
+              <li><b>1</b>이름·가격 정하기</li>
+              <li><b>2</b>재료 담기</li>
+              <li><b>3</b>한 그릇 마진 확인</li>
+            </ol>
           </div>
         )}
         {sorted.map((m, i) => {
@@ -176,11 +189,14 @@ export default function Menu() {
         )}
       </div>
 
-      <button className="combo-cta fade" onClick={() => nav('/app/combo')}>
-        <span className="cc-ic"><Icon name="cart" size={18} stroke={1.9} /></span>
-        <span className="cc-txt"><b>세트·콤보 메뉴 만들기</b><em>메뉴를 묶어 세트가 · 마진 계산</em></span>
-        <Icon name="chevR" size={17} stroke={2} />
-      </button>
+      {/* 세트는 메뉴 두 개부터 묶을 수 있다 */}
+      {list.length >= 2 && (
+        <button className="combo-cta fade" onClick={() => nav('/app/combo')}>
+          <span className="cc-ic"><Icon name="cart" size={18} stroke={1.9} /></span>
+          <span className="cc-txt"><b>세트·콤보 메뉴 만들기</b><em>메뉴를 묶어 세트가 · 마진 계산</em></span>
+          <Icon name="chevR" size={17} stroke={2} />
+        </button>
+      )}
     </div>
     {editMenu && <MenuEditSheet key={editMenu.id} menu={editMenu} onClose={() => setEditMenu(null)} />}
     <NewMenuSheet open={newOpen} onClose={() => setNewOpen(false)} />

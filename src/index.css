@@ -1468,7 +1468,9 @@ a{color:inherit;text-decoration:none}
    메뉴 편집 — 카드 편집 버튼 + 편집 바텀시트
    ============================================================ */
 .scr-menu .mcard{position:relative}
-.scr-menu .mcard-edit{position:absolute;top:9px;right:10px;z-index:2;width:26px;height:26px;border:none;border-radius:8px;
+/* 연필은 오른쪽 위, 마진%는 그 아래 — 둘이 겹치지 않게 오른쪽 열을 내린다 */
+.scr-menu .mcard-end{padding-top:22px}
+.scr-menu .mcard-edit{position:absolute;top:7px;right:8px;z-index:2;width:26px;height:26px;border:none;border-radius:8px;
   background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
 .scr-menu .mcard-edit:hover{background:var(--tile);color:var(--ink-soft)}
 .scr-menu .mcard-edit:active{transform:scale(.9)}
@@ -2265,11 +2267,14 @@ a{color:inherit;text-decoration:none}
 .hit{ position:relative }
 .hit::after{ content:""; position:absolute; inset:-9px }   /* 26px 아이콘 → 44px */
 
-/* 클래스 추가 없이 기존 셀렉터에 이식 (픽셀 이동 0) */
+/* 클래스 추가 없이 기존 셀렉터에 이식 (픽셀 이동 0).
+   이미 position:absolute 인 버튼(.add · .ps-x · .ing-x · .mcard-edit)은 여기 넣지 않는다 —
+   넣으면 relative 로 덮여 제자리를 잃는다(메뉴 카드 연필이 금액을 밀어내고,
+   장바구니 X 가 카드 위에 빈 줄을 만들었다). absolute 도 ::after 의 기준이 된다. */
 .iconbtn,
-.scr-market .search-x, .scr-market .ps-x, .scr-market .add,
-.scr-cart .ing-x, .scr-cart .sum-top .edit, .scr-cart .ing-reset,
-.scr-menu .mcard-edit, .ms-x{ position:relative }
+.scr-market .search-x,
+.scr-cart .sum-top .edit, .scr-cart .ing-reset,
+.ms-x{ position:relative }
 
 .iconbtn::after,
 .scr-market .add::after      { content:""; position:absolute; inset:-5px }  /* 34 → 44 */
@@ -2396,9 +2401,9 @@ a{color:inherit;text-decoration:none}
 }
 .sidebar{display:none}
 
-/* 토스트 — 탭바가 있을 때만 그만큼 띄운다 */
-.app .toast{bottom:calc(28px + env(safe-area-inset-bottom,0px))}
-.app .screen.has-tab .toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+/* 토스트 — 하단 탭바·장바구니 막대·저장 버튼 위로 띄운다.
+   (28px로 내렸더니 재료 담기 화면의 장바구니 막대를 덮었다) */
+.app .toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 
 /* 첫 실행 화면은 이제 셸 밖에 있다 — 뷰포트 전체를 덮는다 */
 .onb{position:fixed;z-index:60}

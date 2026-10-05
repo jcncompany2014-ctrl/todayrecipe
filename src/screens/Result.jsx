@@ -176,9 +176,9 @@ export default function Result() {
 
   const onSave = () => {
     setPrice(price)
-    saveBuild(price, margin)   // 방금 조정한 가격을 그대로 넘긴다(setPrice는 아직 반영 전)
+    saveBuild(price, margin, profit)   // 방금 조정한 가격을 그대로 넘긴다(setPrice는 아직 반영 전)
     toast(`<b>${build.nm}</b> 저장됨 · 마진 ${margin}%로 메뉴판에 올렸어요`)
-    setTimeout(() => nav('/app'), 700)
+    setTimeout(() => nav('/app/menu'), 700)   // 방금 저장한 메뉴가 올라간 메뉴판으로
   }
 
   // 발주서를 글로 — 공유 시트가 있으면 공유, 없으면 클립보드 복사
