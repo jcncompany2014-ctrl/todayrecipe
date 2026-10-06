@@ -3,7 +3,7 @@ import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import QuadrantChart, { QCOL } from '../components/QuadrantChart'
 import { useStore } from '../state/store'
-import { won, menuMatrix, QUADRANTS, QUAD_ORDER } from '../lib/calc'
+import { won, round10, signedWon, menuMatrix, QUADRANTS, QUAD_ORDER } from '../lib/calc'
 import Orb from '../components/Orb'
 import '../styles/orbs.css'
 
@@ -77,7 +77,7 @@ export default function MenuMatrix() {
                   <div className="mx-photo"><Photo src={r.m.img} icon={r.m.icon} iconSize={19} alt={r.m.nm} /></div>
                   <div className="mx-mid">
                     <b>{r.m.nm}</b>
-                    <span className="num">마진 {r.margin}% · 하루 {r.pop}그릇 · 그릇당 +{won(r.profitEach)}원</span>
+                    <span className="num">마진 {r.margin}% · 하루 {r.pop}그릇 · 그릇당 {signedWon(round10(r.profitEach))}원</span>
                   </div>
                   <div className="mx-contrib num">{won(r.contrib)}<i>원</i></div>
                 </div>

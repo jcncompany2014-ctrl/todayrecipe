@@ -22,7 +22,7 @@ const avgOf = (arr) => (arr.length ? Math.round(arr.reduce((a, v) => a + v, 0) /
 
 export default function Stores() {
   const nav = useNavigate()
-  const { stores, enterStore, currentStoreId, toast, safeMargin, addStore, updateStore, deleteStore } = useStore()
+  const { stores, menusOf, enterStore, currentStoreId, toast, safeMargin, addStore, updateStore, deleteStore } = useStore()
   // sheet: null | { mode:'add' } | { mode:'edit', id }
   const [sheet, setSheet] = useState(null)
 
@@ -31,7 +31,7 @@ export default function Stores() {
 
   const open = (id) => { enterStore(id); nav('/app/menu') }
   const info = (s) => {
-    const menus = Array.isArray(s.menus) ? s.menus : []
+    const menus = menusOf(s)   // 메뉴판·결과 화면과 같은 식으로 계산한 마진
     const n = menus.length
     const avg = avgOf(margins(menus))
     const bowls = menus.reduce((a, m) => a + (Number(m && m.pop) || 0), 0)
@@ -39,7 +39,7 @@ export default function Stores() {
     return { n, avg, bowls, photo, s: avg == null ? '' : sig(avg, safePct) }
   }
   const totalMenus = list.reduce((a, s) => a + (Array.isArray(s.menus) ? s.menus.length : 0), 0)
-  const avgAll = avgOf(list.flatMap((s) => margins(s.menus)))
+  const avgAll = avgOf(list.flatMap((s) => margins(menusOf(s))))
 
   const editing = sheet && sheet.mode === 'edit' ? list.find((s) => s.id === sheet.id) : null
 

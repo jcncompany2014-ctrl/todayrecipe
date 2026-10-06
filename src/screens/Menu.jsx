@@ -7,7 +7,7 @@ import MenuEditSheet from '../components/MenuEditSheet'
 import NewMenuSheet from '../components/NewMenuSheet'
 import Orb from '../components/Orb'
 import { useStore } from '../state/store'
-import { won, round10, sig, goalPlan, manwon, profitOf } from '../lib/calc'
+import { won, round10, sig, goalPlan, manwon, profitOf, signedWon } from '../lib/calc'
 import '../styles/menu2.css'
 
 export default function Menu() {
@@ -21,8 +21,10 @@ export default function Menu() {
   // 메뉴판이 빌 수 있다(전부 삭제·첫 사용). 빈 상태에서도 화면은 살아 있어야 한다.
   const list = Array.isArray(menus) ? menus : []
   const hasMenus = list.length > 0
-  const avgProfit = hasMenus ? round10(list.reduce((a, m) => a + profitOf(m), 0) / list.length) : 0
-  const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
+  // 그릇 수는 정확한 값으로 계산하고, 10원 반올림은 보여줄 때만 — 결과 화면과 1그릇 어긋나지 않게
+  const avgProfitExact = hasMenus ? list.reduce((a, m) => a + profitOf(m), 0) / list.length : 0
+  const avgProfit = round10(avgProfitExact)
+  const gp = goalPlan(avgProfitExact, dailyGoal, dailyFixed)   // 한 달 목표 → 하루치 역산(가게 평균 기준)
   const best = hasMenus ? list.reduce((a, b) => (b.margin > a.margin ? b : a)) : null
   const healthy = list.filter((m) => m.margin >= 30).length
   const sorted = [...list].sort((a, b) => (sortHigh ? b.margin - a.margin : a.margin - b.margin))
@@ -171,7 +173,7 @@ export default function Menu() {
                 <div className="mcard-sub">
                   <span className="num">{won(m.price)}원</span>
                   <span className="mcard-dot">·</span>
-                  <span className="mcard-profit num">그릇당 <b className={s}>+{won(profit)}원</b></span>
+                  <span className="mcard-profit num">그릇당 <b className={s}>{signedWon(profit)}원</b></span>
                 </div>
                 <div className="bar"><span className={`${s}-bg`} style={{ width: `${Math.max(4, Math.min(100, m.margin))}%` }} /></div>
               </div>

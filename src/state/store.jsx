@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { DEFAULT_BUILD } from '../data/menus'
 import { SEED_STORES } from '../data/stores'
 import { PRODUCTS } from '../data/catalog'
-import { overheadFor, safeMarginOf, profitOf } from '../lib/calc'
+import { overheadFor, safeMarginOf, profitOf, summarize } from '../lib/calc'
 import { usePersistentState, load, save, clearAll, storageAvailable, SCHEMA, lastSaveFailed, onSaveStatus } from './persist'
 
 /* ── 사장님이 직접 추가한 재료 ─────────────────────────────────────────
@@ -54,8 +54,6 @@ export function StoreProvider({ children }) {
   const [stores, setStores] = usePersistentState('stores', () => clone(SEED_STORES), okStores)
   const [currentStoreId, setCurrentStoreId] = usePersistentState('currentStoreId', SEED_STORES[0].id, (v) => typeof v === 'string')
   const currentStore = stores.find((s) => s.id === currentStoreId) || stores[0] || SEED_STORES[0]
-  // 현재 매장의 메뉴판 (기존 코드가 쓰던 mens 그대로 — 파생값)
-  const menus = currentStore.menus
   // 현재 매장의 메뉴판만 갱신 (setMenus 시그니처 유지)
   const setMenus = useCallback((updater) => {
     setStores((all) => all.map((s) => (s.id === currentStoreId
@@ -157,7 +155,34 @@ export function StoreProvider({ children }) {
 
   /* 부대비용은 '가게'의 속성이다 — 홀 전용 백반집과 배달 위주 가게가
      같은 수수료를 물면 안 된다. 전에는 전역 1벌이라 매장을 바꿔도 그대로였다. */
-  const costOpts = { ...DEFAULT_COST_OPTS, ...(currentStore.costOpts || {}) }
+  const costOpts = useMemo(() => ({ ...DEFAULT_COST_OPTS, ...(currentStore.costOpts || {}) }), [currentStore.costOpts])
+
+  /* 메뉴판에 보이는 '한 그릇 남는 돈'·마진은 메뉴를 눌렀을 때 결과 화면이 낼 값과 같아야 한다.
+     레시피(또는 원가)를 아는 메뉴는 저장해 둔 숫자 대신, 결과 화면과 같은 식으로 지금 다시 계산한다.
+     - 저장해 둔 마진은 반올림된 %라 다시 곱하면 20~40원씩 어긋났다(3,240 vs 3,220)
+     - 예시 제육덮밥은 레시피가 없어 3,690원이라 했는데, 누르면 레시피로 3,730원이 나왔다
+     - 설정에서 배달수수료·인건비를 바꿔도 메뉴판 마진은 다시 저장할 때까지 옛 값이었다
+     레시피도 원가도 모르는 메뉴(예시 데이터)만 저장된 값을 그대로 쓴다. */
+  const liveMenu = useCallback((m, opts) => {
+    if (!m || !(Number(m.price) > 0)) return m
+    const recipe = m.items && m.items.length ? m.items
+      : (m.id === DEFAULT_BUILD.id && m.fixedFood == null ? DEFAULT_BUILD.items : null)   // loadMenu와 같은 규칙
+    let profit
+    if (recipe) profit = summarize(applyLedger(recipe), m.price, opts).profit
+    else if (m.fixedFood != null) profit = m.price - (Number(m.fixedFood) + overheadFor(m.price, opts))
+    else return m
+    if (!Number.isFinite(profit)) return m
+    return { ...m, profit: Math.round(profit), margin: Math.round((profit / m.price) * 100) }
+  }, [applyLedger])
+  const menus = useMemo(
+    () => (Array.isArray(currentStore.menus) ? currentStore.menus : []).map((m) => liveMenu(m, costOpts)),
+    [currentStore.menus, costOpts, liveMenu])
+  // 다른 가게의 메뉴판도 같은 식으로(사업장 목록 화면의 평균 마진)
+  const menusOf = useCallback((store) => {
+    if (!store) return []
+    const opts = { ...DEFAULT_COST_OPTS, ...(store.costOpts || {}) }
+    return (Array.isArray(store.menus) ? store.menus : []).map((m) => liveMenu(m, opts))
+  }, [liveMenu])
   const patchCostOpts = useCallback((patch) => {
     setStores((all) => all.map((s) => (s.id === currentStoreId
       ? { ...s, costOpts: { ...DEFAULT_COST_OPTS, ...(s.costOpts || {}), ...patch } }
@@ -281,7 +306,13 @@ export function StoreProvider({ children }) {
       setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: menu.fixedFood })
       return
     }
-    if (menu.id === DEFAULT_BUILD.id) { setBuild(clone(DEFAULT_BUILD)); return }
+    if (menu.id === DEFAULT_BUILD.id) {
+      // 예시 제육덮밥 — 레시피는 기본값을 쓰되, 사장님이 고친 가격·이름·사진은 살린다
+      // (전엔 가격을 10,000원으로 고쳐도 결과 화면이 9,000원으로 열렸고, 저장하면 되돌아갔다)
+      const base = clone(DEFAULT_BUILD)
+      setBuild({ ...base, nm: menu.nm || base.nm, price: menu.price > 0 ? menu.price : base.price, icon: menu.icon || base.icon, img: menu.img || base.img, items: applyLedger(base.items) })
+      return
+    }
     const cost = Math.round(menu.price - profitOf(menu))
     // 부대비용은 가게 설정(costOpts) 기준으로 역산해야 한다 — 기본값으로 풀면 마진이 되돌아간다
     setBuild({ id: menu.id, nm: menu.nm, price: menu.price, icon: menu.icon, img: menu.img, items: [], fixedFood: Math.max(0, cost - overheadFor(menu.price, costOpts)) })
@@ -501,7 +532,7 @@ export function StoreProvider({ children }) {
     stores, currentStore, currentStoreId, enterStore,
     monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays,
     dailyFixed, dailyGoal,
-    menus, build, costOpts: costOptsWithSafe, setRate, setPackaging, setFlatFee, setDeliveryShare, setLabor, setGas,
+    menus, menusOf, build, costOpts: costOptsWithSafe, setRate, setPackaging, setFlatFee, setDeliveryShare, setLabor, setGas,
     safeMargin,
     ingredientPrices, measuredYields, setMeasuredYield, clearMeasuredYield,
     inBuild, toggleItem, removeItem, setGrams, setMethod, setItemPerG, resetItemPerG, setPrice, setBuildMeta,

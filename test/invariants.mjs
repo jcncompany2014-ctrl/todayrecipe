@@ -4,7 +4,7 @@
    (Vite가 모듈을 풀어주므로 별도 테스트 도구 없이 동작한다) */
 import { PRODUCTS } from '/src/data/catalog.js'
 import { DEFAULT_BUILD } from '/src/data/menus.js'
-import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR, yieldFromMoisture, profitOf } from '/src/lib/calc.js'
+import { costOf, rawGramsOf, yieldOf, orderPlan, summarize, overheadFor, impactOfIngredient, menusUsing, riskBoard, yieldFromWeights, yieldSourceOf, priceTrendOf, explainCost, safeMarginOf, sig, fixedOverheadFor, SAFE_MARGIN_CEIL, SAFE_MARGIN_FLOOR, yieldFromMoisture, profitOf, signedWon } from '/src/lib/calc.js'
 
 export function runInvariants() {
   const log = []
@@ -160,6 +160,8 @@ export function runInvariants() {
     ok(`저장된 메뉴는 결과 화면 금액 그대로 (${saved.profit}원)`, profitOf(saved) === Math.round(DEFAULT_BUILD.price - s.cost))
     ok('금액이 없는 옛 메뉴는 가격 × 마진으로 물러난다', profitOf({ price: 9000, margin: 36 }) === 3240)
     ok('빈 메뉴·글자 입력에도 죽지 않는다', profitOf(null) === 0 && profitOf({ price: 'a', margin: 'b' }) === 0)
+    ok('profit: null 은 0원이 아니라 값 없음으로 본다', profitOf({ price: 9000, margin: 41, profit: null }) === 3690)
+    ok('손해 메뉴는 −로 표시', signedWon(-1230) === '−1,230' && signedWon(3220) === '+3,220')
   }
 
   return { pass, fail, log, foodCost: items.reduce((a, it) => a + costOf(it), 0), summary: summarize(items, DEFAULT_BUILD.price) }

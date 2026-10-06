@@ -69,6 +69,8 @@ export const DAILY_FIXED = 243000
 
 export const won = (n) => Math.round(n).toLocaleString('ko-KR')
 export const round10 = (n) => Math.round(n / 10) * 10
+// 남는 돈 표기 — 손해 보는 메뉴를 '+-1,230원'으로 쓰지 않게 부호를 값에서 정한다
+export const signedWon = (n) => `${n < 0 ? '−' : '+'}${won(Math.abs(n))}`
 
 /* 메뉴 한 그릇이 남기는 돈(원) — 모든 화면이 이 함수 하나로 읽는다.
    결과 화면에서 저장한 메뉴는 계산된 금액(profit)을 그대로 갖고 있다.
@@ -76,7 +78,8 @@ export const round10 = (n) => Math.round(n / 10) * 10
    메뉴판·대시보드는 3,240원이라고 서로 다르게 말했다(마진 35.8% → 36%). */
 export const profitOf = (m) => {
   if (!m) return 0
-  const p = Number(m.profit)
+  // null·빈 글자는 '0원'이 아니라 '값 없음' — Number(null)이 0이라 따로 거른다
+  const p = m.profit == null || m.profit === '' ? NaN : Number(m.profit)
   if (Number.isFinite(p)) return Math.round(p)
   return Math.round(((Number(m.price) || 0) * (Number(m.margin) || 0)) / 100)
 }

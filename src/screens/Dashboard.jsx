@@ -3,20 +3,22 @@ import Icon from '../components/Icon'
 import GoalGauge from '../components/GoalGauge'
 import TrendChart from '../components/TrendChart'
 import { useStore } from '../state/store'
-import { won, round10, breakeven, goalPlan, manwon, profitOf } from '../lib/calc'
+import { won, round10, breakeven, goalPlan, manwon, profitOf, sig } from '../lib/calc'
 
 export default function Dashboard() {
   const nav = useNavigate()
-  const { menus, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, soldToday, recentDays } = useStore()
+  const { menus, safeMargin, monthlyFixed, monthlyGoal, workDays, setMonthlyFixed, setMonthlyGoal, setWorkDays, dailyFixed, dailyGoal, soldToday, recentDays } = useStore()
   const soldCount = Object.values(soldToday).reduce((a, n) => a + n, 0)
 
   const ranked = [...menus].sort((a, b) => b.margin - a.margin)
-  const avgProfit = round10(menus.reduce((a, m) => a + profitOf(m), 0) / (menus.length || 1))   // 메뉴 0개면 NaN 대신 0
-  const shopBowls = breakeven(avgProfit, dailyFixed)
-  const gp = goalPlan(avgProfit, dailyGoal, dailyFixed)   // 가게 전체: 한 달 목표 → 하루치 역산
+  const avgProfitExact = menus.reduce((a, m) => a + profitOf(m), 0) / (menus.length || 1)   // 메뉴 0개면 NaN 대신 0
+  const avgProfit = round10(avgProfitExact)   // 보여줄 때만 10원 단위 — 그릇 수는 정확한 값으로(메뉴판과 같게)
+  const shopBowls = breakeven(avgProfitExact, dailyFixed)
+  const gp = goalPlan(avgProfitExact, dailyGoal, dailyFixed)   // 가게 전체: 한 달 목표 → 하루치 역산
 
   const counts = { g: 0, w: 0, b: 0 }
-  menus.forEach((m) => { counts[m.margin >= 30 ? 'g' : m.margin >= 20 ? 'w' : 'b']++ })
+  // 메뉴판 신호등과 같은 기준(우리 가게 안전선) — 30%로 박아두면 두 화면 색이 달랐다
+  menus.forEach((m) => { counts[sig(m.margin, safeMargin.pct)]++ })
   const total = menus.length
   const pct = (n) => (total ? Math.round((n / total) * 100) : 0)
   const C = { g: '#16A06A', w: '#D69412', b: '#D04B3F' }

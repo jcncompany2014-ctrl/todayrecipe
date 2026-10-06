@@ -2285,6 +2285,9 @@ a{color:inherit;text-decoration:none}
 .scr-cart .ing-reset::after,
 .scr-menu .mcard-edit::after { content:""; position:absolute; inset:-9px }  /* 26 → 44 */
 .scr-market .search-x::after { content:""; position:absolute; inset:-11px } /* 22 → 44 */
+/* 이웃 버튼과 겹치는 쪽은 덜 넓힌다 — 장바구니 X는 왼쪽의 '수율' 버튼, 메뉴 카드 연필은 아래의 마진% */
+.scr-cart .ing-x::after      { inset:-9px -9px -9px -2px }
+.scr-menu .mcard-edit::after { inset:-9px -9px -1px -9px }
 
 
 /* ── B-7. 스테퍼 — 한 컴포넌트 한 크기 ─────────────────────────────────────

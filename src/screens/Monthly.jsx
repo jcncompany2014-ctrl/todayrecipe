@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import { useStore } from '../state/store'
-import { won, manwon, profitOf } from '../lib/calc'
+import { won, manwon, profitOf, signedWon } from '../lib/calc'
 
 /* 이번 달 손익 요약 — 메뉴별 '하루 평균 판매량'만 넣으면 한 달 매출·순이익을 역산. */
 export default function Monthly() {
@@ -75,7 +75,7 @@ export default function Monthly() {
           <div className={`mo-row${d > 0 ? ' on' : ''}`} key={m.id}>
             <div className="mo-mid">
               <b>{m.nm}</b>
-              <span className="num">{d > 0 ? <>한 달 <em>{d * workDays}그릇</em> · <em className="g">+{won(profit)}원</em></> : `${won(m.price)}원 · 마진 ${m.margin}%`}</span>
+              <span className="num">{d > 0 ? <>한 달 <em>{d * workDays}그릇</em> · <em className={profit < 0 ? 'b' : 'g'}>{signedWon(profit)}원</em></> : `${won(m.price)}원 · 마진 ${m.margin}%`}</span>
             </div>
             <div className="oe-stepper">
               <button aria-label="감소" onClick={() => setD(m.id, (c) => c - 1)}><Icon name="minus" size={14} stroke={2.4} /></button>

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import Photo from '../components/Photo'
 import { useStore } from '../state/store'
-import { won, profitOf } from '../lib/calc'
+import { won, round10, profitOf, signedWon } from '../lib/calc'
 import Orb from '../components/Orb'
 import '../styles/orbs.css'
 
@@ -113,9 +113,9 @@ export default function SalesToday() {
             <div className="stl-photo"><Photo src={m.img} icon={m.icon} iconSize={22} alt={m.nm} /></div>
             <div className="stl-mid">
               <b>{m.nm}</b>
-              <span className="num">{won(m.price)}원 · 그릇당 <em className="g">+{won(profit)}원</em></span>
+              <span className="num">{won(m.price)}원 · 그릇당 <em className={profit < 0 ? 'b' : 'g'}>{signedWon(round10(profit))}원</em></span>
             </div>
-            <div className="stl-line num">{count > 0 ? `+${won(profit * count)}` : ''}</div>
+            <div className="stl-line num">{count > 0 ? signedWon(profit * count) : ''}</div>
             <div className="oe-stepper stl-step">
               <button aria-label="감소" onClick={() => setSold(m.id, (c) => c - 1)}><Icon name="minus" size={14} stroke={2.4} /></button>
               <span className="v num">{count}</span>

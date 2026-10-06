@@ -84,7 +84,10 @@ export default function MenuEditSheet({ menu, onClose }) {
     setTried(true)
     if (nameErr || pErr) return null
     const patch = { nm: name.slice(0, NAME_MAX), price: newPrice, img }
-    if (priceChanged) { patch.margin = estMargin; patch.profit = est.profit }
+    if (priceChanged) {
+      patch.margin = estMargin
+      if (est.profit != null) patch.profit = est.profit   // 어림을 못 하면 넣지 않는다 → 옛 금액은 updateMenu가 지운다
+    }
     return patch
   }
 
